@@ -6,9 +6,9 @@ Drupal.dhtmlMenu = {};
 * Attaches the online users autoupdate behaviour to the block content.
 */
 Drupal.dhtmlMenu.autoAttach = function() {
-  $('span.submenu').hide();
+//  $('span.submenu').hide();
 
-  var cookievalue = Drupal.dhtmlMenu.getCookie("switchmenu");
+  var cookievalue = Drupal.dhtmlMenu.getCookie('dhtml_menu');
   if (cookievalue != "") {
     var cookieList = cookievalue.split(",");
     for (var i = 0; i < cookieList.length; i++) {
@@ -34,6 +34,7 @@ Drupal.dhtmlMenu.switchMenu = function(submenu, parent) {
     submenu.style.display = "none";
     $(parent).removeClass('expanded').addClass('collapsed');
   }
+  Drupal.dhtmlMenu.saveMenuState();
 }
 
 Drupal.dhtmlMenu.getCookie = function(Name) {
@@ -64,7 +65,7 @@ Drupal.dhtmlMenu.saveMenuState = function() {
     }
   });
 
-  document.cookie = "switchmenu=" + blocks + ";path=/" ;
+  document.cookie = "dhtml_menu=" + blocks + ";path=/" ;
 }
 
 if (Drupal.jsEnabled) {

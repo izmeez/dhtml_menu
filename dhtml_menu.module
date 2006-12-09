@@ -39,6 +39,10 @@ function _get_add_links() {
   );
 }
 function theme_dhtml_menu_item($mid, $children = '', $leaf = TRUE) {
+  static $expanded = NULL;
+  if (!is_array($expanded)) {
+    $expanded = explode(',', $_COOKIE['dhtml_menu']);
+  }
   if ($mid == menu_get_active_nontask_item()) {
     $active = " active";
   }
@@ -48,10 +52,19 @@ function theme_dhtml_menu_item($mid, $children = '', $leaf = TRUE) {
   else {
     $menu = menu_get_menu();
 
-    $output = "<li class=\"menutitle collapsed\" id = \"menu-sub$mid\" ><a href=\"#\" class=\"link\">" . $menu['items'][$mid]['title'];
-    $output .= "</a><span class='submenu' id='sub$mid'>\n";
+    $type = isset($menu['visible'][$mid]['type']) ? $menu['visible'][$mid]['type'] : NULL;
+    if (menu_in_active_trail($mid) || ($type & MENU_EXPANDED) || in_array("sub$mid", $expanded)) {
+      $state = 'expanded';
+    }
+    else {
+      $state = 'collapsed';
+      $display = 'style="display: none;"';
+    }
 
-    $output .= "$children\n</span>\n" . "</li>\n";
+    $output = "<li class=\"menutitle $state\" id = \"menu-sub$mid\" >" .menu_item_link($mid);
+    $output .= "<span class='submenu' id='sub$mid' $display>\n";
+    $output .= "$children\n</span>\n";
+    $output .= "</li>\n";
     return $output;
   }
 }
