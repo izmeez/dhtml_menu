@@ -19,9 +19,8 @@ Drupal.dhtmlMenu.autoAttach = function() {
 
   $('li.menutitle > a').each(function(i) {
       $(this).click(function(e) {
-		parent = $(this).parents()[0];
-		id = parent.id.replace('menu-', '');
-        Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], parent);
+		id = $(this).parents()[0].id.replace('menu-', '');
+        Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
         return false;
       });
   });
@@ -71,5 +70,5 @@ Drupal.dhtmlMenu.saveMenuState = function() {
 }
 
 if (Drupal.jsEnabled) {
-  Drupal.dhtmlMenu.autoAttach();
+  $(document).ready(function() { Drupal.dhtmlMenu.autoAttach() });
 }

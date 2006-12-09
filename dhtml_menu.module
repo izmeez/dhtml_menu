@@ -85,7 +85,7 @@ function theme_dhtml_menu_tree($pid = 1, $toplevel = true) {
 
     if ($toplevel) {
       $path = drupal_get_path('module', 'dhtml_menu');
-      drupal_add_js("$path/dhtml_menu.js", 'module', 'footer');
+      drupal_add_js("$path/dhtml_menu.js");
     }
     return "\n<ul class=\"menu\">\n". $tree ."\n</ul>\n";
   }
