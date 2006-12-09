@@ -17,18 +17,16 @@ Drupal.dhtmlMenu.autoAttach = function() {
     }
   }
 
-  $('li.menutitle > a').each(function() {
+  $('ul.menu li > a').each(function() {
     this.style.display = 'block';
     this.style.paddingLeft = '2em';
-//    this.style.marginLeft = '-2em';
-    this.style.position = 'relative';
-    this.style.left = '-2em';
-  });
-
-  $('li.menutitle > a').click(function(e) {
-     id = $(this).parents()[0].id.replace('menu-', '');
-     Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
-     return false;
+    this.style.marginLeft = '-2em';
+    this.style.zIndex = 2;
+    $(this).click(function(e) {
+       id = $(this).parents()[0].id.replace('menu-', '');
+       Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
+       return false;
+    });
   });
 
   $(window).unload(Drupal.dhtmlMenu.saveMenuState);
