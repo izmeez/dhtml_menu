@@ -17,12 +17,10 @@ Drupal.dhtmlMenu.autoAttach = function() {
     }
   }
 
-  $('li.menutitle > a').each(function(i) {
-      $(this).click(function(e) {
-		id = $(this).parents()[0].id.replace('menu-', '');
-        Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
-        return false;
-      });
+  $('li.menutitle > a').click(function(e) {
+     id = $(this).parents()[0].id.replace('menu-', '');
+     Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
+     return false;
   });
 
   $(window).unload(Drupal.dhtmlMenu.saveMenuState);
@@ -70,5 +68,5 @@ Drupal.dhtmlMenu.saveMenuState = function() {
 }
 
 if (Drupal.jsEnabled) {
-  $(document).ready(function() { Drupal.dhtmlMenu.autoAttach() });
+  $(document).ready(Drupal.dhtmlMenu.autoAttach);
 }
