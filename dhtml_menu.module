@@ -61,7 +61,8 @@ function theme_dhtml_menu_item($mid, $children = '', $leaf = TRUE) {
       $display = 'style="display: none;"';
     }
 
-    $output = "<li class=\"menutitle $state\" id = \"menu-sub$mid\" >" .menu_item_link($mid);
+    $output = "<li class=\"menutitle $state\" id = \"menu-sub$mid\" >";
+    $output .= menu_item_link($mid);
     $output .= "<span class='submenu' id='sub$mid' $display>\n";
     $output .= "$children\n</span>\n";
     $output .= "</li>\n";

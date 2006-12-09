@@ -17,6 +17,14 @@ Drupal.dhtmlMenu.autoAttach = function() {
     }
   }
 
+  $('li.menutitle > a').each(function() {
+    this.style.display = 'block';
+    this.style.paddingLeft = '2em';
+//    this.style.marginLeft = '-2em';
+    this.style.position = 'relative';
+    this.style.left = '-2em';
+  });
+
   $('li.menutitle > a').click(function(e) {
      id = $(this).parents()[0].id.replace('menu-', '');
      Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
