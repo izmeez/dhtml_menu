@@ -26,6 +26,9 @@ Drupal.dhtmlMenu.autoAttach = function() {
        id = $(this).parents()[0].id.replace('menu-', '');
        Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
        return false;
+    })
+    .dblclick(function(e) {
+      window.location = this.href;
     });
   });
 
@@ -33,12 +36,12 @@ Drupal.dhtmlMenu.autoAttach = function() {
 };
 
 Drupal.dhtmlMenu.switchMenu = function(submenu, parent) {
-  if(submenu.style.display == "none") {
-    submenu.style.display = "block";
-    $(parent).removeClass('collapsed').addClass('expanded');
-  } else {
-    submenu.style.display = "none";
+  if($(parent).is('.expanded')) {
+    $(submenu).css('display', 'none');
     $(parent).removeClass('expanded').addClass('collapsed');
+  } else {
+    $(submenu).css('display', 'block');
+    $(parent).removeClass('collapsed').addClass('expanded');
   }
   Drupal.dhtmlMenu.saveMenuState();
 }
