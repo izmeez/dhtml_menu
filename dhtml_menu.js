@@ -16,21 +16,19 @@ Drupal.dhtmlMenu.autoAttach = function() {
   }
 
   $('ul.menu li > a').each(function() {
-    $(this)
-    .css({display: 'block', paddingLeft: '2em', marginLeft: '-2em', zIndex: 2})
-    .click(function(e) {
-      if ($(this).parent().children('div.submenu').length > 0) {
+    if ($(this).parent().children('div.submenu').length > 0) {
+      $(this)
+      .css({display: 'block', paddingLeft: '2em', marginLeft: '-2em', zIndex: 2})
+      .click(function(e) {
         id = $(this).parents()[0].id.replace('menu-', '');
         Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
-        
+          
         return false;
-      } else {
+      })
+      .dblclick(function(e) {
         window.location = this.href;
-      }
-    })
-    .dblclick(function(e) {
-      window.location = this.href;
-    });
+      });
+    }
   });
   $(window).unload(Drupal.dhtmlMenu.saveMenuState);
 };
