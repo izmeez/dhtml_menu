@@ -1,0 +1,3 @@
+; $Id$
+description = "Adds new menus with DHTML to reduce page refreshes"
+name = "DHTML Menus"
