@@ -43,6 +43,8 @@ function dhtml_menu_menu($may_cache) {
  * of each menu.
  */
 function dhtml_menu_block($op = 'list', $delta = 0) {
+  global $user;
+
   if ($op == 'list') {
     $blocks = array();
     $root_menus = menu_get_root_menus();
@@ -53,7 +55,12 @@ function dhtml_menu_block($op = 'list', $delta = 0) {
   }
   else if ($op == 'view') {
     $item = menu_get_item($delta);
-    $data['subject'] = check_plain($item['title']);
+    if ($user->uid > 0 && check_plain($item['title']) == t('Navigation') ) {
+      $data['subject'] = $user->name;
+    }
+    else {
+      $data['subject'] = check_plain($item['title']);
+    }
     $data['content'] = theme('dhtml_menu_tree', $delta);
     return $data;
   }
