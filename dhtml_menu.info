@@ -1,3 +1,4 @@
 ; $Id$
-description = "Adds new menus with DHTML to reduce page refreshes"
-name = "DHTML Menus"
+core          = "5.0"
+description   = "Adds dynamic menus with DHTML to reduce page refreshes"
+name          = "DHTML Menus"
