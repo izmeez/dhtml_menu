@@ -1,10 +1,10 @@
 <?php
 // $Id$
 
-/** 
+/**
  * DHTML menus
  *
- * Allow click expansion of the menu tree via javascript, with 
+ * Allow click expansion of the menu tree via javascript, with
  * graceful degradation.
  */
 
@@ -23,18 +23,18 @@ function dhtml_menu_perm() {
  */
 function dhtml_menu_menu($may_cache) {
   $items = array();
-  
+
   if ($may_cache) {
     $items[] = array(
-    'path' => 'admin/settings/dhtml_menu', 
+    'path' => 'admin/settings/dhtml_menu',
     'title' => t('DHTML Menu'),
     'callback' => 'drupal_get_form',
     'callback arguments' => array('dhtml_menu_settings'),
     'access' => user_access('administer dhtml menu'),
     'type' => MENU_NORMAL_ITEM
-    ); 
+    );
   }
-  
+
   return $items;
 }
 
@@ -66,19 +66,19 @@ function dhtml_menu_block($op = 'list', $delta = 0) {
   }
 }
 
-/** 
+/**
  * Settings page.
  */
 function dhtml_menu_settings() {
   $form['javascript_settings'] = array('#type' => 'fieldset', '#title' => t('JavaScript Settings'), '#collapsible' => true);
   $form['javascript_settings']['dhtml_menu_use_effects'] = array(
-  '#type' => 'checkbox', 
-  '#title' => t('Use jQuery Slide Effects'), 
+  '#type' => 'checkbox',
+  '#title' => t('Use jQuery Slide Effects'),
   '#description' => t('Menu\'s will slide open and closed.'),
-  '#default_value' => DHTML_MENU_USE_EFFECTS, 
+  '#default_value' => DHTML_MENU_USE_EFFECTS,
   '#return_value' => 1
   );
-  
+
   return system_settings_form($form);
 }
 
@@ -89,25 +89,25 @@ function dhtml_menu_settings() {
 // note: replace this with something set from the UI.
 function _dhtml_get_add_links() {
   return array(
-    'admin' => t('Administer'), 
+    'admin' => t('Administer'),
   );
 }
 
-function theme_dhtml_menu_item($mid, $children = '', $leaf = TRUE) {
-  static $expanded = NULL;
+function theme_dhtml_menu_item($mid, $children = '', $leaf = true) {
+  static $expanded = null;
   if (!is_array($expanded)) {
     $expanded = explode(',', $_COOKIE['dhtml_menu']);
   }
   if ($mid == menu_get_active_nontask_item()) {
-    $active = " active";
+    $active = ' active';
   }
   if ($leaf) {
-    return "  <li class=\"leaf$active\">" . menu_item_link($mid) . "</li>\n";
+    return "  <li class=\"leaf$active\">". menu_item_link($mid) ."</li>\n";
   }
   else {
     $menu = menu_get_menu();
 
-    $type = isset($menu['visible'][$mid]['type']) ? $menu['visible'][$mid]['type'] : NULL;
+    $type = isset($menu['visible'][$mid]['type']) ? $menu['visible'][$mid]['type'] : null;
     if (menu_in_active_trail($mid) || ($type & MENU_EXPANDED) || in_array("sub$mid", $expanded)) {
       $state = 'expanded';
     }
@@ -118,7 +118,7 @@ function theme_dhtml_menu_item($mid, $children = '', $leaf = TRUE) {
 
     $output = "<li class=\"menutitle $state\" id=\"menu-sub$mid\" >";
     $output .= menu_item_link($mid);
-    $output .= '<div class="submenu" id="sub'. $mid .'" '. $display .'>'. "\n";
+    $output .= "<div class=\"submenu\" id=\"sub$mid\" $display>\n";
     $output .= "$children\n</div>\n";
     $output .= "</li>\n";
     return $output;
@@ -149,7 +149,7 @@ function theme_dhtml_menu_tree($pid = 1, $toplevel = true) {
     $add_links = _dhtml_get_add_links();
     $menu = menu_get_menu();
     if ($add_links[$menu['items'][$pid]['path']]) {
-      $tree = "<li class='leaf'>" . menu_item_link($pid) . "</li>\n" . $tree;
+      $tree = "<li class='leaf'>". menu_item_link($pid) ."</li>\n". $tree;
     }
 
     if ($toplevel) {
@@ -157,6 +157,6 @@ function theme_dhtml_menu_tree($pid = 1, $toplevel = true) {
       drupal_add_js(array('dhtmlMenu' => array('useEffects' => DHTML_MENU_USE_EFFECTS)), 'setting');
       drupal_add_js($path .'/dhtml_menu.js');
     }
-    return "\n<ul class=\"menu\">\n". $tree ."\n</ul>\n";
+    return "\n<ul class=\"menu\">\n$tree\n</ul>\n";
   }
 }
