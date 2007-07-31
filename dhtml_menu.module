@@ -19,7 +19,6 @@ define('DHTML_MENU_USE_EFFECTS', variable_get('dhtml_menu_use_effects', 0));
  */
 function dhtml_menu_block($op = 'list', $delta = 0) {
   global $user;
-
   if ($op == 'list') {
     $blocks = array();
     $root_menus = menu_get_root_menus();
@@ -46,14 +45,13 @@ function dhtml_menu_block($op = 'list', $delta = 0) {
  */
 function dhtml_menu_menu($may_cache) {
   $items = array();
-
-  if ($may_cache) {
+  if (!empty($may_cache)) {
     $items[] = array(
     'path' => 'admin/settings/dhtml_menu',
     'title' => t('DHTML Menu'),
     'callback' => 'drupal_get_form',
     'callback arguments' => array('dhtml_menu_settings'),
-    'access' => user_access('administer dhtml menu'),
+    'access' => user_access('administer menu'),
     'type' => MENU_NORMAL_ITEM
     );
   }
@@ -61,24 +59,20 @@ function dhtml_menu_menu($may_cache) {
 }
 
 /**
- * Implementation of hook_perm().
- */
-function dhtml_menu_perm() {
-  return array('administer dhtml menu');
-}
-
-/**
  * DHTML Menu Settings page.
  * @ingroup form
  */
 function dhtml_menu_settings() {
-  $form['javascript_settings'] = array('#type' => 'fieldset', '#title' => t('JavaScript Settings'), '#collapsible' => true);
+  $form['javascript_settings'] = array(
+    '#type'          => 'fieldset',
+    '#title'         => t('JavaScript Settings'),
+    '#collapsible'   => true);
   $form['javascript_settings']['dhtml_menu_use_effects'] = array(
-  '#type' => 'checkbox',
-  '#title' => t('Use jQuery Slide Effects'),
-  '#description' => t('Menu\'s will slide open and closed.'),
-  '#default_value' => DHTML_MENU_USE_EFFECTS,
-  '#return_value' => 1
+    '#type'          => 'checkbox',
+    '#title'         => t('Use jQuery Slide Effects'),
+    '#description'   => t('Menu\'s will slide open and closed.'),
+    '#default_value' => DHTML_MENU_USE_EFFECTS,
+    '#return_value'  => 1
   );
   return system_settings_form($form);
 }
@@ -94,6 +88,11 @@ function _dhtml_get_add_links() {
   );
 }
 
+/**
+ * Convert menus into DHTML menus
+ * @param $pid
+ *    Number, parent menu item ID
+ */
 function dhtml_menu_tree($pid = 1) {
   $menu = menu_get_menu();
   $output = '';
