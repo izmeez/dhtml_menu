@@ -3,37 +3,6 @@
 Drupal.dhtmlMenu = {};
 
 /**
- * Attaches the online users autoupdate behaviour to the block content.
- */
-Drupal.dhtmlMenu.autoAttach = function() {
-  var cookievalue = Drupal.dhtmlMenu.getCookie('dhtml_menu');
-  if (cookievalue != '') {
-    var cookieList = cookievalue.split(',');
-    for (var i = 0; i < cookieList.length; i++) {
-      $('#'+ cookieList[i]).show();
-      $('#menu-' + cookieList[i]).addClass('expanded');
-    }
-  }
-
-  $('ul.menu li[@class!="leaf"] > a').each(function() {
-    if ($(this).parent().children('div.submenu').length > 0) {
-      $(this)
-      .css({display: 'block', paddingLeft: '2em', marginLeft: '-2em', zIndex: 2})
-      .click(function(e) {
-        id = $(this).parents()[0].id.replace('menu-', '');
-        Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
-          
-        return false;
-      })
-      .dblclick(function(e) {
-        window.location = this.href;
-      });
-    }
-  });
-  $(window).unload(Drupal.dhtmlMenu.saveMenuState);
-};
-
-/**
  *  Changes the state of a submenu from open to close.
  */
 Drupal.dhtmlMenu.switchMenu = function(submenu, parent) {
@@ -61,7 +30,6 @@ Drupal.dhtmlMenu.switchMenu = function(submenu, parent) {
 Drupal.dhtmlMenu.getCookie = function(name) {
   var search = name + '=';
   var returnvalue = '';
-  
   if (document.cookie.length > 0) {
     offset = document.cookie.indexOf(search);
     if (offset != -1) {
@@ -73,7 +41,6 @@ Drupal.dhtmlMenu.getCookie = function(name) {
       returnvalue = unescape(document.cookie.substring(offset, end));
     }
   }
-
   return returnvalue;
 }
 
@@ -90,10 +57,36 @@ Drupal.dhtmlMenu.saveMenuState = function() {
       blocks += this.id;
     }
   });
-
   document.cookie = 'dhtml_menu=' + blocks + ';path=/';
 }
 
-if (Drupal.jsEnabled) {
-  $(document).ready(Drupal.dhtmlMenu.autoAttach);
-}
+/**
+ * Start everything: Attaches the online users autoupdate behaviour
+ * to the block content.
+ */
+$(function() {
+  var cookievalue = Drupal.dhtmlMenu.getCookie('dhtml_menu');
+  if (cookievalue != '') {
+    var cookieList = cookievalue.split(',');
+    for (var i = 0; i < cookieList.length; i++) {
+      $('#'+ cookieList[i]).show();
+      $('#menu-' + cookieList[i]).addClass('expanded');
+    }
+  }
+  $('ul.dhtml_menu li[@class!="leaf"] > a').each(function() {
+    if ($(this).parent().children('div.submenu').length > 0) {
+      $(this)
+      .css({display: 'block', paddingLeft: '2em', marginLeft: '-2em', zIndex: 2})
+      .click(function(e) {
+        id = $(this).parents()[0].id.replace('menu-', '');
+        Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
+
+        return false;
+      })
+      .dblclick(function(e) {
+        window.location = this.href;
+      });
+    }
+  });
+  $(window).unload(Drupal.dhtmlMenu.saveMenuState);
+});
