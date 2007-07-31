@@ -8,6 +8,7 @@
  * @todo Provide all menus that are both parent menus and have
  * important content. This adds a pseudo menu item as the first item in
  * the container, and lets you rename it too.
+ * @todo Finish the item bullet feature
  */
 
 /**
@@ -66,12 +67,12 @@ function dhtml_menu_settings() {
     '#description'   => t('Menu slides when it opens and closes.'),
     '#default_value' => variable_get('dhtml_menu_use_effects', 0)
   );
-  $form['dhtml_menu_bullet'] = array(
-    '#type'          => 'checkbox',
-    '#title'         => t('Item bullets'),
-    '#description'   => t('The menu only collapses/exapand when clicking over the item bullet. WARNING: some themes do not show bullets!'),
-    '#default_value' => variable_get('dhtml_menu_bullet', 0)
-  );
+//   $form['dhtml_menu_bullet'] = array(
+//     '#type'          => 'checkbox',
+//     '#title'         => t('Item bullets'),
+//     '#description'   => t('The menu only collapses/exapand when clicking over the item bullet. WARNING: some themes do not show bullets!'),
+//     '#default_value' => variable_get('dhtml_menu_bullet', 0)
+//   );
   return system_settings_form($form);
 }
 
