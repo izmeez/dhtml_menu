@@ -17,7 +17,7 @@ Drupal.dhtmlMenu.switchMenu = function(submenu, parent) {
     if (Drupal.settings.dhtmlMenu.useEffects) {
       $(submenu).slideDown('fast');
     } else {
-      $(submenu).css('display', 'block');
+      $(submenu).css('display', 'inline');
     }
     $(parent).removeClass('collapsed').addClass('expanded');
   }
@@ -76,7 +76,7 @@ $(function() {
   $('ul.dhtml_menu li[@class!="leaf"] > a').each(function() {
     if ($(this).parent().children('div.submenu').length > 0) {
       $(this)
-      .css({display: 'block', paddingLeft: '2em', marginLeft: '-2em', zIndex: 2})
+      .css({paddingLeft: '2em', marginLeft: '-2em', zIndex: 2})
       .click(function(e) {
         id = $(this).parents()[0].id.replace('menu-', '');
         Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
