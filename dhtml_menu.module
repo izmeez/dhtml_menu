@@ -11,13 +11,6 @@
 define('DHTML_MENU_USE_EFFECTS', variable_get('dhtml_menu_use_effects', 0));
 
 /**
- * Implementation of hook_perm().
- */
-function dhtml_menu_perm() {
-  return array('administer dhtml menu');
-}
-
-/**
  * Implementation of hook_theme().
  */
 function dhtml_menu_theme($existing, $type) {
@@ -41,7 +34,6 @@ function dhtml_menu_menu() {
     'title' => 'DHTML Menu',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('dhtml_menu_settings'),
-    'access arguments' => array('administer dhtml menu'),
   ); 
     
   return $items;
