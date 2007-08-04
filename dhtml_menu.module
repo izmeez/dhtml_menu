@@ -131,8 +131,10 @@ function theme_dhtml_menu_tree($tree, $parent = NULL, $pid = NULL) {
   if ($parent && isset($add_links[$parent['link_path']])) {
     $output .= "<li class='leaf'>" . theme('menu_item_link', $parent) . "</li>\n";
   }
-
+  
+  $class = 'menu';
   if ($parent == NULL) {
+    $class .= ' menu-root';
     $path = drupal_get_path('module', 'dhtml_menu');
     drupal_add_js(array('dhtmlMenu' => array('useEffects' => DHTML_MENU_USE_EFFECTS)), 'setting');
     drupal_add_js($path .'/dhtml_menu.js');
@@ -143,5 +145,5 @@ function theme_dhtml_menu_tree($tree, $parent = NULL, $pid = NULL) {
     $output .= theme('dhtml_menu_item', $item, $pid);
   }
 	
-  return "\n<ul class=\"menu\">\n". $output ."\n</ul>\n";
+  return "\n<ul class=\"$class\">\n". $output ."\n</ul>\n";
 }
