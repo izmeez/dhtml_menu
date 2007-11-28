@@ -100,7 +100,7 @@ function _dhtml_get_add_links() {
     foreach($text as $line) {
       $line = trim($line);
       preg_match('/^([^ ]+)( (.*))?$/',$line,$match);
-      $dhtml_menu_duplicated[$match[1]] = $match[3] ? $match[3] : TRUE;
+      $dhtml_menu_duplicated[$match[1]] = empty($match[3]) ? TRUE : $match[3] ;
     }
   }
   return $dhtml_menu_duplicated;  
