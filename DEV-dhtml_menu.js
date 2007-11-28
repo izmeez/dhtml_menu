@@ -3,28 +3,6 @@
 dhtmlMenu = {};
 
 /**
- *  Changes the state of a submenu from open to close.
- */
-dhtmlMenu.switchMenu = function(submenu, parent) {
-  if($(parent).is(".expanded")) {
-    if (Drupal.settings.dhtmlMenu.useEffects) {
-      $(submenu).slideUp("fast");
-    } else {
-      $(submenu).css("display", "none");
-    }
-    $(parent).removeClass("expanded").addClass("collapsed");
-  } else {
-    if (Drupal.settings.dhtmlMenu.useEffects) {
-      $(submenu).slideDown("fast");
-    } else {
-      $(submenu).css("display", "inline");
-    }
-    $(parent).removeClass("collapsed").addClass("expanded");
-  }
-  dhtmlMenu.saveMenuState();
-};
-
-/**
  * Grabs the cookie data.
  */
 dhtmlMenu.getCookie = function(name) {
@@ -42,6 +20,31 @@ dhtmlMenu.getCookie = function(name) {
     }
   }
   return returnvalue;
+};
+
+/**
+ *  Changes the state of a submenu from open to close.
+ */
+dhtmlMenu.switchMenu = function(submenu, parent) {
+  if($(parent).is(".expanded")) {
+    if (Drupal.settings.dhtmlMenu.useEffects) {
+      $(submenu).slideUp("fast", dhtmlMenu.saveMenuState);
+    }
+    else {
+      $(submenu).css("display", "none");
+    }
+    $(parent).removeClass("expanded").addClass("collapsed");
+  }
+  else {
+    if (Drupal.settings.dhtmlMenu.useEffects) {
+      $(submenu).slideDown("fast", dhtmlMenu.saveMenuState);
+    }
+    else {
+      $(submenu).css("display", "block");
+    }
+    $(parent).removeClass("collapsed").addClass("expanded");
+  }
+  dhtmlMenu.saveMenuState();
 };
 
 /**
