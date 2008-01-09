@@ -1,1 +1,99 @@
-eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('3={};3.q=5(a){6 b=a+"=";6 c="";4(8.9.f>0){g=8.9.r(b);4(g!=-1){g+=b.f;6 d=8.9.r(";",g);4(d==-1){d=8.9.f}c=I(8.9.J(g,d))}}s c};3.t=5(a,b){4($(b).K(".j")){4(u.v.3.w){$(a).L("x",3.h)}l{$(a).m("n","y")}$(b).z("j").o("A")}l{4(u.v.3.w){$(a).M("x",3.h)}l{$(a).m("n","N")}$(b).z("A").o("j")}3.h()};3.h=5(){6 a="";$("B.C").D(5(i){4(7.O.n!="y"){4(a!=""){a+=","}a+=7.k}});8.9="p="+a+";P=/"};$(5(){6 a=3.q("p");4(a!=""){6 b=a.Q(",");R(6 i=0;i<b.f;i++){$("#"+b[i]).S();$("#E-"+b[i]).o("j")}}$("T.p U[@V!=W] > a").D(5(){4($(7).X().Y("B.C").f>0){$(7).m({Z:"F",10:"-F",11:2}).12(5(e){k=$(7).G()[0].k.13("E-","");3.t($("#"+k)[0],$(7).G()[0]);s 14}).15(5(e){H.16=7.17})}});$(H).18(3.h)});',62,71,'|||dhtmlMenu|if|function|var|this|document|cookie||||||length|offset|saveMenuState||expanded|id|else|css|display|addClass|dhtml_menu|getCookie|indexOf|return|switchMenu|Drupal|settings|useEffects|fast|none|removeClass|collapsed|div|submenu|each|menu|2em|parents|window|unescape|substring|is|slideUp|slideDown|block|style|path|split|for|show|ul|li|class|leaf|parent|children|paddingLeft|marginLeft|zIndex|click|replace|false|dblclick|location|href|unload'.split('|'),0,{}))
+// $Id$
+
+Drupal.dhtmlMenu = {};
+
+/**
+ * Attaches the online users autoupdate behaviour to the block content.
+ */
+Drupal.dhtmlMenu.autoAttach = function() {
+  var cookievalue = Drupal.dhtmlMenu.getCookie('dhtml_menu');
+  if (cookievalue != '') {
+    var cookieList = cookievalue.split(',');
+    for (var i = 0; i < cookieList.length; i++) {
+      $('#'+ cookieList[i]).show();
+      $('#menu-' + cookieList[i]).addClass('expanded');
+    }
+  }
+
+  $('ul.menu li[@class!="leaf"] > a').each(function() {
+    if ($(this).parent().children('div.submenu').length > 0) {
+      $(this)
+      .css({display: 'block', paddingLeft: '2em', marginLeft: '-2em', zIndex: 2})
+      .click(function(e) {
+        id = $(this).parents()[0].id.replace('menu-', '');
+        Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
+          
+        return false;
+      })
+      .dblclick(function(e) {
+        window.location = this.href;
+      });
+    }
+  });
+  $(window).unload(Drupal.dhtmlMenu.saveMenuState);
+};
+
+/**
+ *  Changes the state of a submenu from open to close.
+ */
+Drupal.dhtmlMenu.switchMenu = function(submenu, parent) {
+  if($(parent).is('.expanded')) {
+    if (Drupal.settings.dhtmlMenu.useEffects) {
+      $(submenu).slideUp('fast');
+    } else {
+      $(submenu).css('display', 'none');
+    }
+    $(parent).removeClass('expanded').addClass('collapsed');
+  } else {
+    if (Drupal.settings.dhtmlMenu.useEffects) {
+      $(submenu).slideDown('fast');
+    } else {
+      $(submenu).css('display', 'block');
+    }
+    $(parent).removeClass('collapsed').addClass('expanded');
+  }
+  Drupal.dhtmlMenu.saveMenuState();
+}
+
+/**
+ * Grabs the cookie data.
+ */
+Drupal.dhtmlMenu.getCookie = function(name) {
+  var search = name + '=';
+  var returnvalue = '';
+  
+  if (document.cookie.length > 0) {
+    offset = document.cookie.indexOf(search);
+    if (offset != -1) {
+      offset += search.length;
+      var end = document.cookie.indexOf(';', offset);
+      if (end == -1) {
+        end = document.cookie.length;
+      }
+      returnvalue = unescape(document.cookie.substring(offset, end));
+    }
+  }
+
+  return returnvalue;
+}
+
+/**
+ * Saves the states of the menus.
+ */
+Drupal.dhtmlMenu.saveMenuState = function() {
+  var blocks = '';
+  $('div.submenu').each(function(i) {
+    if (this.style.display != 'none') {
+      if (blocks != '') {
+        blocks += ',';
+      }
+      blocks += this.id;
+    }
+  });
+
+  document.cookie = 'dhtml_menu=' + blocks + ';path=/';
+}
+
+if (Drupal.jsEnabled) {
+  $(document).ready(Drupal.dhtmlMenu.autoAttach);
+}
