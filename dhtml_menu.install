@@ -1,0 +1,15 @@
+<?php
+// $Id$
+/**
+ * @author Arancaytar                     <http://drupal.org/user/28680>
+ * @author Bruno Massa - "brmassa"        <http://drupal.org/user/67164>
+ * @author Earl Miles  - "merlinofchaos"  <http://drupal.org/user/26979>
+ * @file dhtml_menu.install
+ * Install and Unistall processes for this module
+ */
+
+function dhtml_menu_uninstall() {
+  // Delete all global variables
+  variable_del('dhtml_menu_duplicated');
+  variable_del('dhtml_menu_use_effects');
+}
