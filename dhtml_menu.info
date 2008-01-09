@@ -1,12 +1,6 @@
 ; $Id$
-name = "DHTML Menus"
+core        = 6.x
+dependency  = menu
 description = "Adds new menus with DHTML to reduce page refreshes"
-dependency = menu
-core = 6.x
-
-; Information added by drupal.org packaging script on 2007-10-05
-version = "6.x-1.x-dev"
-core = "6.x"
-project = "dhtml_menu"
-datestamp = "1191542495"
+name        = "DHTML Menus"
 

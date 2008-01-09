@@ -55,7 +55,7 @@ function dhtml_menu_block($op = 'list', $delta = '') {
   elseif ($op == 'view') {
     $tree = menu_tree_all_data($delta);
     $data['content'] = theme('dhtml_menu_tree', $tree);
-    if ($user->uid > 0 && $delta == 'navigation') {
+    if ($user->uid > 0 and $delta == 'navigation') {
       $data['subject'] = $user->name;
     }
     else {
@@ -151,7 +151,7 @@ function theme_dhtml_menu_item($item, $id) {
   }
   else {
     $type = isset($item['link']['type']) ? $item['link']['type'] : NULL;
-    if ($item['link']['in_active_trail'] || $item['link']['expanded'] || in_array("sub$id", $expanded)) {
+    if ($item['link']['in_active_trail'] or $item['link']['expanded'] or in_array("sub$id", $expanded)) {
       $state = 'expanded';
       $display = '';
     }
@@ -160,11 +160,12 @@ function theme_dhtml_menu_item($item, $id) {
       $display = 'style="display: none;"';
     }
 
-    $output = "<li class=\"menutitle $state\" id=\"menu-sub$id\">";
-    $output .= theme('menu_item_link', $item['link']);
-    $output .= '<div class="submenu" id="sub'. $id .'" '. $display .">\n";
-    $output .= theme('dhtml_menu_tree', $item['below'], $item['link'], $id) ."\n</div>\n";
-    $output .= "</li>\n";
+    $output = "<li class=\"menutitle $state\" id=\"menu-sub$id\">".
+      theme('menu_item_link', $item['link']) ."\n\n".
+      '<div class="submenu" id="sub'. $id .'" '. $display .'>'.
+      theme('dhtml_menu_tree', $item['below'], $item['link'], $id) .
+      "</div>\n\n".
+      "</li>\n";
   }
 
   return $output;
@@ -176,10 +177,14 @@ function theme_dhtml_menu_item($item, $id) {
  * @ingroup themable
  */
 function theme_dhtml_menu_tree($tree, $parent = NULL, $pid = NULL) {
-  if (!$tree) return ''; // no further items
+  // no further items
+  if (!$tree) {
+    return '';
+  }
+
   $add_links = _dhtml_get_add_links();
   $output = '';
-  if ($parent && isset($add_links[$parent['link_path']])) {
+  if ($parent and isset($add_links[$parent['link_path']])) {
     $duplication = $parent;
     if ($add_links[$parent['link_path']] !== TRUE) {
       $duplication['title'] = $add_links[$parent['link_path']];
@@ -190,17 +195,25 @@ function theme_dhtml_menu_tree($tree, $parent = NULL, $pid = NULL) {
   $class = 'menu';
   if ($parent == NULL) {
     $class .= ' menu-root';
-    $path = drupal_get_path('module', 'dhtml_menu');
     drupal_add_js(array('dhtmlMenu' => array('useEffects' => DHTML_MENU_USE_EFFECTS)), 'setting');
-    drupal_add_js($path .'/dhtml_menu.js');
+    drupal_add_js(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.js');
   }
-  if (!is_array($tree)) var_dump($tree);
+
+  if (!is_array($tree)) {
+    var_dump($tree);
+  }
+
   foreach ($tree as $pid => $item) {
     // hidden sub-items are removed already; this line takes care of root items.
-    if ($item['link']['hidden'] < 0) continue; // 'hidden' is -1 for invisible items; do not display these.
-    $pid = str_replace(" ", "", $pid); // pid is going to be a DOM identifier, and can't have spaces.
+    if ($item['link']['hidden'] < 0) {
+      continue;
+    }
+
+    // pid is going to be a DOM identifier, and can't have spaces.
+    $pid = str_replace(" ", "", $pid);
+
     $output .= theme('dhtml_menu_item', $item, $pid);
   }
 
-  return "\n<ul class=\"$class\">\n". $output ."\n</ul>\n";
+  return "\n<ul class=\"$class\">\n". $output ."</ul>\n";
 }
