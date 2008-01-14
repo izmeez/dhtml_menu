@@ -106,9 +106,9 @@ function _dhtml_get_add_links() {
   
   $dhtml_menu_duplicated = array();
   $text = variable_get('dhtml_menu_duplicated', 'admin');
-  $text = explode("\n",$text);
 
-  if ($text) {
+  if (!empty($text)) {
+    $text = explode("\n",$text);
     foreach($text as $line) {
       $line = trim($line);
       preg_match('/^([^ ]+)( (.*))?$/',$line,$match);
