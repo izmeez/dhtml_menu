@@ -18,7 +18,7 @@ Drupal.dhtmlMenu.autoAttach = function() {
   $('ul.menu li[@class!="leaf"] > a').each(function() {
     if ($(this).parent().children('div.submenu').length > 0) {
       $(this)
-      .css({display: 'block', paddingLeft: '2em', marginLeft: '-2em', zIndex: 2})
+      .css({display: 'block', zIndex: 2})
       .click(function(e) {
         id = $(this).parents()[0].id.replace('menu-', '');
         Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
