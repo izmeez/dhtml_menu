@@ -30,6 +30,7 @@ Drupal.dhtmlMenu.autoAttach = function() {
       });
     }
   });
+
   $(window).unload(Drupal.dhtmlMenu.saveMenuState);
 };
 
