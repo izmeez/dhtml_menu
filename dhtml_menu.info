@@ -1,6 +1,4 @@
 ; $Id$
-core        = 6.x
-dependency  = menu
-description = "Adds new menus with DHTML to reduce page refreshes"
-name        = "DHTML Menus"
-
+name = DHTML Menus
+description = Adds new menus with DHTML to reduce page refreshes
+dependencies = menu

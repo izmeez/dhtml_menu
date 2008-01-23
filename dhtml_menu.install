@@ -1,11 +1,9 @@
 <?php
 // $Id$
+
 /**
- * @author Arancaytar                     <http://drupal.org/user/28680>
- * @author Bruno Massa - "brmassa"        <http://drupal.org/user/67164>
- * @author Earl Miles  - "merlinofchaos"  <http://drupal.org/user/26979>
- * @file dhtml_menu.install
- * Install and Unistall processes for this module
+ * @file
+ * Install and Uninstall processes for this module.
  */
 
 /**

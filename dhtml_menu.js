@@ -22,7 +22,7 @@ Drupal.dhtmlMenu.autoAttach = function() {
       .click(function(e) {
         id = $(this).parents()[0].id.replace('menu-', '');
         Drupal.dhtmlMenu.switchMenu($('#'+ id)[0], $(this).parents()[0]);
-
+          
         return false;
       })
       .dblclick(function(e) {
@@ -62,7 +62,7 @@ Drupal.dhtmlMenu.switchMenu = function(submenu, parent) {
 Drupal.dhtmlMenu.getCookie = function(name) {
   var search = name + '=';
   var returnvalue = '';
-
+  
   if (document.cookie.length > 0) {
     offset = document.cookie.indexOf(search);
     if (offset != -1) {

@@ -1,3 +1,8 @@
+$Id$
+
+DESCRIPTION
+-----------
+
 DHTML menus uses javascript DHTML to reduce the number of page loads when using
 nested menus; this is particularly useful with Drupal's administration system.
 
@@ -8,7 +13,9 @@ on it. Additionally, it uses a cookie to remember what menus are open and
 what menus are closed, so as you navigate around the site your menus remain
 consistent.
 
-To use this module:
+
+INSTALLATION
+------------
 
 1) Drop the entire directory into your modules directory or sites/all/modules 
    directory.
@@ -21,3 +28,11 @@ To use this module:
    it works properly.
 
 Enjoy!
+
+
+CREDITS
+-------
+
+Arancaytar                     <http://drupal.org/user/28680>
+Bruno Massa - "brmassa"        <http://drupal.org/user/67164>
+Earl Miles  - "merlinofchaos"  <http://drupal.org/user/26979>
