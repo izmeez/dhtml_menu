@@ -17,6 +17,7 @@ function dhtml_menu_menu($may_cache) {
     $items[] = array(
     'path'               => 'admin/settings/dhtml_menu',
     'title'              => t('DHTML Menu'),
+    'description'        => t('Configure jQuery slide effect and Duplicated menu items.'),
     'callback'           => 'drupal_get_form',
     'callback arguments' => array('dhtml_menu_settings'),
     'access'             => user_access('administer menu'),
