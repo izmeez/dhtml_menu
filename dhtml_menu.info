@@ -1,5 +1,5 @@
 ; $Id$
 name = DHTML Menus
 description = Adds new menus with DHTML to reduce page refreshes
-dependency = menu
+dependencies[] = menu
 core = 6.x
