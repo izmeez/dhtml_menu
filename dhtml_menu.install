@@ -1,0 +1,27 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Install and Uninstall processes for this module.
+ */
+
+/**
+ * Implementation of hook_enable().
+ */
+function dhtml_menu_enable() {
+  // Allow option to replace navigation block with DHTML equivalent
+  drupal_set_message(t('DHTML menu has been installed. If you wish, you may immediately <a href="@auto">enable it for the main navigation menu</a> or adjust your <a href="@settings">block settings</a> in detail.',
+   array('@auto' => url('admin/settings/dhtml_menu/replace-navigation'),
+    '@settings' => url('admin/build/block'))),
+   'status');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function dhtml_menu_uninstall() {
+  // Delete all global variables
+  variable_del('dhtml_menu_duplicated');
+  variable_del('dhtml_menu_use_effects');
+}
