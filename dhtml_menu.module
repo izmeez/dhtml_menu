@@ -25,6 +25,7 @@ function dhtml_menu_menu() {
   $items['admin/settings/dhtml_menu/replace-navigation'] = array(
     'title'           => 'Replace navigation block',
     'page callback'   => '_dhtml_menu_replace',
+    'type'            => MENU_CALLBACK,
   );
     
   return $items;
