@@ -65,7 +65,7 @@ Drupal.dhtmlMenu.switchMenu = function(submenu, parent_menu) {
     // If the user wants the Fading effects, use it,
     // otherwise, simply make the menu disapear
     if (Drupal.settings.dhtmlMenu_useEffects) {
-      $(submenu).slideUp('fast');
+      $(submenu).hide('fast');
     }
     else {
       $(submenu).css('display', 'none');
@@ -76,7 +76,7 @@ Drupal.dhtmlMenu.switchMenu = function(submenu, parent_menu) {
   }
   else {
     if (Drupal.settings.dhtmlMenu_useEffects) {
-      $(submenu).slideDown('fast');
+      $(submenu).show('fast');
     }
     else {
       $(submenu).css('display', 'block');
