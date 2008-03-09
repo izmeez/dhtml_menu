@@ -1,10 +1,17 @@
 <?php
-// $Id$
-
 /**
- * @file
+ * $Id$
+ * @file dhtml_menu.install
  * Install and Uninstall processes for this module.
  */
+
+/**
+ * Implementation of hook_install().
+ */
+function dhtml_menu_install() {
+  // Use the effects on menus by default now.
+  variable_get('dhtml_menu_use_effects', 1);
+}
 
 /**
  * Implementation of hook_enable().
