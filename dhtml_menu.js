@@ -13,17 +13,21 @@ Drupal.dhtmlMenu = {};
 Drupal.behaviors.dhtmlMenu = function(context) {
   // Get the Cookie's data
   var cookievalue = Drupal.dhtmlMenu.getCookie();
+
+  // If there is any menus that should be expanded,
+  // do it now
   if (cookievalue != '') {
     var cookieList = cookievalue.split(',');
     for (var i = 0; i < cookieList.length; i++) {
-      $('#'+ cookieList[i]).show();
-
-      $('menu-'+cookieList[i]).removeClass('collapsed').addClass('expanded');
-      $(cookieList[i]).css('display', 'block');
+      submenu = document.getElementById(cookieList[i]);
+      menu = document.getElementById('menu-' + cookieList[i]);
+      $(menu).removeClass('collapsed').addClass('expanded');
+      $(submenu).show();
+      $(submenu).css('display', 'block');
     }
   }
 
-  // Add jQuery effects to all menu items
+  // Add jQuery effects (click and double click) to all menu items
   $('ul.menu li[@class!="leaf"] > a').each(function() {
     if ($(this).parent().children('div.submenu').length > 0) {
       $(this)
@@ -32,7 +36,7 @@ Drupal.behaviors.dhtmlMenu = function(context) {
         window.location = this.href;
       })
       .click(function(e) {
-        id = '#' + $(this).parents()[0].id.replace('menu-', '');
+        id = $(this).parents()[0].id.replace('menu-', '');
         Drupal.dhtmlMenu.switchMenu(id, $(this).parents()[0]);
         return false;
       });
@@ -52,6 +56,8 @@ Drupal.behaviors.dhtmlMenu = function(context) {
  *   String. The parent item ID (including the "#")
  */
 Drupal.dhtmlMenu.switchMenu = function(submenu, parent_menu) {
+  submenu = document.getElementById(submenu);
+
   // First, see if the menu is already expanded or collapsed,
   // and perform the opposing effect
   if($(parent_menu).is('.expanded')) {
