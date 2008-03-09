@@ -32,54 +32,61 @@ function dhtml_menu_menu() {
  * of each menu.
  */
 function dhtml_menu_block($op = 'list', $delta = '') {
-  $root_menus = menu_get_menus(true);
-  global $user;
-
   if ($op == 'list') {
+    // Get a list of all menus
+    $root_menus = menu_get_menus(true);
+
+    // "Clone" each menu, using DHTML as a prefix
     $blocks = array();
     foreach ($root_menus as $mid => $title) { // $mid is a string in 6.x
       $blocks[$mid]['info'] = t('DHTML: ') . $title;
     }
+
     return $blocks;
   }
   else if ($op == 'view') {
+    // Get a list of all menus
+    $root_menus = menu_get_menus(true);
+
+    // Build the menu tree using DHTML menu special
+    // construction functions
     $tree = menu_tree_all_data($delta);
     $data['content'] = theme('dhtml_menu_tree', $tree);
-    if ($user->uid > 0 && $delta == 'navigation') {
+
+    // Set the block title: if its Navigation menu, use
+    // the user's nickname. Otherwise, use the original
+    // block name
+    global $user;
+    if ($user->uid > 0 and $delta == 'navigation') {
       $data['subject'] = $user->name;
     }
     else {
       $data['subject'] = check_plain($root_menus[$delta]);
     }
+
     return $data;
   }
 }
 
 /**
  * DHTML Menu Settings page.
+ *
  * @ingroup form
  */
 function dhtml_menu_settings() {
   $form['dhtml_menu_use_effects'] = array(
-    '#type'          => 'checkbox',
-    '#title'         => t('jQuery slide effect'),
-    '#description'   => t('Menu slides when it opens and closes.'),
-    '#default_value' => variable_get('dhtml_menu_use_effects', 0),
+    '#type'           => 'checkbox',
+    '#title'          => t('jQuery slide effect'),
+    '#description'    => t('Menu slides when it opens and closes.'),
+    '#default_value'  => variable_get('dhtml_menu_use_effects', 0),
   );
 
-  //   $form['dhtml_menu_bullet'] = array(
-  //     '#type'          => 'checkbox',
-  //     '#title'         => t('Item bullets'),
-  //     '#description'   => t('The menu only collapses/exapand when clicking over the item bullet. WARNING: some themes do not show bullets!'),
-  //     '#default_value' => variable_get('dhtml_menu_bullet', 0)
-  //   );
-
   $form['dhtml_menu_duplicated'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Duplicated menu items'),
-    '#description' => t('You can specify a list of menu items that should be displayed twice: Once as a parent item that expands and collapses the sub-menu and again as its own child item, which points directly to the page (the parent items still links on double-click). Enter one internal path (like "admin") on each line. To specify a custom link text, put it after the path, separated by a space.'),
-    '#rows' => 4,
-    '#default_value' => variable_get('dhtml_menu_duplicated', 'admin'),
+    '#type'           => 'textarea',
+    '#title'          => t('Duplicated menu items'),
+    '#description'    => t('You can specify a list of menu items that should be displayed twice: Once as a parent item that expands and collapses the sub-menu and again as its own child item, which points directly to the page (the parent items still links on double-click). Enter one internal path (like "admin") on each line. To specify a custom link text, put it after the path, separated by a space.'),
+    '#rows'           => 4,
+    '#default_value'  => variable_get('dhtml_menu_duplicated', 'admin'),
   );
 
   return system_settings_form($form);
@@ -175,12 +182,15 @@ function theme_dhtml_menu_item($item, $id) {
     }
   }
 
+  // Check if the menu item has a submenu
+  // If no, create a normal menu item
+  // If yes, create the submenu too
   if (empty($item['below'])) {
     return '  <li class="leaf" id="menu-leaf'. $id .'">' . theme('menu_item_link', $item['link']) . "</li>\n";
   }
   else {
     $type = isset($item['link']['type']) ? $item['link']['type'] : NULL;
-    if ($item['link']['in_active_trail'] || $item['link']['expanded'] || in_array("sub$id", $expanded)) {
+    if ($item['link']['in_active_trail'] or $item['link']['expanded'] or in_array("sub$id", $expanded)) {
       $state = 'expanded';
       $display = '';
     }
@@ -211,7 +221,7 @@ function theme_dhtml_menu_tree($tree, $parent = NULL, $pid = NULL) {
 
   $add_links = _dhtml_get_add_links();
   $output = '';
-  if ($parent && isset($add_links[$parent['link_path']])) {
+  if ($parent and isset($add_links[$parent['link_path']])) {
     $duplication = $parent;
     if ($add_links[$parent['link_path']] !== TRUE) {
       $duplication['title'] = $add_links[$parent['link_path']];
