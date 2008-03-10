@@ -16,7 +16,7 @@ function dhtml_menu_menu() {
     'page callback'   => 'drupal_get_form',
     'page arguments'  => array('dhtml_menu_settings'),
   );
-  $items['admin/settings/dhtml_menu/replace-navigation'] = array(
+  $items['admin/settings/dhtml_menu/replace_navigation'] = array(
     'title'           => 'Replace navigation block',
     'page callback'   => '_dhtml_menu_replace',
     'type'            => MENU_CALLBACK,

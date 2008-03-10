@@ -19,7 +19,7 @@ function dhtml_menu_install() {
 function dhtml_menu_enable() {
   // Allow option to replace navigation block with DHTML equivalent
   drupal_set_message(t('DHTML menu has been installed. If you wish, you may immediately <a href="@auto">enable it for the main navigation menu</a> or adjust your <a href="@settings">block settings</a> in detail.',
-   array('@auto' => url('admin/settings/dhtml_menu/replace-navigation'),
+   array('@auto' => url('admin/settings/dhtml_menu/replace_navigation'),
     '@settings' => url('admin/build/block'))),
    'status');
 }
