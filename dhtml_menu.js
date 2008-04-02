@@ -12,7 +12,7 @@ Drupal.dhtmlMenu = {};
  */
 Drupal.behaviors.dhtmlMenu = function(context) {
   // Get the Cookie's data
-  var cookievalue = Drupal.dhtmlMenu.getCookie();
+  var cookievalue = Drupal.dhtmlMenu.cookieGet();
 
   // If there is any menus that should be expanded,
   // do it now
@@ -29,7 +29,7 @@ Drupal.behaviors.dhtmlMenu = function(context) {
 
   // Add jQuery effects (click and double click) to all menu items
   $('ul.menu li[@class!="leaf"] > a').each(function() {
-    if ($(this).parent().children('div.submenu').length > 0) {
+    if ($(this).siblings('div.submenu').length > 0) {
       $(this)
       .css({display: 'block', zIndex: 2})
       .dblclick(function(e) {
@@ -43,51 +43,8 @@ Drupal.behaviors.dhtmlMenu = function(context) {
     }
   });
 
-  // Avoid using the saveMenuState function by mistake
-  $(window).unload(Drupal.dhtmlMenu.saveMenuState);
-}
-
-/**
- * Changes the state of a submenu from open to close.
- *
- * @param submenu
- *   String. The submenu ID (including the "#")
- * @param parent_menu
- *   String. The parent item ID (including the "#")
- */
-Drupal.dhtmlMenu.switchMenu = function(submenu, parent_menu) {
-  submenu = document.getElementById(submenu);
-
-  // First, see if the menu is already expanded or collapsed,
-  // and perform the opposing effect
-  if($(parent_menu).is('.expanded')) {
-
-    // If the user wants the Fading effects, use it,
-    // otherwise, simply make the menu disapear
-    if (Drupal.settings.dhtmlMenu_useEffects) {
-      $(submenu).hide('fast');
-    }
-    else {
-      $(submenu).css('display', 'none');
-    }
-
-    // Set the parent menu item as collapsed
-    $(parent_menu).removeClass('expanded').addClass('collapsed');
-  }
-  else {
-    if (Drupal.settings.dhtmlMenu_useEffects) {
-      $(submenu).show('fast');
-    }
-    else {
-      $(submenu).css('display', 'block');
-    }
-    $(parent_menu).removeClass('collapsed').addClass('expanded');
-  }
-
-  // After all changes, save the current state
-  // of the menus, so other pages will load and use
-  // this new layout
-  Drupal.dhtmlMenu.saveMenuState();
+  // Avoid using the cookieSet function by mistake
+  $(window).unload(Drupal.dhtmlMenu.cookieSet);
 }
 
 /**
@@ -97,7 +54,7 @@ Drupal.dhtmlMenu.switchMenu = function(submenu, parent_menu) {
  *   String. A list, separated by comma, of all menu IDs
  *   that should be expanded.
  */
-Drupal.dhtmlMenu.getCookie = function() {
+Drupal.dhtmlMenu.cookieGet = function() {
   var string = 'dhtml_menu=';
   var returnvalue = '';
 
@@ -127,7 +84,7 @@ Drupal.dhtmlMenu.getCookie = function() {
 /**
  * Saves the states of the menus.
  */
-Drupal.dhtmlMenu.saveMenuState = function() {
+Drupal.dhtmlMenu.cookieSet = function() {
   var menus = '';
 
   // Get a list of menu IDs, saparated by comma
@@ -142,4 +99,58 @@ Drupal.dhtmlMenu.saveMenuState = function() {
 
   // Save this values on the cookie
   document.cookie = 'dhtml_menu=' + menus + ';path=/';
+}
+
+/**
+* Hide all submenus
+*/
+Drupal.dhtmlMenu.hideSiblings = function(parent_menu) {
+  $(parent_menu).siblings('.expanded').each(function() {
+    id = $(this).attr('id').replace('menu-', '');
+    Drupal.dhtmlMenu.switchMenu(id, this);
+  });
+};
+
+/**
+ * Changes the state of a submenu from open to close.
+ *
+ * @param submenu
+ *   String. The submenu ID (including the "#")
+ * @param parent_menu
+ *   String. The parent item ID (including the "#")
+ */
+Drupal.dhtmlMenu.switchMenu = function(submenu, parent_menu) {
+  submenu = document.getElementById(submenu);
+
+  // First, see if the menu is already expanded or collapsed,
+  // and perform the opposing effect
+  if($(parent_menu).is('.expanded')) {
+
+    // If the user wants the Fading effects, use it,
+    // otherwise, simply make the menu disapear
+    if (Drupal.settings.dhtmlMenu_useEffects) {
+      $(submenu).hide('fast');
+    }
+    else {
+      $(submenu).css('display', 'none');
+    }
+
+    // Set the parent menu item as collapsed
+    $(parent_menu).removeClass('expanded').addClass('collapsed');
+  }
+  else {
+    Drupal.dhtmlMenu.hideSiblings(parent_menu);
+    if (Drupal.settings.dhtmlMenu_useEffects) {
+      $(submenu).show('fast');
+    }
+    else {
+      $(submenu).css('display', 'block');
+    }
+    $(parent_menu).removeClass('collapsed').addClass('expanded');
+  }
+
+  // After all changes, save the current state
+  // of the menus, so other pages will load and use
+  // this new layout
+  Drupal.dhtmlMenu.cookieSet();
 }
