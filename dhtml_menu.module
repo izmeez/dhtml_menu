@@ -7,25 +7,6 @@
  */
 
 /**
- * Implementation of hook_menu().
- */
-function dhtml_menu_menu() {
-  $items['admin/settings/dhtml_menu'] = array(
-    'description'     => 'Adds new menus with DHTML to reduce page refreshes',
-    'title'           => 'DHTML Menu',
-    'page callback'   => 'drupal_get_form',
-    'page arguments'  => array('dhtml_menu_settings'),
-  );
-  $items['admin/settings/dhtml_menu/replace_navigation'] = array(
-    'title'           => 'Replace navigation block',
-    'page callback'   => '_dhtml_menu_replace',
-    'type'            => MENU_CALLBACK,
-  );
-
-  return $items;
-}
-
-/**
  * Implementation of hook_block().
  *
  * Basically a copy of menu_block() -- we're providing our own version
@@ -69,81 +50,24 @@ function dhtml_menu_block($op = 'list', $delta = '') {
 }
 
 /**
- * DHTML Menu Settings page.
- *
- * @ingroup form
+ * Implementation of hook_menu().
  */
-function dhtml_menu_settings() {
-  $form['dhtml_menu_use_effects'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('jQuery slide effect'),
-    '#description'    => t('Menu slides when it opens and closes.'),
-    '#default_value'  => variable_get('dhtml_menu_use_effects', 0),
+function dhtml_menu_menu() {
+  $items['admin/settings/dhtml_menu'] = array(
+    'description'     => 'Adds new menus with DHTML to reduce page refreshes',
+    'file'            => 'dhtml_menu.admin.inc',
+    'title'           => 'DHTML Menu',
+    'page callback'   => 'drupal_get_form',
+    'page arguments'  => array('_dhtml_menu_settings'),
+  );
+  $items['admin/settings/dhtml_menu/replace_navigation'] = array(
+    'file'            => 'dhtml_menu.admin.inc',
+    'title'           => 'Replace navigation block',
+    'page callback'   => '_dhtml_menu_replace',
+    'type'            => MENU_CALLBACK,
   );
 
-  $form['dhtml_menu_duplicated'] = array(
-    '#type'           => 'textarea',
-    '#title'          => t('Duplicated menu items'),
-    '#description'    => t('You can specify a list of menu items that should be displayed twice: Once as a parent item that expands and collapses the sub-menu and again as its own child item, which points directly to the page (the parent items still links on double-click). Enter one internal path (like "admin") on each line. To specify a custom link text, put it after the path, separated by a space.'),
-    '#rows'           => 4,
-    '#default_value'  => variable_get('dhtml_menu_duplicated', 'admin'),
-  );
-
-  return system_settings_form($form);
-}
-
-/**
- * Replaces the navigation block in all themes by
- * assigning its values to this module's block, then
- * disabling the normal block.
- */
-function _dhtml_menu_replace() {
-  // Ensure that the block table is up to date.
-  _block_rehash();
-
-  // Get all blocks that are enabled
-  $res = db_query("SELECT status, weight, region, visibility, pages, title, theme
-    FROM {blocks} WHERE module = 'user' AND delta = 1");
-  while ($row = db_fetch_array($res)) {
-    $navigation_settings[$row['theme']] = $row;
-  }
-
-  // Enable the equivalent DHTML menu and
-  // disable the original one
-  foreach ($navigation_settings as $theme => $row) {
-    db_query("UPDATE {blocks} SET status = %d, weight = %d, region = '%s',
-      visibility = %d, pages = %d, title = '%s'
-      WHERE module = 'dhtml_menu'
-      AND delta = 'navigation' AND theme = '%s'", $row);
-    db_query("UPDATE {blocks} SET status = 0, region = ''
-      WHERE module = 'user' AND delta = 1 AND theme = '%s';", $theme);
-  }
-
-  drupal_set_message(t('Your navigation block has been replaced with its DHTML equivalent in all currently enabled themes.'), 'status');
-
-  // go to block administration
-  drupal_goto('admin/build/block');
-}
-
-/**
- * Fetch duplicated menu items - this is a configurable setting.
- */
-function _dhtml_get_add_links() {
-  static $dhtml_menu_duplicated;
-
-  if (!isset($dhtml_menu_duplicated)) {
-    $dhtml_menu_duplicated = array();
-    $text = variable_get('dhtml_menu_duplicated', 'admin');
-    $text = preg_split('/\n/', $text, -1, PREG_SPLIT_NO_EMPTY); // explode returns array(0 => '') for $text == ''
-
-    foreach($text as $line) {
-      $line = trim($line);
-      preg_match('/^([^ ]+)( (.*))?$/',$line,$match);
-      $dhtml_menu_duplicated[$match[1]] = !empty($match[3]) ? $match[3] : TRUE;
-    }
-  }
-
-  return $dhtml_menu_duplicated;
+  return $items;
 }
 
 /**
@@ -152,114 +76,11 @@ function _dhtml_get_add_links() {
 function dhtml_menu_theme($existing, $type) {
   $theme['dhtml_menu_item'] = array(
     'arguments' => array('item' => array(), 'id' => NULL),
+    'file'      => 'dhtml_menu.inc'
   );
   $theme['dhtml_menu_tree'] = array(
     'arguments' => array('tree' => array(), 'parent' => NULL, 'pid' => NULL),
+    'file'      => 'dhtml_menu.inc'
   );
   return $theme;
-}
-
-/**
- * Theme each menu item, adding important CSS data
- *
- * @ingroup themable
- */
-function theme_dhtml_menu_item($item, $id) {
-  static $expanded = NULL;
-  if (!is_array($expanded)) {
-    if (!isset($_COOKIE['dhtml_menu'])) {
-      $_COOKIE['dhtml_menu'] = '';
-    }
-    $expanded = explode(',', $_COOKIE['dhtml_menu']);
-  }
-
-  // Unset hidden sub-items. This avoids items with empty, all-hidden sub-menus.
-  if (!empty($item['below'])) {
-    foreach ($item['below'] as $index => $leaf) {
-      if ($leaf['link']['hidden']) {
-        unset($item['below'][$index]);
-      }
-    }
-  }
-
-  // Check if the menu item has a submenu
-  // If no, create a normal menu item
-  // If yes, create the submenu too
-  if (empty($item['below'])) {
-    return '  <li class="leaf" id="menu-leaf'. $id .'">' . theme('menu_item_link', $item['link']) . "</li>\n";
-  }
-  else {
-    $type = isset($item['link']['type']) ? $item['link']['type'] : NULL;
-    if ($item['link']['in_active_trail'] or $item['link']['expanded'] or in_array("sub$id", $expanded)) {
-      $state = 'expanded';
-      $display = '';
-    }
-    else {
-      $state = 'collapsed';
-      $display = ' style="display: none;"';
-    }
-
-    return "<li class=\"menutitle $state\" id=\"menu-sub$id\">"
-      . theme('menu_item_link', $item['link'])
-      ."<div class=\"submenu\" id=\"sub$id\"$display>"
-      . theme('dhtml_menu_tree', $item['below'], $item['link'], $id)
-      .'</div>'
-      .'</li>';
-  }
-}
-
-/**
- * Theme each menu, adding important CSS data
- *
- * @ingroup themable
- */
-function theme_dhtml_menu_tree($tree, $parent = NULL, $pid = NULL) {
-  // If no further items, return blank
-  if (empty($tree)) {
-    return '';
-  }
-
-  // do not include disabled menu items
-  if ($item['link']['hidden'] == '1') {
-    return NULL;
-  }
-
-  $add_links = _dhtml_get_add_links();
-  $output = '';
-  if ($parent and isset($add_links[$parent['link_path']])) {
-    $duplication = $parent;
-    if ($add_links[$parent['link_path']] !== TRUE) {
-      $duplication['title'] = $add_links[$parent['link_path']];
-    }
-    $output .= '<li class="leaf" id="menu-leaf'. $pid .'">'. theme('menu_item_link', $duplication) ."</li>\n";
-  }
-
-  $class = 'menu';
-  if ($parent == NULL) {
-    $class .= ' menu-root';
-
-    // Add the propper JS file
-    drupal_add_js(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.js');
-
-    // If the Effect is on, tell it to JS
-    if ($effects = variable_get('dhtml_menu_use_effects', 0)) {
-      drupal_add_js(array('dhtmlMenu_useEffects' => $effects), 'setting');
-    }
-  }
-
-  // Create each menu item
-  foreach ($tree as $pid => $item) {
-    // hidden sub-items are removed already; this line takes care of root items.
-    if ($item['link']['hidden']) {
-      continue;
-    }
-
-    // pid is going to be a DOM identifier, and can't have some characters
-    $forbid = array(' ', '(', ')', '{', '}', '[', ']', '\'');
-    $pid = str_replace($forbid, '', $pid);
-
-    $output .= theme('dhtml_menu_item', $item, $pid);
-  }
-
-  return "\n<ul class=\"$class\">\n". $output ."\n</ul>\n";
 }
