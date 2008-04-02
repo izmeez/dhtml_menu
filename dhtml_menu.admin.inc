@@ -18,6 +18,12 @@ function _dhtml_menu_settings() {
     '#description'    => t('Menu slides when it opens and closes.'),
     '#default_value'  => variable_get('dhtml_menu_use_effects', 0),
   );
+  $form['dhtml_menu_hide_siblings'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Hide Siblings effect'),
+    '#description'    => t('Close all other menu items when one opens.'),
+    '#default_value'  => variable_get('dhtml_menu_hide_siblings', 0),
+  );
 
   $form['dhtml_menu_duplicated'] = array(
     '#type'           => 'textarea',

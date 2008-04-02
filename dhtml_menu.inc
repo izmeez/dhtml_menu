@@ -111,7 +111,11 @@ function theme_dhtml_menu_tree($tree, $parent = NULL, $pid = NULL) {
 
     // If the Effect is on, tell it to JS
     if ($effects = variable_get('dhtml_menu_use_effects', 0)) {
-      drupal_add_js(array('dhtmlMenu_useEffects' => $effects), 'setting');
+      drupal_add_js(array('dhtmlMenu_useEffects' => 1), 'setting');
+    }
+    // If Hide Siblings is on, tell it to JS
+    if ($effects = variable_get('dhtml_menu_hide_siblings', 0)) {
+      drupal_add_js(array('dhtmlMenu_hideSiblings' => 1), 'setting');
     }
   }
 

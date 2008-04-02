@@ -139,7 +139,12 @@ Drupal.dhtmlMenu.switchMenu = function(submenu, parent_menu) {
     $(parent_menu).removeClass('expanded').addClass('collapsed');
   }
   else {
-    Drupal.dhtmlMenu.hideSiblings(parent_menu);
+    if (Drupal.settings.dhtmlMenu_hideSiblings) {
+      Drupal.dhtmlMenu.hideSiblings(parent_menu);
+    }
+
+    // If the user wants the Fading effects, use it,
+    // otherwise, simply make the menu apear
     if (Drupal.settings.dhtmlMenu_useEffects) {
       $(submenu).show('fast');
     }

@@ -31,4 +31,5 @@ function dhtml_menu_uninstall() {
   // Delete all global variables
   variable_del('dhtml_menu_duplicated');
   variable_del('dhtml_menu_use_effects');
+  variable_del('dhtml_menu_hide_siblings');
 }
