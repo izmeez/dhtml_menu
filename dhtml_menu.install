@@ -24,23 +24,13 @@ function dhtml_menu_enable() {
   // Ensure that the block table is up to date.
   _block_rehash();
 
-  // Get all blocks that are enabled
-  $res = db_query("SELECT status, weight, region, visibility, pages, title, theme
-    FROM {blocks} WHERE module = 'user' AND delta = 1");
+  $dhtml_menus = variable_get('dhtml_menus_menus', array());
+  $res = db_query("SELECT delta FROM {blocks} WHERE module = 'menu'");
   while ($row = db_fetch_array($res)) {
-    $navigation_settings[$row['theme']] = $row;
+    $dhtml_menus[$row['delta']] = TRUE;
   }
-
-  // Enable the equivalent DHTML menu and
-  // disable the original one
-  foreach ($navigation_settings as $theme => $row) {
-    db_query("UPDATE {blocks} SET status = %d, weight = %d, region = '%s',
-      visibility = %d, pages = %d, title = '%s'
-      WHERE module = 'dhtml_menu'
-      AND delta = 'navigation' AND theme = '%s'", $row);
-    db_query("UPDATE {blocks} SET status = 0, region = ''
-      WHERE module = 'user' AND delta = 1 AND theme = '%s';", $theme);
-  }
+  $dhtml_menus['navigation'] = TRUE;
+  variable_set('dhtml_menus_menus', $dhtml_menus);
 
   drupal_set_message(t('Your navigation block has been replaced with its DHTML equivalent in all currently enabled themes. If you wish, you may adjust your <a href="@settings">block settings</a> in detail.',
     array('@settings' => url('admin/build/block'))), 'status');
@@ -54,4 +44,5 @@ function dhtml_menu_uninstall() {
   variable_del('dhtml_menu_duplicated');
   variable_del('dhtml_menu_use_effects');
   variable_del('dhtml_menu_hide_siblings');
+  variable_del('dhtml_menus_menus');
 }

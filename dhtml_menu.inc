@@ -6,6 +6,12 @@
  * graceful degradation.
  */
 
+function _dhtml_menu_build_menu($delta) {
+  // Build the menu tree using DHTML menu special
+  // construction functions
+  return theme('dhtml_menu_tree', menu_tree_all_data($delta));
+}
+
 /**
  * Fetch duplicated menu items - this is a configurable setting.
  */
