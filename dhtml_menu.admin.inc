@@ -24,7 +24,7 @@ function _dhtml_menu_settings() {
     '#title'          => t('Duplicated menu items'),
     '#description'    => t('You can specify a list of menu items that should be displayed twice: Once as a parent item that expands and collapses the sub-menu and again as its own child item, which points directly to the page (the parent items still links on double-click). Enter one internal path (like "admin") on each line. To specify a custom link text, put it after the path, separated by a space.'),
     '#rows'           => 4,
-    '#default_value'  => variable_get('dhtml_menu_duplicated', 'admin'),
+    '#default_value'  => variable_get('dhtml_menu_duplicated', "admin\nadmin/build/menu\nnode/add"),
   );
 
   return system_settings_form($form);

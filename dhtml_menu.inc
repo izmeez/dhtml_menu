@@ -14,7 +14,7 @@ function _dhtml_menu_get_add_links() {
 
   if (!isset($dhtml_menu_duplicated)) {
     $dhtml_menu_duplicated = array();
-    $text = variable_get('dhtml_menu_duplicated', 'admin');
+    $text = variable_get('dhtml_menu_duplicated', "admin\nadmin/build/menu\nnode/add");
     $text = preg_split('/\n/', $text, -1, PREG_SPLIT_NO_EMPTY); // explode returns array(0 => '') for $text == ''
 
     foreach($text as $line) {

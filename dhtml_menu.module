@@ -25,7 +25,7 @@ function dhtml_menu_block($op = 'list', $delta = '') {
 
     return $blocks;
   }
-  else if ($op == 'view') {
+  elseif ($op == 'view') {
     // Get a list of all menus
     $root_menus = menu_get_menus(true);
 
