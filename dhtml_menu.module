@@ -60,12 +60,6 @@ function dhtml_menu_menu() {
     'page callback'   => 'drupal_get_form',
     'page arguments'  => array('_dhtml_menu_settings'),
   );
-  $items['admin/settings/dhtml_menu/replace_navigation'] = array(
-    'file'            => 'dhtml_menu.admin.inc',
-    'title'           => 'Replace navigation block',
-    'page callback'   => '_dhtml_menu_replace',
-    'type'            => MENU_CALLBACK,
-  );
 
   return $items;
 }
