@@ -42,9 +42,6 @@ Drupal.behaviors.dhtmlMenu = function(context) {
       });
     }
   });
-
-  // Avoid using the cookieSet function by mistake
-  $(window).unload(Drupal.dhtmlMenu.cookieSet);
 }
 
 /**
@@ -98,7 +95,7 @@ Drupal.dhtmlMenu.cookieSet = function() {
   });
 
   // Save this values on the cookie
-  document.cookie = 'dhtml_menu=' + menus + ';path=/';
+  document.cookie = 'dhtml_menu=' + escape(menus) + ';path=/';
 }
 
 /**
