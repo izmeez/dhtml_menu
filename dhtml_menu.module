@@ -44,6 +44,7 @@ function _dhtml_menu_form_block_validate(&$form, $form_state) {
  */
 function dhtml_menu_menu() {
   $items['admin/settings/dhtml_menu'] = array(
+    'access arguments' => array('access administration pages'),
     'description'     => 'Adds new menus with DHTML to reduce page refreshes',
     'file'            => 'dhtml_menu.admin.inc',
     'title'           => 'DHTML Menu',
