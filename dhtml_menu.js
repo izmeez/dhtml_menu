@@ -19,11 +19,16 @@ Drupal.behaviors.dhtmlMenu = function(context) {
   if (cookievalue != '') {
     var cookieList = cookievalue.split(',');
     for (var i = 0; i < cookieList.length; i++) {
-      submenu = document.getElementById(cookieList[i]);
-      menu = document.getElementById('menu-' + cookieList[i]);
-      $(menu).removeClass('collapsed').addClass('expanded');
-      $(submenu).show();
-      $(submenu).css('display', 'block');
+      if (!document.getElementById(cookieList[i])) {
+        cookieList.splice(i, 1);
+      }
+      else {
+        submenu = document.getElementById(cookieList[i]);
+        menu = document.getElementById('menu-' + cookieList[i]);
+        $(menu).removeClass('collapsed').addClass('expanded');
+        $(submenu).show();
+        $(submenu).css('display', 'block');
+      }
     }
   }
 
