@@ -133,8 +133,7 @@ function theme_dhtml_menu_tree($tree, $parent = NULL, $pid = NULL) {
     }
 
     // pid is going to be a DOM identifier, and can't have some characters
-    $forbid = array(' ', '(', ')', '{', '}', '[', ']', '\'');
-    $pid = str_replace($forbid, '', $pid);
+    $pid = ereg_replace('[^A-Za-z0-9]', '', $pid);
 
     $output .= theme('dhtml_menu_item', $item, $pid);
   }
