@@ -18,14 +18,16 @@ function dhtml_menu_menu() {
   $items = array();
   
   $items['admin/settings/dhtml_menu'] = array(
-    'title'           => 'DHTML Menu',
-    'page callback'   => 'drupal_get_form',
-    'page arguments'  => array('dhtml_menu_settings'),
+    'title'            => 'DHTML Menu',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('dhtml_menu_settings'),
+    'access arguments' => array('administer site configuration'),
   ); 
   $items['admin/settings/dhtml_menu/replace-navigation'] = array(
-    'title'           => 'Replace navigation block',
-    'page callback'   => '_dhtml_menu_replace',
-    'type'            => MENU_CALLBACK,
+    'title'            => 'Replace navigation block',
+    'page callback'    => '_dhtml_menu_replace',
+    'access arguments' => array('administer site configuration'),
+    'type'             => MENU_CALLBACK,
   );
     
   return $items;
