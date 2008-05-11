@@ -30,47 +30,42 @@ function dhtml_menu_menu() {
 }
 
 /**
- * Implementation of hook_block().
- *
- * Basically a copy of menu_block() -- we're providing our own version
- * of each menu.
+ * Implementation of hook_form_alter().
+ * @ingroup form
  */
-function dhtml_menu_block($op = 'list', $delta = '') {
-  if ($op == 'list') {
-    // Get a list of all menus
-    $root_menus = menu_get_menus(true);
-
-    // "Clone" each menu, using DHTML as a prefix
-    $blocks = array();
-    foreach ($root_menus as $mid => $title) { // $mid is a string in 6.x
-      $blocks[$mid]['info'] = t('DHTML: ') . $title;
-    }
-
-    return $blocks;
-  }
-  else if ($op == 'view') {
-    // Get a list of all menus
-    $root_menus = menu_get_menus(true);
-
-    // Build the menu tree using DHTML menu special
-    // construction functions
-    $tree = menu_tree_all_data($delta);
-    $data['content'] = theme('dhtml_menu_tree', $tree);
-
-    // Set the block title: if its Navigation menu, use
-    // the user's nickname. Otherwise, use the original
-    // block name
-    global $user;
-    if ($user->uid > 0 && $delta == 'navigation') {
-      $data['subject'] = $user->name;
-    }
-    else {
-      $data['subject'] = check_plain($root_menus[$delta]);
-    }
-
-    return $data;
+function dhtml_menu_form_block_admin_configure_alter(&$form, $form_state) {
+  // Modify the form if it is a menu or the navigation block.
+  if ($form['module']['#value'] == 'menu' || ($form['module']['#value'] == 'user' && $form['delta']['#value'] == 1)) {
+    $delta = $form['module']['#value'] == 'user' ? 'navigation' : $form['delta']['#value'];
+    $dhtml_menus = variable_get('dhtml_menus_menus', array());
+    $form['dhtml_menu'] = array(
+      '#default_value'  => !empty($dhtml_menus[$delta]),
+      '#title'          => t('Use the DHTML effect'),
+      '#type'           => 'checkbox',
+      '#weight'         => -3,
+    );
+    $form['#submit']['_dhtml_menu_form_block_submit'] = '_dhtml_menu_form_block_submit';
   }
 }
+
+/**
+ * Save the DHTML options
+ *
+ * @ingroup form
+ */
+function _dhtml_menu_form_block_submit(&$form, $form_state) {
+  $dhtml_menus = variable_get('dhtml_menu_menus', array());
+  $delta = $form_state['values']['delta'];
+
+  // Rename the navigation block to avoid collisions between the delta values of menu and user blocks.
+  if ($delta == 1 && $form_state['values']['module'] == 'user') {
+    $delta = 'navigation';
+  }
+
+  $dhtml_menus[$delta] = $form_state['values']['dhtml_menu'];
+  variable_set('dhtml_menu_menus', $dhtml_menus);
+}
+
 
 /**
  * DHTML Menu Settings page.
@@ -108,28 +103,11 @@ function dhtml_menu_settings() {
  * disabling the normal block.
  */
 function _dhtml_menu_replace() {
-  // Ensure that the block table is up to date.
-  _block_rehash();
+  $dhtml = variable_get('dhtml_menu_menus', array());
+  $dhtml['navigation'] = 1;
+  variable_set('dhtml_menu_menus', array());
 
-  // Get all blocks that are enabled
-  $res = db_query("SELECT status, weight, region, visibility, pages, title, theme
-    FROM {blocks} WHERE module = 'user' AND delta = 1");
-  while ($row = db_fetch_array($res)) {
-    $navigation_settings[$row['theme']] = $row;
-  }
-
-  // Enable the equivalent DHTML menu and
-  // disable the original one
-  foreach ($navigation_settings as $theme => $row) {
-    db_query("UPDATE {blocks} SET status = %d, weight = %d, region = '%s',
-      visibility = %d, pages = %d, title = '%s'
-      WHERE module = 'dhtml_menu'
-      AND delta = 'navigation' AND theme = '%s'", $row);
-    db_query("UPDATE {blocks} SET status = 0, region = ''
-      WHERE module = 'user' AND delta = 1 AND theme = '%s';", $theme);
-  }
-
-  drupal_set_message(t('Your navigation block has been replaced with its DHTML equivalent in all currently enabled themes.'), 'status');
+  drupal_set_message(t('Your navigation menu is now using DHTML.'), 'status');
 
   // go to block administration
   drupal_goto('admin/build/block');
@@ -155,7 +133,30 @@ function _dhtml_get_add_links() {
  
   return $dhtml_menu_duplicated;
 }
-					    
+
+/**
+ * Implementation of hook_preprocess().
+ * Change the normal behaviour ('theming') of hook_block().
+ *
+ * @ingroup themable
+ */
+function dhtml_menu_preprocess_block(&$variables) {
+  $delta = $variables['block']->delta;
+  
+  // Disambiguate the navigation block's delta value.
+  if ($delta == 1 && $variables['block']->module == 'user') {
+    $delta = 'navigation';
+  }
+
+  $dhtml_menus = variable_get('dhtml_menu_menus', array());
+
+  // If the menu has the DHTML menu option enabled,
+  // replace the entire block content with its DHTML equivalent
+  if (!empty($dhtml_menus[$delta])) {
+    $variables['block']->content = _dhtml_menu_build_menu($delta);
+  }
+}
+			    
 /**
  * Implementation of hook_theme().
  */
@@ -167,6 +168,14 @@ function dhtml_menu_theme($existing, $type) {
     'arguments' => array('tree' => array(), 'parent' => NULL, 'pid' => NULL),
   );
   return $theme;
+}
+
+/** 
+ * Build a specific DHTML Menu block's content.
+ */
+function _dhtml_menu_build_menu($delta) {
+  // Retrieve menu tree data and build a DHTML menu from it.
+  return theme('dhtml_menu_tree', menu_tree_all_data($delta));
 }
 
 /**

@@ -25,4 +25,32 @@ function dhtml_menu_uninstall() {
   variable_del('dhtml_menu_duplicated');
   variable_del('dhtml_menu_use_effects');
   variable_del('dhtml_menu_hide_siblings');
+  variable_del('dhtml_menu_menus');
+}
+
+/**
+ * #6000: 
+ *  - Replace outdated DHTML blocks with normal menu blocks, enable DHTML for these blocks.
+ *  - Fix a typo in one of the variable names.    
+ */
+function dhtml_menu_update_6000() {
+  if ($old_variable = variable_get('dhtml_menus_menus', FALSE)) {
+    variable_set('dhtml_menu_menus', $old_variable);
+    variable_del('dhtml_menus_menus');
+  }
+  
+  $dhtml_menu_menus = variable_get('dhtml_menu_menus', array());
+  
+  $result = db_query("SELECT delta, region, weight, theme FROM {blocks} WHERE module = 'dhtml_menu' AND status = 1");
+  while ($row = db_fetch_array($result)) {
+    $dhtml_menu_menus[$row['delta']] = 1;
+    $module = $row['delta'] == 'navigation' ? 'user' : 'menu';
+    if ($row['delta'] == 'navigation') $row['delta'] = 1;
+    
+    $ret[] = update_sql("UPDATE {blocks} SET status = 1, region = '$row[region]', weight = '$row[weight]' WHERE module = '$module' AND delta = '$row[delta]' AND theme = '$row[theme]'");
+  }
+  $ret[] = update_sql("DELETE FROM {blocks} WHERE module = 'dhtml_menu'");
+  
+  variable_set('dhtml_menu_menus', $dhtml_menu_menus);
+  return $ret;
 }
