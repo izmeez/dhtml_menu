@@ -10,11 +10,16 @@
  * Implementation of hook_enable().
  */
 function dhtml_menu_enable() {
-  // Allow option to replace navigation block with DHTML equivalent
-  drupal_set_message(t('DHTML menu has been installed. If you wish, you may immediately <a href="@auto">enable it for the main navigation menu</a> or adjust your <a href="@settings">block settings</a> in detail.',
-   array('@auto' => url('admin/settings/dhtml_menu/replace-navigation'),
-    '@settings' => url('admin/build/block'))),
-   'status');
+  // If DHTML hasn't been configured yet, set the default values.
+  if (!$dhtml = variable_get('dhtml_menu_menus', array())) {
+    $dhtml['navigation'] = 1;
+    $menus = array_keys(module_invoke('menu', 'block', 'list'));
+    foreach ($menus as $delta) $dhtml[$delta] = 1;
+    variable_set('dhtml_menu_menus', $dhtml);
+    
+    // Notify about added DHTML behavior
+    drupal_set_message(t('All your menu blocks now use DHTML behavior by default. This configuration can be changed in the block settings.'), 'status');
+  }
 }
 
 /**

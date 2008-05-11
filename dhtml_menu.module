@@ -19,12 +19,6 @@ function dhtml_menu_menu() {
     'page arguments'   => array('dhtml_menu_settings'),
     'access arguments' => array('administer site configuration'),
   );
-  $items['admin/settings/dhtml_menu/replace-navigation'] = array(
-    'title'            => 'Replace navigation block',
-    'page callback'    => '_dhtml_menu_replace',
-    'access arguments' => array('administer site configuration'),
-    'type'             => MENU_CALLBACK,
-  );
 
   return $items;
 }
@@ -95,22 +89,6 @@ function dhtml_menu_settings() {
   );
 
   return system_settings_form($form);
-}
-
-/**
- * Replaces the navigation block in all themes by
- * assigning its values to this module's block, then
- * disabling the normal block.
- */
-function _dhtml_menu_replace() {
-  $dhtml = variable_get('dhtml_menu_menus', array());
-  $dhtml['navigation'] = 1;
-  variable_set('dhtml_menu_menus', array());
-
-  drupal_set_message(t('Your navigation menu is now using DHTML.'), 'status');
-
-  // go to block administration
-  drupal_goto('admin/build/block');
 }
 
 /**
