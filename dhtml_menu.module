@@ -33,7 +33,7 @@ function dhtml_menu_form_block_admin_configure_alter(&$form, $form_state) {
   // Modify the form if it is a menu or the navigation block.
   if ($form['module']['#value'] == 'menu' || ($form['module']['#value'] == 'user' && $form['delta']['#value'] == 1)) {
     $delta = $form['module']['#value'] == 'user' ? 'navigation' : $form['delta']['#value'];
-    $dhtml_menus = variable_get('dhtml_menus_menus', array());
+    $dhtml_menus = variable_get('dhtml_menu_menus', array());
     $form['dhtml_menu'] = array(
       '#default_value'  => !empty($dhtml_menus[$delta]),
       '#title'          => t('Use the DHTML effect'),
