@@ -11,7 +11,8 @@ Drupal.dhtmlMenu.autoAttach = function() {
     var cookieList = cookievalue.split(',');
     for (var i = 0; i < cookieList.length; i++) {
       $('#'+ cookieList[i]).show();
-      $('#menu-' + cookieList[i]).addClass('expanded');
+      $('#'+ cookieList[i]).removeClass('sub-collapsed').addClass('sub-expanded');
+      $('#menu-' + cookieList[i]).removeClass('collapsed').addClass('expanded');
     }
   }
 
@@ -40,18 +41,20 @@ Drupal.dhtmlMenu.autoAttach = function() {
 Drupal.dhtmlMenu.switchMenu = function(submenu, parent) {
   if($(parent).is('.expanded')) {
     if (Drupal.settings.dhtmlMenu.useEffects) {
-      $(submenu).slideUp('fast');
+      $(submenu).animate({height: 'hide', opacity: 'hide'}, '500');
     } else {
       $(submenu).css('display', 'none');
     }
     $(parent).removeClass('expanded').addClass('collapsed');
+    $(submenu).removeClass('sub-expanded').addClass('sub-collapsed');
   } else {
     if (Drupal.settings.dhtmlMenu.useEffects) {
-      $(submenu).slideDown('fast');
+      $(submenu).animate({height: 'show', opacity: 'show'}, '500');
     } else {
       $(submenu).css('display', 'block');
     }
     $(parent).removeClass('collapsed').addClass('expanded');
+    $(submenu).removeClass('sub-collapsed').addClass('sub-expanded');
   }
   Drupal.dhtmlMenu.saveMenuState();
 }
@@ -84,7 +87,7 @@ Drupal.dhtmlMenu.getCookie = function(name) {
 Drupal.dhtmlMenu.saveMenuState = function() {
   var blocks = '';
   $('div.submenu').each(function(i) {
-    if (this.style.display != 'none') {
+    if ($(this).is('.sub-expanded')) {
       if (blocks != '') {
         blocks += ',';
       }
