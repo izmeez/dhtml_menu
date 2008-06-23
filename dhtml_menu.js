@@ -6,11 +6,15 @@
  */
 
 Drupal.dhtmlMenu = {};
+var dhtmlRun = false;
 
 /**
  * Initialize the module's JS functions
  */
 Drupal.behaviors.dhtmlMenu = function(context) {
+  // Do not run this function more than once.
+  if (dhtmlRun) return;
+  else dhtmlRun = true;
   // Get the Cookie's data
   var cookievalue = Drupal.dhtmlMenu.cookieGet();
 
