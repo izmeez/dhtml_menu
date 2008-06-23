@@ -26,6 +26,7 @@ Drupal.behaviors.dhtmlMenu = function(context) {
         submenu = document.getElementById(cookieList[i]);
         menu = document.getElementById('menu-' + cookieList[i]);
         $(menu).removeClass('collapsed').addClass('expanded');
+        $(submenu).removeClass('sub-collapsed').addClass('sub-expanded');
         $(submenu).show();
         $(submenu).css('display', 'block');
       }
@@ -91,7 +92,7 @@ Drupal.dhtmlMenu.cookieSet = function() {
 
   // Get a list of menu IDs, saparated by comma
   $('div.submenu').each(function(i) {
-    if (this.style.display != 'none') {
+    if ($(this).hasClass('sub-expanded')) {
       if (menus != '') {
         menus += ',';
       }
@@ -139,6 +140,7 @@ Drupal.dhtmlMenu.switchMenu = function(submenu, parent_menu) {
 
     // Set the parent menu item as collapsed
     $(parent_menu).removeClass('expanded').addClass('collapsed');
+    $(submenu).removeClass('sub-expanded').addClass('sub-collapsed');
   }
   else {
     if (Drupal.settings.dhtmlMenu_hideSiblings) {
@@ -154,6 +156,7 @@ Drupal.dhtmlMenu.switchMenu = function(submenu, parent_menu) {
       $(submenu).css('display', 'block');
     }
     $(parent_menu).removeClass('collapsed').addClass('expanded');
+    $(submenu).removeClass('sub-collapsed').addClass('sub-expanded');
   }
 
   // After all changes, save the current state
