@@ -32,10 +32,10 @@ function dhtml_menu_menu() {
 function dhtml_menu_form_block_admin_configure_alter(&$form, $form_state) {
   // Modify the form if it is a menu or the navigation block.
   if ($form['module']['#value'] == 'menu' || ($form['module']['#value'] == 'user' && $form['delta']['#value'] == 1)) {
-    $delta = $form['module']['#value'] == 'user' ? 'navigation' : $form['delta']['#value'];
-    $dhtml_menus = variable_get('dhtml_menu_menus', array());
+    $dhtml = variable_get('dhtml_menu_menus', array());
+    
     $form['dhtml_menu'] = array(
-      '#default_value'  => !empty($dhtml_menus[$delta]),
+      '#default_value'  => !empty($dhtml[$form['module']['#value']][$form['delta']['#value']]),
       '#title'          => t('Use the DHTML effect'),
       '#type'           => 'checkbox',
       '#weight'         => -3,
@@ -50,16 +50,9 @@ function dhtml_menu_form_block_admin_configure_alter(&$form, $form_state) {
  * @ingroup form
  */
 function _dhtml_menu_form_block_submit(&$form, $form_state) {
-  $dhtml_menus = variable_get('dhtml_menu_menus', array());
-  $delta = $form_state['values']['delta'];
-
-  // Rename the navigation block to avoid collisions between the delta values of menu and user blocks.
-  if ($delta == 1 && $form_state['values']['module'] == 'user') {
-    $delta = 'navigation';
-  }
-
-  $dhtml_menus[$delta] = $form_state['values']['dhtml_menu'];
-  variable_set('dhtml_menu_menus', $dhtml_menus);
+  $dhtml = variable_get('dhtml_menu_menus', array());
+  $dhtml[$form_state['values']['module']][$form_state['values']['delta']] = $form_state['values']['dhtml_menu'];
+  variable_set('dhtml_menu_menus', $dhtml);
 }
 
 /**
@@ -70,27 +63,23 @@ function _dhtml_menu_form_block_submit(&$form, $form_state) {
  */
 function dhtml_menu_preprocess_block(&$variables) {
   $delta = $variables['block']->delta;
+  $module = $variables['block']->module;
+  $dhtml = variable_get('dhtml_menu_menus', array());
   
-  // Disambiguate the navigation block's delta value.
-  if ($delta == 1 && $variables['block']->module == 'user') {
-    $delta = 'navigation';
-  }
-
-  $dhtml_menus = variable_get('dhtml_menu_menus', array());
-
   // If the menu has the DHTML menu option enabled,
   // replace the entire block content with its DHTML equivalent
-  if (!empty($dhtml_menus[$delta])) {
-    $variables['block']->content = _dhtml_menu_build_menu($delta);
+  if (!empty($dhtml[$module][$delta])) {
+    $variables['block']->content = _dhtml_menu_build_block($module, $delta);
   }
 }
 
 /** 
  * Build a specific DHTML Menu block's content.
  */
-function _dhtml_menu_build_menu($delta) {
+function _dhtml_menu_build_block($module, $delta) {
+  $menu_name = $module == 'user' ? 'navigation' : $delta;
   // Retrieve menu tree data and build a DHTML menu from it.
-  return theme('dhtml_menu_tree', menu_tree_all_data($delta));
+  return theme('dhtml_menu_tree', menu_tree_all_data($menu_name));
 }
 
 /**

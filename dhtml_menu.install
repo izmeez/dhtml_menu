@@ -12,13 +12,13 @@
 function dhtml_menu_enable() {
   // If DHTML hasn't been configured yet, set the default values.
   if (!$dhtml = variable_get('dhtml_menu_menus', array())) {
-    $dhtml['navigation'] = 1;
+    $dhtml['user'][1] = 1;
     $menus = array_keys(module_invoke('menu', 'block', 'list'));
-    foreach ($menus as $delta) $dhtml[$delta] = 1;
+    foreach ($menus as $delta) $dhtml['menu'][$delta] = 1;
     variable_set('dhtml_menu_menus', $dhtml);
     
     // Notify about added DHTML behavior
-    drupal_set_message(t('All your menu blocks now use DHTML behavior by default. This configuration can be changed in the block settings.'), 'status');
+    drupal_set_message(t('All your menu blocks now use DHTML behavior by default. This configuration can be changed in the <a href="@url">block settings</a>.', array('@url' => url('admin/build/block'))));
   }
 }
 
@@ -58,4 +58,14 @@ function dhtml_menu_update_6000() {
   
   variable_set('dhtml_menu_menus', $dhtml_menu_menus);
   return $ret;
+}
+
+function dhtml_menu_update_6001() {
+  $dhtml = variable_get('dhtml_menu_menus', array());
+  
+  $new['user'][1] = $dhtml['navigation'];
+  unset($dhtml['navigation']);
+  $new['menu'] = $dhtml;
+
+  variable_set('dhtml_menu_menus', $new);
 }
