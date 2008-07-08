@@ -3,96 +3,163 @@
 
 /**
  * @file dhtml_menu.module
- * Allow click expansion of the menu tree via javascript, with
- * graceful degradation.
+ * Adds preprocessors to the menu theming functions
+ * that will add dynamic expansion to their menus.
  */
 
-define('DHTML_MENU_DUPLICATE_DEFAULT', "admin\nadmin/build/menu\nnode/add");
+/**
+ * Effects enabled by default. This is an array and
+ * must be split to be used. Constants can not contain arrays.
+ */
+define('DHTML_MENU_DEFAULT', 'slide,clone');
+
+/**
+ * Implementation of hook_init().
+ * Adds CSS, Javascript and settings to the page.
+ */
+function dhtml_menu_init() {
+  drupal_add_css(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.css');
+  drupal_add_js(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.js');
+  $settings = variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT));
+  $valid    = array('slide', 'clone', 'siblings', 'doubleclick');
+  $settings = array_intersect($settings, $valid);
+  foreach (variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT)) as $effect) {
+    if (in_array($effect, $valid)) {
+      $settings[$effect] = TRUE;
+    }
+  }
+  drupal_add_js(array('dhtmlMenu' => $settings), 'setting');
+}
+
+/** Implementation of hook_theme_registry_alter().
+ * Replaces the theme functions for the menu_item functions
+ */
+function dhtml_menu_theme_registry_alter(&$theme_registry) {
+  $theme_registry['menu_item']['function'] = 'dhtml_menu_theme_menu_item';
+  $theme_registry['menu_item_link']['function'] = 'dhtml_menu_theme_menu_item_link';
+}
+
+/**
+ * Preprocessor for menu_item_link.
+ * Adds an ID attribute to menu links and helps the module
+ * follow the recursion of menu_tree_output().
+ */
+function dhtml_menu_theme_menu_item_link($link) {
+  // The ID is the mlid or a stripped form of the link path. It just must be unique.
+  $id = isset($link['mlid']) ? $link['mlid'] : preg_replace('/[^a-z0-9]/', '0', $link['href']);
+  $link['localized_options']['attributes']['id'] = "menu-". $id;
+
+  // Each link in series is another level of recursion. Add it to the stack.
+  _dhtml_menu_stack($link);
+
+  // Pass the altered variables to the normal menu themer.
+  return theme_menu_item_link($link);
+}
+
+/**
+ * Preprocessor for menu_item.
+ * Checks whether the current item has children that
+ * were not rendered, and loads and renders them.
+ */
+function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
+  static $cookie;
+  if (!isset($cookie)) {
+    $cookie = explode(',', @$_COOKIE['dhtml_menu']);
+  }
+
+  /* When theme('menu_item') is called, the menu tree below it has been
+   * rendered already. Since we are done on this recursion level,
+   * one element must be popped off the stack.
+   */
+  $stack = _dhtml_menu_stack();
+
+  // If there are children, but they were not loaded...
+  if ($has_children && !$menu) {
+    // Load the tree below the current position.
+    $tree = _dhtml_menu_subtree($stack);
+
+    // Render it...
+    $menu = menu_tree_output($tree);
+    if (!in_array(end($stack), $cookie)) {
+      $extra_class .= ' collapsed start-collapsed';
+    }
+  }
+
+  return theme_menu_item($link, $has_children, $menu, $in_active_trail, $extra_class);
+}
+
+/**
+ * Helper function for storing recursion levels.
+ *
+ * @param $link
+ *   If a menu item link is passed, it will be appended to the stack.
+ *   If none is given, the stack will be returned and popped by one.
+ *
+ * @return
+ *   The stack, if no parameter is given.
+ */
+function _dhtml_menu_stack($link = FALSE) {
+  static $stack;
+  if ($link) {
+    $stack[] = $link;
+  }
+  else {
+    $copy = $stack;
+    array_pop($stack);
+    return $copy;
+  }
+}
+
+/**
+ * Traverses the menu tree and returns the sub-tree of the item
+ * indicated by the parameter.
+ *
+ * @param $stack
+ *   An array of menu item links that are nested in each other in the tree.
+ *
+ * @return
+ *   The items below the lowest item in the stack.
+ */
+function _dhtml_menu_subtree($stack) {
+  $tree = menu_tree_all_data($stack[0]['menu_name']);
+  foreach ($stack as $item) {
+    // Generate the sortable array key of an item:
+    $path[] = (50000 + $item['weight']) .' '. $item['title'] .' '. $item['mlid'];
+  }
+
+  // Traverse the tree.
+  foreach ($path as $key) {
+    if (!isset($tree[$key])) {
+      $tree = $tree[key($tree)]['below'];
+    }
+    $tree = $tree[$key]['below'];
+  }
+  return $tree;
+}
 
 /**
  * Implementation of hook_menu().
+ * Adds a settings page.
  */
 function dhtml_menu_menu() {
-  $items['admin/settings/dhtml_menu'] = array(
-    'title'            => 'DHTML Menu',
-    'description'      => 'Adds new menus with DHTML to reduce page refreshes',
-    'page callback'    => 'drupal_get_form',
-    'page arguments'   => array('dhtml_menu_settings'),
+  $menu['admin/settings/dhtml_menu'] = array(
+    'title' => 'DHTML Menu',
+    'description' => 'Configure the effects of DHTML Menu',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dhtml_menu_settings'),
     'access arguments' => array('administer site configuration'),
-    'file'             => 'dhtml_menu.admin.inc',
+    'file' => 'dhtml_menu.admin.inc',
   );
-
-  return $items;
+  return $menu;
 }
 
 /**
- * Implementation of hook_form_alter().
- * @ingroup form
+ * Implementation of hook_help().
  */
-function dhtml_menu_form_block_admin_configure_alter(&$form, $form_state) {
-  // Modify the form if it is a menu or the navigation block.
-  if ($form['module']['#value'] == 'menu' || ($form['module']['#value'] == 'user' && $form['delta']['#value'] == 1)) {
-    $dhtml = variable_get('dhtml_menu_menus', array());
-    
-    $form['dhtml_menu'] = array(
-      '#default_value'  => !empty($dhtml[$form['module']['#value']][$form['delta']['#value']]),
-      '#title'          => t('Use the DHTML effect'),
-      '#type'           => 'checkbox',
-      '#weight'         => -3,
-    );
-    $form['#submit']['_dhtml_menu_form_block_submit'] = '_dhtml_menu_form_block_submit';
+function dhtml_menu_help($path) {
+  switch ($path) {
+    case 'admin/settings/dhtml_menu':
+      return t('<em>DHTML Menu</em> adds dynamic functionality to the menus of your site. Ordinarily, reaching the child elements below an item requires you to visit its page. With DHTML Menu, clicking on an item with child elements will expand it without leaving the page, saving time. You can reach the actual page of such an item either by double-clicking on it or visiting the small extra link that will be shown right below it when expanded.');
   }
 }
 
-/**
- * Save the DHTML options
- *
- * @ingroup form
- */
-function _dhtml_menu_form_block_submit(&$form, $form_state) {
-  $dhtml = variable_get('dhtml_menu_menus', array());
-  $dhtml[$form_state['values']['module']][$form_state['values']['delta']] = $form_state['values']['dhtml_menu'];
-  variable_set('dhtml_menu_menus', $dhtml);
-}
-
-/**
- * Implementation of hook_preprocess().
- * Change the normal behaviour ('theming') of hook_block().
- *
- * @ingroup themable
- */
-function dhtml_menu_preprocess_block(&$variables) {
-  $delta = $variables['block']->delta;
-  $module = $variables['block']->module;
-  $dhtml = variable_get('dhtml_menu_menus', array());
-  
-  // If the menu has the DHTML menu option enabled,
-  // replace the entire block content with its DHTML equivalent
-  if (!empty($dhtml[$module][$delta])) {
-    $variables['block']->content = _dhtml_menu_build_block($module, $delta);
-  }
-}
-
-/** 
- * Build a specific DHTML Menu block's content.
- */
-function _dhtml_menu_build_block($module, $delta) {
-  $menu_name = $module == 'user' ? 'navigation' : $delta;
-  // Retrieve menu tree data and build a DHTML menu from it.
-  return theme('dhtml_menu_tree', menu_tree_all_data($menu_name));
-}
-
-/**
- * Implementation of hook_theme().
- */
-function dhtml_menu_theme($existing, $type) {
-  $theme['dhtml_menu_item'] = array(
-    'file'      => 'dhtml_menu.theme.inc',
-    'arguments' => array('item' => array(), 'id' => NULL),
-  );
-  $theme['dhtml_menu_tree'] = array(
-    'file'      => 'dhtml_menu.theme.inc',
-    'arguments' => array('tree' => array(), 'parent' => NULL, 'pid' => NULL),
-  );
-  return $theme;
-}

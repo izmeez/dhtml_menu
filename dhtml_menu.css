@@ -1,0 +1,8 @@
+.fake-leaf {
+  font-size:5pt;
+  /*font-size:80%;*/
+}
+li.start-collapsed ul {
+  display:none;
+}
+
