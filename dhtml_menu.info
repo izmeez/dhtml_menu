@@ -1,5 +1,5 @@
 ; $Id$
 name = DHTML Menu
-description = Adds new menus with DHTML to reduce page refreshes.
+description = Opens menus dynamically to reduce page refreshes.  
 core = 6.x
 
