@@ -1,11 +1,11 @@
 # $Id$
 #
-# LANGUAGE translation of Drupal (general)
+# LANGUAGE translation of DHTML Menu 6.x-3.0
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  dhtml_menu.admin.inc: n/a
-#  dhtml_menu.module: n/a
-#  dhtml_menu.info,v 1.3 2008/02/14 17:15:57 arancaytar
+#  dhtml_menu.admin.inc,v 1.4 2008/07/08 13:44:25 arancaytar
+#  dhtml_menu.module,v 1.28 2008/07/08 13:44:25 arancaytar
+#  dhtml_menu.info,v 1.5 2008/07/09 12:05:25 arancaytar
 #
 #, fuzzy
 msgid ""
@@ -57,6 +57,6 @@ msgid "dhtml_menu"
 msgstr ""
 
 #: dhtml_menu.info:0
-msgid "Adds new menus with DHTML to reduce page refreshes."
+msgid "Opens menus dynamically to reduce page refreshes."
 msgstr ""
 
