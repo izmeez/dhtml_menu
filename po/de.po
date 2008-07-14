@@ -14,11 +14,11 @@ msgstr ""
 
 #: dhtml_menu.module:19
 msgid "DHTML Menu"
-msgstr "DHTML Menü"
+msgstr "DHTML MenÃ¼"
 
 #: dhtml_menu.module:20
 msgid "Configure jQuery slide effect and Duplicated menu items."
-msgstr "Einstellungen zum jQuery Slide Effekt und gedoppelten Menüeinträgen."
+msgstr "Einstellungen zum jQuery Slide Effekt und gedoppelten MenÃ¼eintrÃ¤gen."
 
 #: dhtml_menu.module:27
 msgid "Replace navigation block"
@@ -38,23 +38,23 @@ msgstr "jQuery-Slide Effekt"
 
 #: dhtml_menu.module:71
 msgid "Menu slides when it opens and closes."
-msgstr "Das Menü wird auf- und zugeschoben."
+msgstr "Das MenÃ¼ wird auf- und zugeschoben."
 
 #: dhtml_menu.module:83
 msgid "Duplicated menu items"
-msgstr "Gedoppelte Menüeinträge"
+msgstr "Gedoppelte MenÃ¼eintrÃ¤ge"
 
 #: dhtml_menu.module:84
 msgid "You can specify a list of menu items that should be displayed twice: Once as a parent item that expands and collapses the sub-menu and again as its own child item, which points directly to the page (the parent items still links on double-click). Enter one internal path (like \"admin\") on each line. To specify a custom link text, put it after the path, separated by a space."
-msgstr "Es können Menüeinträge angegeben werden, die doppelt angezeigt werden sollen: Als Eltern-Knoten, der das Sub-Menü auf- und zuklappt und als Kind-Knoten in diesem Sub-Menü, der zur entsprechenden Seite verlinkt (Der Eltern-Knoten funktioniert mit Doppelklick immer noch). Angabe eines internen Pfades (z.B. \"admin\") pro Zeile. Um einen eigenen Link-Text festzulegen, muss dieser durch ein Leerzeichen getrennt hinter dem Pfad angegeben werden."
+msgstr "Es kÃ¶nnen MenÃ¼eintrÃ¤ge angegeben werden, die doppelt angezeigt werden sollen: Als Eltern-Knoten, der das Sub-MenÃ¼ auf- und zuklappt und als Kind-Knoten in diesem Sub-MenÃ¼, der zur entsprechenden Seite verlinkt (Der Eltern-Knoten funktioniert mit Doppelklick immer noch). Angabe eines internen Pfades (z.B. \"admin\") pro Zeile. Um einen eigenen Link-Text festzulegen, muss dieser durch ein Leerzeichen getrennt hinter dem Pfad angegeben werden."
 
 #: dhtml_menu.module:119
 msgid "Your navigation block has been replaced with its DHTML equivalent in all currently enabled themes."
-msgstr "Der Navigations-Block wurde durch sein DHTML-Äquivalent in allen gegenwärtig aktivierten Themes ersetzt."
+msgstr "Der Navigations-Block wurde durch sein DHTML-Ã„quivalent in allen gegenwÃ¤rtig aktivierten Themes ersetzt."
 
 #: dhtml_menu.module:235
 msgid "Menus"
-msgstr "Menüs"
+msgstr "MenÃ¼s"
 
 #: dhtml_menu.module:0
 msgid "dhtml_menu"
@@ -62,13 +62,13 @@ msgstr "dhtml_menu"
 
 #: dhtml_menu.install:14
 msgid "DHTML menu has been installed. If you wish, you may immediately <a href=\"@auto\">enable it for the main navigation menu</a> or adjust your <a href=\"@settings\">block settings</a> in detail."
-msgstr "DHTML-Menü wurde installiert. Bei Bedarf kann es sofort für das Navigations-Menü <a href=\"@auto\">aktiviert</a> werden. Unter  <a href=\"@settings\">Block Einstellungen</a>  können weitere Einstellungen vorgenommen werden."
+msgstr "DHTML-MenÃ¼ wurde installiert. Bei Bedarf kann es sofort fÃ¼r das Navigations-MenÃ¼ <a href=\"@auto\">aktiviert</a> werden. Unter  <a href=\"@settings\">Block Einstellungen</a>  kÃ¶nnen weitere Einstellungen vorgenommen werden."
 
 #: dhtml_menu.info:0
 msgid "DHTML Menus"
-msgstr "DHTML Menüs"
+msgstr "DHTML MenÃ¼s"
 
 #: dhtml_menu.info:0
 msgid "Adds new menus with DHTML to reduce page refreshes"
-msgstr "Erstellt neue Menüs mit DHTML um Seitenaufrufe zu reduzieren."
+msgstr "Erstellt neue MenÃ¼s mit DHTML um Seitenaufrufe zu reduzieren."
 
