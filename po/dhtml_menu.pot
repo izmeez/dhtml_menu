@@ -1,17 +1,17 @@
 # $Id$
 #
-# LANGUAGE translation of DHTML Menu 6.x-3.0
+# LANGUAGE translation of Drupal (dhtml_menu)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  dhtml_menu.admin.inc,v 1.4 2008/07/08 13:44:25 arancaytar
-#  dhtml_menu.module,v 1.28 2008/07/08 13:44:25 arancaytar
-#  dhtml_menu.info,v 1.5 2008/07/09 12:05:25 arancaytar
+#  dhtml_menu.admin.inc,v 1.5 2008/07/14 21:58:51 arancaytar
+#  dhtml_menu.module,v 1.29 2008/07/14 21:58:51 arancaytar
+#  dhtml_menu.info,v 1.6 2008/07/11 22:15:58 arancaytar
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2008-07-07 14:46-0700\n"
+"POT-Creation-Date: 2008-07-14 14:59-0700\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -33,22 +33,26 @@ msgid "Keep only one menu open at a time."
 msgstr ""
 
 #: dhtml_menu.admin.inc:19
-msgid "Add an extra page link to each expanding menu item."
+msgid "Close menus when their parent menu is closed."
 msgstr ""
 
 #: dhtml_menu.admin.inc:20
+msgid "Add an extra page link to each expanding menu item."
+msgstr ""
+
+#: dhtml_menu.admin.inc:21
 msgid "Go to the page on double-click."
 msgstr ""
 
-#: dhtml_menu.module:162
+#: dhtml_menu.module:169
 msgid "<em>DHTML Menu</em> adds dynamic functionality to the menus of your site. Ordinarily, reaching the child elements below an item requires you to visit its page. With DHTML Menu, clicking on an item with child elements will expand it without leaving the page, saving time. You can reach the actual page of such an item either by double-clicking on it or visiting the small extra link that will be shown right below it when expanded."
 msgstr ""
 
-#: dhtml_menu.module:146 dhtml_menu.info:0
+#: dhtml_menu.module:153 dhtml_menu.info:0
 msgid "DHTML Menu"
 msgstr ""
 
-#: dhtml_menu.module:147
+#: dhtml_menu.module:154
 msgid "Configure the effects of DHTML Menu"
 msgstr ""
 
