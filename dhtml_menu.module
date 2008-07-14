@@ -21,7 +21,7 @@ function dhtml_menu_init() {
   drupal_add_css(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.css');
   drupal_add_js(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.js');
   $settings = variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT));
-  $valid    = array('slide', 'clone', 'siblings', 'doubleclick');
+  $valid    = array('slide', 'clone', 'siblings', 'doubleclick', 'children');
   $settings = array_intersect($settings, $valid);
   foreach (variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT)) as $effect) {
     if (in_array($effect, $valid)) {
@@ -80,9 +80,14 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
 
     // Render it...
     $menu = menu_tree_output($tree);
-    if (!in_array(end($stack), $cookie)) {
-      $extra_class .= ' collapsed start-collapsed';
-    }
+  }
+
+  // Move to the last element in the stack (the current item).
+  end($stack);
+
+  // If this item can expand, and is neither saved as open nor in the active trail, close it.
+  if ($menu && !($in_active_trail || in_array(substr(key($stack), 5), $cookie))) {
+    $extra_class .= ' collapsed start-collapsed';
   }
 
   return theme_menu_item($link, $has_children, $menu, $in_active_trail, $extra_class);
@@ -101,7 +106,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
 function _dhtml_menu_stack($link = FALSE) {
   static $stack;
   if ($link) {
-    $stack[] = $link;
+    $stack[$link['localized_options']['attributes']['id']] = $link;
   }
   else {
     $copy = $stack;
@@ -121,7 +126,9 @@ function _dhtml_menu_stack($link = FALSE) {
  *   The items below the lowest item in the stack.
  */
 function _dhtml_menu_subtree($stack) {
-  $tree = menu_tree_all_data($stack[0]['menu_name']);
+  reset($stack);
+  $start = current($stack);
+  $tree = menu_tree_all_data($start['menu_name']);
   foreach ($stack as $item) {
     // Generate the sortable array key of an item:
     $path[] = (50000 + $item['weight']) .' '. $item['title'] .' '. $item['mlid'];

@@ -16,6 +16,7 @@ function dhtml_menu_settings(&$form_state) {
     '#options' => array(
       'slide' => t('Animated sliding effect'),
       'siblings' => t('Keep only one menu open at a time.'),
+      'children' => t('Close menus when their parent menu is closed.'),
       'clone' => t('Add an extra page link to each expanding menu item.'),
       'doubleclick' => t('Go to the page on double-click.'),
     ),

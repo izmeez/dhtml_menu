@@ -24,17 +24,7 @@ Drupal.behaviors.dhtmlMenu = function() {
   // Get the settings.
   var effects = Drupal.settings.dhtmlMenu;
 
-  // Get the cookie and mark the saved menus.
-  var cookie = Drupal.dhtmlMenu.cookieGet().split(',');
-  
-  for (i in cookie) {
-    $('#menu-' + cookie[i]).parents('li:first').addClass('dhtml-open');
-  }
-
-  // Close the menu items that were not saved as open.
-  $('li.expanded').not('.dhtml-open')
-  .removeClass('expanded').addClass('collapsed').children('ul').css('display', 'none');
-  Drupal.dhtmlMenu.cookieSet();
+  $('.collapsed').removeClass('expanded');
 
   /* Add jQuery effects and listeners to all menu items.
    * The ~ (sibling) selector is unidirectional and selects 
@@ -74,8 +64,16 @@ Drupal.dhtmlMenu.toggleMenu = function(li) {
       $(li).children('ul').animate({height: 'hide', opacity: 'hide'}, '1000');
     }
     else $(li).children('ul').css('display', 'none');
+
+    // If children are closed automatically, find and close them now.
+    if (effects.children) {
+      $(li).find('li.expanded').removeClass('expanded').addClass('collapsed')
+      .children('ul').css('display', 'none');
+    }
+
     $(li).removeClass('expanded').addClass('collapsed');
   }
+
   // Otherwise, expand it.
   else {
     if (effects.slide) {
@@ -84,16 +82,30 @@ Drupal.dhtmlMenu.toggleMenu = function(li) {
     else $(li).children('ul').css('display', 'block');
     $(li).removeClass('collapsed').addClass('expanded');
 
-    // If the effect is on, close all sibling menus.
+    // If the siblings effect is on, close all sibling menus.
     if (effects.siblings) {
-      var id = $(li).children('a:first').attr('id');
-      siblings = $('ul.menu li.expanded').not(':has(#' + id + ')').filter(function() {
-        return !$(this).parents().is('#' + id);
-      });
+      var id = $(li).children('a').attr('id');
+
+      // Siblings are all open menus that are neither parents nor children of this menu.
+      $(li).find('li').addClass('own-children-temp');
+      siblings = $('ul.menu li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
+
+      // If children should not get closed automatically...
+      if (!effects.children) {
+        // Remove items that are currently hidden from view (do not close these).
+        $('li.collapsed li.expanded').addClass('sibling-children-temp');
+        // Only close the top-most open sibling, not its children.
+        $(siblings).find('li.expanded').addClass('sibling-children-temp');
+        siblings = $(siblings).not('.sibling-children-temp');
+      }
+
+      $('.own-children-temp, .sibling-children-temp').removeClass('own-children-temp').removeClass('sibling-children-temp');
+
       if (effects.slide) {
         $(siblings).children('ul').animate({height: 'hide', opacity: 'hide'}, '1000');
       }
       else $(siblings).children('ul').css('display', 'none');
+
       $(siblings).removeClass('expanded').addClass('collapsed');
     }
   }
