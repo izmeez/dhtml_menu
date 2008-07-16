@@ -26,6 +26,16 @@ Drupal.behaviors.dhtmlMenu = function() {
 
   $('.collapsed').removeClass('expanded');
 
+  // Get cookie
+  var cookie = Drupal.dhtmlMenu.cookieGet();
+  for (var i in cookie) {
+    // If the cookie was not applied to the HTML code yet, do so now.
+    var li = $('#menu-' + cookie[i]).parents('li:first');
+    if ($(li).hasClass('collapsed')) {
+      Drupal.dhtmlMenu.toggleMenu(li);
+    }
+  }
+
   /* Add jQuery effects and listeners to all menu items.
    * The ~ (sibling) selector is unidirectional and selects 
    * only the latter element, so we must use siblings() to get 
@@ -67,8 +77,12 @@ Drupal.dhtmlMenu.toggleMenu = function(li) {
 
     // If children are closed automatically, find and close them now.
     if (effects.children) {
+      if (effects.slide) {
+        $(li).find('li.expanded').children('ul').animate({height: 'hide', opacity: 'hide'}, '1000');
+      }
+      else $(li).find('li.expanded').children('ul').css('display', 'none');
+
       $(li).find('li.expanded').removeClass('expanded').addClass('collapsed')
-      .children('ul').css('display', 'none');
     }
 
     $(li).removeClass('expanded').addClass('collapsed');
