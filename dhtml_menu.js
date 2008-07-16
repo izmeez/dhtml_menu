@@ -11,14 +11,12 @@ Drupal.dhtmlMenu = {};
  * Initialize the module's JS functions
  */
 Drupal.behaviors.dhtmlMenu = function() {
-  var dhtmlRun;
-  
   // Do not run this function more than once.
-  if (dhtmlRun) {
+  if (Drupal.dhtmlMenu.init) {
     return;
   }
   else {
-    dhtmlRun = true;
+    Drupal.dhtmlMenu.init = true;
   }
 
   // Get the settings.
