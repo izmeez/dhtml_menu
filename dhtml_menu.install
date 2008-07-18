@@ -27,7 +27,6 @@ function dhtml_menu_update_6000() {
   }
 
   variable_set('dhtml_menu_menus', array('navigation' => 1, 'primary-links' => 1, 'secondary-links' => 1));
-  menu_rebuild();
   return array();
 }
 
