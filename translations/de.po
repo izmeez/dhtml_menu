@@ -1,18 +1,18 @@
 # $Id$
 #
-# German translation of DHTML Menu 6.x-3.0
+# German translation of Drupal (dhtml_menu)
 # Copyright Christoph Burschka <christoph@burschka.de>
 # Generated from files:
-#  dhtml_menu.admin.inc,v 1.4 2008/07/08 13:44:25 arancaytar
-#  dhtml_menu.module,v 1.28 2008/07/08 13:44:25 arancaytar
-#  dhtml_menu.info,v 1.5 2008/07/09 12:05:25 arancaytar
+#  dhtml_menu.admin.inc,v 1.5 2008/07/14 21:58:51 arancaytar
+#  dhtml_menu.module,v 1.29 2008/07/14 21:58:51 arancaytar
+#  dhtml_menu.info,v 1.6 2008/07/11 22:15:58 arancaytar
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: dhtml_menu\n"
-"POT-Creation-Date: 2008-07-07 14:46-0700\n"
-"PO-Revision-Date: 2008-07-09 13:46+0200\n"
+"POT-Creation-Date: 2008-07-14 14:59-0700\n"
+"PO-Revision-Date: 2008-07-19 19:35+0200\n"
 "Last-Translator: Christoph Burschka <christoph@burschka.de>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -32,6 +32,10 @@ msgstr "Animierter Schiebeeffekt"
 #: dhtml_menu.admin.inc:18
 msgid "Keep only one menu open at a time."
 msgstr "Öffne nur einen Menüpfad auf einmal (andere schließen automatisch)."
+
+#: dhtml_menu.admin.inc:19
+msgid "Close menus when their parent menu is closed."
+msgstr "Schließe Menüs automatisch, wenn das übergeordnete Menü geschlossen wird."
 
 #: dhtml_menu.admin.inc:19
 msgid "Add an extra page link to each expanding menu item."
