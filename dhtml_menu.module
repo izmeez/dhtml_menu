@@ -138,6 +138,7 @@ function _dhtml_menu_subtree($stack) {
   foreach ($path as $key) {
     if (!isset($tree[$key])) {
       $tree = $tree[key($tree)]['below'];
+      if (!isset($tree[$key])) return array();
     }
     $tree = $tree[$key]['below'];
   }
