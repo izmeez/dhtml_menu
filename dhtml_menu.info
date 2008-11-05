@@ -1,5 +1,16 @@
 ; $Id$
 name = DHTML Menu
 description = Opens menus dynamically to reduce page refreshes.
-core = 6.x
+core = 7.x
 
+; Everyday use
+files[] = dhtml_menu.module
+
+; Installation
+files[] = dhtml_menu.install
+
+; Admin page
+files[] = dhtml_menu.admin.inc
+
+; Hooks called when rebuilding the cache
+files[] = dhtml_menu.rebuild.inc

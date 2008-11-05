@@ -8,35 +8,28 @@
  */
 
 /**
- * Effects enabled by default. This is an array and
- * must be split to be used. Constants can not contain arrays.
- */
-define('DHTML_MENU_DEFAULT', 'slide,clone');
-
-/**
  * Implementation of hook_init().
  * Adds CSS, Javascript and settings to the page.
  */
 function dhtml_menu_init() {
   drupal_add_css(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.css');
   drupal_add_js(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.js');
-  $settings = variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT));
-  $valid    = array('slide', 'clone', 'siblings', 'relativity', 'doubleclick', 'children');
-  $settings = array_intersect($settings, $valid);
-  foreach (variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT)) as $effect) {
-    if (in_array($effect, $valid)) {
-      $settings[$effect] = TRUE;
-    }
+  
+  $settings = array(
+    'animations' => array(
+       'height' => 'height', 
+       'opacity' => 'opacity'
+     ), 
+    'speed' => 500, 
+    'siblings' => 'none', 
+    'children' => 'none', 
+    'nav' => 'pseudo-child'
+  );
+  
+  foreach ($settings as $setting => &$value) {
+    $value = variable_get("dhtml_menu_$setting", $value);
   }
   drupal_add_js(array('dhtmlMenu' => $settings), 'setting');
-}
-
-/** Implementation of hook_theme_registry_alter().
- * Replaces the theme functions for the menu_item functions
- */
-function dhtml_menu_theme_registry_alter(&$theme_registry) {
-  $theme_registry['menu_item']['function'] = 'dhtml_menu_theme_menu_item';
-  $theme_registry['menu_item_link']['function'] = 'dhtml_menu_theme_menu_item_link';
 }
 
 /**
@@ -47,6 +40,8 @@ function dhtml_menu_theme_registry_alter(&$theme_registry) {
 function dhtml_menu_theme_menu_item_link($link) {
   // The ID is the mlid or a stripped form of the link path. It just must be unique.
   $id = isset($link['mlid']) ? $link['mlid'] : preg_replace('/[^a-z0-9]/', '0', $link['href']);
+  
+  if (!isset($link['localized_options']) || !is_array($link['localized_options'])) $link['localized_options'] = array('attributes' => '');
   $link['localized_options']['attributes']['id'] = "menu-". $id;
 
   // Each link in series is another level of recursion. Add it to the stack.
@@ -146,23 +141,8 @@ function _dhtml_menu_subtree($stack) {
 }
 
 /**
- * Implementation of hook_menu().
- * Adds a settings page.
- */
-function dhtml_menu_menu() {
-  $menu['admin/settings/dhtml_menu'] = array(
-    'title' => 'DHTML Menu',
-    'description' => 'Configure the effects of DHTML Menu',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('dhtml_menu_settings'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'dhtml_menu.admin.inc',
-  );
-  return $menu;
-}
-
-/**
  * Implementation of hook_help().
+ * @TODO: Move this to dhtml_menu.rebuild.inc once hook_help is no longer called on every page.
  */
 function dhtml_menu_help($path) {
   switch ($path) {

@@ -1,8 +1,12 @@
 .fake-leaf {
-  font-size:5pt;
+  font-size:8pt;
+  font-style:italic;
   /*font-size:80%;*/
 }
 li.start-collapsed ul {
   display:none;
 }
 
+ul.menu a:hover {
+  background:red;
+}
