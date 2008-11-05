@@ -21,7 +21,7 @@ function dhtml_menu_init() {
   drupal_add_css(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.css');
   drupal_add_js(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.js');
   $settings = variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT));
-  $valid    = array('slide', 'clone', 'siblings', 'doubleclick', 'children');
+  $valid    = array('slide', 'clone', 'siblings', 'relativity', 'doubleclick', 'children');
   $settings = array_intersect($settings, $valid);
   foreach (variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT)) as $effect) {
     if (in_array($effect, $valid)) {

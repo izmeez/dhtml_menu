@@ -100,7 +100,15 @@ Drupal.dhtmlMenu.toggleMenu = function(li) {
 
       // Siblings are all open menus that are neither parents nor children of this menu.
       $(li).find('li').addClass('own-children-temp');
-      var siblings = $('ul.menu li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
+	  
+      // If the relativity option is on, select only the siblings that have the same parent
+      if (effects.relativity) {
+      var siblings = $(li).parent().find('li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
+      }
+      // Otherwise, select all menus of the same level
+      else {
+          var siblings = $('ul.menu li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
+      }
 
       // If children should not get closed automatically...
       if (!effects.children) {
