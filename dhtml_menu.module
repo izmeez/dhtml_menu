@@ -65,6 +65,10 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   static $cookie;
   if (!isset($cookie)) {
     $cookie = explode(',', @$_COOKIE['dhtml_menu']);
+    // Do not use this feature when keeping only one menu open at a time - the active path will always be open.
+    if (in_array('siblings', variable_get('dhtml_menu_effects', DHTML_MENU_DEFAULT))) {
+      $cookie = array();
+    }
   }
 
   /* When theme('menu_item') is called, the menu tree below it has been

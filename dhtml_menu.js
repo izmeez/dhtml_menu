@@ -25,12 +25,14 @@ Drupal.behaviors.dhtmlMenu = function() {
   $('.collapsed').removeClass('expanded');
 
   // Get cookie
-  var cookie = Drupal.dhtmlMenu.cookieGet();
-  for (var i in cookie) {
-    // If the cookie was not applied to the HTML code yet, do so now.
-    var li = $('#menu-' + cookie[i]).parents('li:first');
-    if ($(li).hasClass('collapsed')) {
-      Drupal.dhtmlMenu.toggleMenu(li);
+  if (!effects.siblings) {
+    var cookie = Drupal.dhtmlMenu.cookieGet();
+    for (var i in cookie) {
+      // If the cookie was not applied to the HTML code yet, do so now.
+      var li = $('#menu-' + cookie[i]).parents('li:first');
+      if ($(li).hasClass('collapsed')) {
+        Drupal.dhtmlMenu.toggleMenu(li);
+      }
     }
   }
 
