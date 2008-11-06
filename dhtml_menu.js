@@ -41,19 +41,20 @@ Drupal.behaviors.dhtmlMenu = function() {
    * only the latter element, so we must use siblings() to get 
    * back to the link element.
    */
-  $('ul.menu a ~ ul').siblings('a').each(function() {
+   $('ul.menu li:not(.leaf)').each(function() {
+    var li = this;
     if (effects.clone) {
-      $(this).clone().prependTo($(this).siblings('ul')).wrap('<li class="leaf fake-leaf"></li>');
+      $(li).find('a:first').clone().prependTo($(li).find('ul:first')).wrap('<li class="leaf fake-leaf"></li>');
     }
 
     if (effects.doubleclick) {
-      $(this).dblclick(function(e) {
+      $(li).find('a:first').dblclick(function(e) {
         window.location = this.href;
       });
     }
 
-    $(this).click(function(e) {
-      Drupal.dhtmlMenu.toggleMenu($(this).parent());
+    $(li).find('a:first').click(function(e) {
+      Drupal.dhtmlMenu.toggleMenu($(li));
       return false;
     });
   });
@@ -71,16 +72,16 @@ Drupal.dhtmlMenu.toggleMenu = function(li) {
   // If the menu is expanded, collapse it.
   if($(li).hasClass('expanded')) {
     if (effects.slide) {
-      $(li).children('ul').animate({height: 'hide', opacity: 'hide'}, '1000');
+      $(li).find('ul:first').animate({height: 'hide', opacity: 'hide'}, '1000');
     }
-    else $(li).children('ul').css('display', 'none');
+    else $(li).find('ul:first').css('display', 'none');
 
     // If children are closed automatically, find and close them now.
     if (effects.children) {
       if (effects.slide) {
-        $(li).find('li.expanded').children('ul').animate({height: 'hide', opacity: 'hide'}, '1000');
+        $(li).find('li.expanded').find('ul:first').animate({height: 'hide', opacity: 'hide'}, '1000');
       }
-      else $(li).find('li.expanded').children('ul').css('display', 'none');
+      else $(li).find('li.expanded').find('ul:first').css('display', 'none');
 
       $(li).find('li.expanded').removeClass('expanded').addClass('collapsed')
     }
@@ -91,25 +92,25 @@ Drupal.dhtmlMenu.toggleMenu = function(li) {
   // Otherwise, expand it.
   else {
     if (effects.slide) {
-      $(li).children('ul').animate({height: 'show', opacity: 'show'}, '1000');
+      $(li).find('ul:first').animate({height: 'show', opacity: 'show'}, '1000');
     }
-    else $(li).children('ul').css('display', 'block');
+    else $(li).find('ul:first').css('display', 'block');
     $(li).removeClass('collapsed').addClass('expanded');
 
     // If the siblings effect is on, close all sibling menus.
     if (effects.siblings) {
-      var id = $(li).children('a').attr('id');
+      var id = $(li).find('a:first').attr('id');
 
       // Siblings are all open menus that are neither parents nor children of this menu.
       $(li).find('li').addClass('own-children-temp');
 	  
       // If the relativity option is on, select only the siblings that have the same parent
       if (effects.relativity) {
-      var siblings = $(li).parent().find('li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
+        var siblings = $(li).parent().find('li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
       }
       // Otherwise, select all menus of the same level
       else {
-          var siblings = $('ul.menu li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
+        var siblings = $('ul.menu li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
       }
 
       // If children should not get closed automatically...
@@ -124,9 +125,9 @@ Drupal.dhtmlMenu.toggleMenu = function(li) {
       $('.own-children-temp, .sibling-children-temp').removeClass('own-children-temp').removeClass('sibling-children-temp');
 
       if (effects.slide) {
-        $(siblings).children('ul').animate({height: 'hide', opacity: 'hide'}, '1000');
+        $(siblings).find('ul:first').animate({height: 'hide', opacity: 'hide'}, '1000');
       }
-      else $(siblings).children('ul').css('display', 'none');
+      else $(siblings).fid('ul:first').css('display', 'none');
 
       $(siblings).removeClass('expanded').addClass('collapsed');
     }
@@ -153,7 +154,7 @@ Drupal.dhtmlMenu.cookieGet = function() {
 Drupal.dhtmlMenu.cookieSet = function() {
   var expanded = new Array();
   $('li.expanded').each(function() {
-    expanded.push($(this).children('a:first').attr('id').substr(5));
+    expanded.push($(this).find('a:first').attr('id').substr(5));
   });
   document.cookie = 'dhtml_menu=' + expanded.join(',') + ';path=/';
 }
