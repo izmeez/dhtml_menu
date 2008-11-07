@@ -84,6 +84,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
 
     // Render it...
     $menu = menu_tree_output($tree);
+    if (!$menu) $has_children = FALSE; // Sanitize tree. If we found no children, the item has none.
   }
 
   // Move to the last element in the stack (the current item).

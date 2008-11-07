@@ -44,7 +44,10 @@ Drupal.behaviors.dhtmlMenu = function() {
    $('ul.menu li:not(.leaf)').each(function() {
     var li = this;
     if (effects.clone) {
-      $(li).find('a:first').clone().prependTo($(li).find('ul:first')).wrap('<li class="leaf fake-leaf"></li>');
+      var ul = $(li).find('ul:first');
+      if (ul.length) {
+        $(li).find('a:first').clone().prependTo(ul).wrap('<li class="leaf fake-leaf"></li>');
+      }
     }
 
     if (effects.doubleclick) {
