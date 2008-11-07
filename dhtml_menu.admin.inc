@@ -23,6 +23,40 @@ function dhtml_menu_settings(&$form_state) {
     ),
     '#default_value' => variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT)),
   );
+
+  $form['dhtml_menu_disabled'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Menus without DHTML'),
+    '#options' => dhtml_menu_menus(),
+    '#default_value' => variable_get('dhtml_menu_disabled', array()),
+    '#description' => t('DHTML will be used for all menus by default, but can be switched off for specific menus.'),
+  );
+  
   return system_settings_form($form);
 }
 
+/**
+ * Build human-readable menu names for book menus.
+ * This fetches the title of the book outline's root node. Titles are cached for performance.
+ */
+function dhtml_menu_menus() {
+  $titles = cache_get('dhtml_book_titles');
+  $titles = isset($titles->data) ? $titles->data : array();
+  
+  $menu_internal = menu_get_names();
+  
+  foreach ($menu_internal as $key) {
+    if (preg_match('/book-toc-([0-9]+)/', $key, $match)) {
+      if (!isset($titles[$match[1]])) {
+        $node = node_load($match[1]);
+        $titles[$match[1]] = $node->title;
+      }
+      $menus[$key] = t('Book: %title', array('%title' => $titles[$match[1]]));
+    }
+    else $menus[$key] = $key;
+  }
+  
+  cache_set('dhtml_book_titles', $titles);
+  
+  return $menus;
+}
