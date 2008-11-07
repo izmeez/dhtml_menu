@@ -40,7 +40,10 @@ Drupal.behaviors.dhtmlMenu = {
      */
     $('ul.menu li:not(.leaf)').each(function() {
       if (nav == 'pseudo-child') {
-        $(this).find('a:first').clone().prependTo($(this).find('ul:first')).wrap('<li class="leaf fake-leaf"></li>');
+        var ul = $(this).find('ul:first');
+        if (ul.length) {
+          $(this).find('a:first').clone().prependTo(ul).wrap('<li class="leaf fake-leaf"></li>');
+        }
       }
   
       if (nav == 'doubleclick') {
