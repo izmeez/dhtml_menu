@@ -21,7 +21,7 @@ function dhtml_menu_settings(&$form_state) {
       'clone' => t('Add an extra page link to each expanding menu item.'),
       'doubleclick' => t('Go to the page on double-click.'),
     ),
-    '#default_value' => variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT)),
+    '#default_value' => variable_get('dhtml_menu_effects', unserialize(DHTML_MENU_DEFAULT)),
   );
 
   $form['dhtml_menu_disabled'] = array(

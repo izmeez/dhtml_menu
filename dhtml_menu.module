@@ -9,9 +9,9 @@
 
 /**
  * Effects enabled by default. This is an array and
- * must be split to be used. Constants can not contain arrays.
+ * must be unserialized to be used. Constants can not contain arrays.
  */
-define('DHTML_MENU_DEFAULT', 'slide,clone');
+define('DHTML_MENU_DEFAULT', serialize(array('slide' => 'slide', 'clone' => 'clone')));
 
 /**
  * Implementation of hook_init().
@@ -20,18 +20,12 @@ define('DHTML_MENU_DEFAULT', 'slide,clone');
 function dhtml_menu_init() {
   drupal_add_css(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.css');
   drupal_add_js(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.js');
-  $settings = variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT));
-  $valid    = array('slide', 'clone', 'siblings', 'relativity', 'doubleclick', 'children');
-  $settings = array_intersect($settings, $valid);
-  foreach (variable_get('dhtml_menu_effects', explode(',', DHTML_MENU_DEFAULT)) as $effect) {
-    if (in_array($effect, $valid)) {
-      $settings[$effect] = TRUE;
-    }
-  }
+  $settings = variable_get('dhtml_menu_effects', unserialize(DHTML_MENU_DEFAULT));
   drupal_add_js(array('dhtmlMenu' => $settings), 'setting');
 }
 
-/** Implementation of hook_theme_registry_alter().
+/** 
+ * Implementation of hook_theme_registry_alter().
  * Replaces the theme functions for the menu_item functions
  */
 function dhtml_menu_theme_registry_alter(&$theme_registry) {
@@ -71,13 +65,11 @@ function dhtml_menu_theme_menu_item_link($link) {
  * were not rendered, and loads and renders them.
  */
 function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
+  $settings =  variable_get('dhtml_menu_effects', unserialize(DHTML_MENU_DEFAULT));
   static $cookie;
   if (!isset($cookie)) {
-    $cookie = explode(',', @$_COOKIE['dhtml_menu']);
     // Do not use this feature when keeping only one menu open at a time - the active path will always be open.
-    if (in_array('siblings', variable_get('dhtml_menu_effects', DHTML_MENU_DEFAULT))) {
-      $cookie = array();
-    }
+    $cookie = !empty($_COOKIE['dhtml_menu']) && empty($settings['siblings']) ? explode(',', $_COOKIE['dhtml_menu']) : array();
   }
 
   /* When theme('menu_item') is called, the menu tree below it has been
