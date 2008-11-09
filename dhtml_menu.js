@@ -38,7 +38,7 @@ Drupal.behaviors.dhtmlMenu = {
      * only the latter element, so we must use siblings() to get 
      * back to the link element. 
      */
-    $('ul.menu li:not(.leaf)').each(function() {
+    $('ul.menu li:not(.leaf,.no-dhtml)').each(function() {
       if (nav == 'pseudo-child') {
         var ul = $(this).find('ul:first');
         if (ul.length) {

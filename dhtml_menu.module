@@ -38,9 +38,18 @@ function dhtml_menu_init() {
  * follow the recursion of menu_tree_output().
  */
 function dhtml_menu_theme_menu_item_link($link) {
+  static $disabled;
+  if (!isset($disabled)) {
+    $disabled = variable_get('dhtml_menu_disabled', array());
+  }
+
+  if (isset($link['menu_name']) && !empty($disabled[$link['menu_name']])) {
+    $link['dhtml_disabled'] = TRUE;
+  }
+
   // The ID is the mlid or a stripped form of the link path. It just must be unique.
   $id = isset($link['mlid']) ? $link['mlid'] : preg_replace('/[^a-z0-9]/', '0', $link['href']);
-  
+
   if (!isset($link['localized_options']) || !is_array($link['localized_options'])) $link['localized_options'] = array('attributes' => '');
   $link['localized_options']['attributes']['id'] = "menu-". $id;
 
@@ -68,6 +77,16 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
    */
   $stack = _dhtml_menu_stack();
 
+  // Move to the last element in the stack (the current item).
+  end($stack);
+  
+  // If this item should not have DHTML, then return to the "parent" function.
+  $current = current($stack);
+  if (!empty($current['dhtml_disabled'])) {
+    $extra_class .= ' no-dhtml ';
+    return theme_menu_item($link, $has_children, $menu, $in_active_trail, $extra_class);
+  }
+  
   // If there are children, but they were not loaded...
   if ($has_children && !$menu) {
     // Load the tree below the current position.
@@ -78,12 +97,9 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
     if (!$menu) $has_children = FALSE; // Sanitize tree.
   }
 
-  // Move to the last element in the stack (the current item).
-  end($stack);
-
-  // If this item can expand, and is neither saved as open nor in the active trail, close it.
+  // If the current item can expand, and is neither saved as open nor in the active trail, close it.
   if ($menu && !($in_active_trail || in_array(substr(key($stack), 5), $cookie))) {
-    $extra_class .= ' collapsed start-collapsed';
+    $extra_class .= ' collapsed start-collapsed ';
   }
 
   return theme_menu_item($link, $has_children, $menu, $in_active_trail, $extra_class);
