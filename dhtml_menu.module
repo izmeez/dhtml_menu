@@ -50,8 +50,7 @@ function dhtml_menu_theme_menu_item_link($link) {
     return theme_menu_item_link($link);
   }
 
-  // TODO: When the menu appears multiple times on a page, validation breaks.
-  $link['localized_options']['attributes']['id'] = "menu-". $link['mlid'];
+  $link['localized_options']['attributes']['id'] = 'dhtml_menu-' . _dhtml_menu_unique_id($link['mlid']);
 
   // Each link in series is another level of recursion. Add it to the stack.
   _dhtml_menu_stack($link);
@@ -213,3 +212,16 @@ function dhtml_menu_help($path) {
   }
 }
 
+/**
+ * Keeps track of ID attributes and adds a suffix to make it unique-when necessary.
+ */
+function _dhtml_menu_unique_id($id) {
+  static $ids = array();
+  if (!isset($ids[$id])) {
+    $ids[$id] = 1;
+    return $id;
+  }
+  else {
+    return $id . '-' . $ids[$id]++;
+  }
+}
