@@ -48,15 +48,15 @@ function dhtml_menu_theme_menu_item_link($link) {
     $disabled = variable_get('dhtml_menu_disabled', array());
   }
 
-  if (isset($link['menu_name']) && !empty($disabled[$link['menu_name']])) {
+  if (!isset($link['menu_name']) || !isset($link['mlid']) || !empty($disabled[$link['menu_name']])) {
     $link['dhtml_disabled'] = TRUE;
   }
 
-  // The ID is the mlid or a stripped form of the link path. It just must be unique.
-  $id = isset($link['mlid']) ? $link['mlid'] : preg_replace('/[^a-z0-9]/', '0', $link['href']);
-
-  if (!isset($link['localized_options']) || !is_array($link['localized_options'])) $link['localized_options'] = array('attributes' => '');
-  $link['localized_options']['attributes']['id'] = "menu-". $id;
+  // TODO: When the menu appears multiple times on a page, validation breaks.
+  if (!isset($link['localized_options']) || !is_array($link['localized_options'])) {
+    $link['localized_options'] = array('attributes' => '');
+  }
+  $link['localized_options']['attributes']['id'] = "menu-". $link['mlid'];
 
   // Each link in series is another level of recursion. Add it to the stack.
   _dhtml_menu_stack($link);
@@ -143,16 +143,23 @@ function _dhtml_menu_stack($link = FALSE) {
  *   The items below the lowest item in the stack.
  */
 function _dhtml_menu_subtree($stack) {
+  static $index = array();
+  static $indexed = array();
+
   reset($stack);
   $start = current($stack);
+
+  // This looks expensive, but menu_tree_all_data uses static caching.
   $tree = menu_tree_all_data($start['menu_name']);
-  foreach ($stack as $item) {
-    // Generate the sortable array key of an item:
-    $path[] = (50000 + $item['weight']) .' '. $item['title'] .' '. $item['mlid'];
+
+  if (!isset($indexed[$start['menu_name']])) {
+    $index += _dhtml_menu_index($tree);
+    $indexed[$start['menu_name']] = TRUE;
   }
 
   // Traverse the tree.
-  foreach ($path as $key) {
+  foreach ($stack as $item) {
+    $key = $index[$item['mlid']];
     if (!isset($tree[$key])) {
       $tree = $tree[key($tree)]['below'];
       if (!isset($tree[$key])) return array();
@@ -160,6 +167,27 @@ function _dhtml_menu_subtree($stack) {
     $tree = $tree[$key]['below'];
   }
   return $tree;
+}
+
+/**
+ * Indexes the menu tree by mlid. This is needed to identify the items
+ * without relying on titles. This function is recursive.
+ *
+ * @param $tree
+ *   A tree of menu items such as the return value of menu_tree_all_data()
+ *
+ * @return
+ *   An array associating mlid values with the internal keys of the menu tree.
+ */
+function _dhtml_menu_index($tree) {
+  $index = array();
+  foreach ($tree as $key => $item) {
+    $index[$item['link']['mlid']] = $key;
+    if (!empty($item['below'])) {
+      $index += _dhtml_menu_index($item['below']);
+    }
+  }
+  return $index;
 }
 
 /**
