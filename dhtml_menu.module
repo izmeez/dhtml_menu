@@ -121,7 +121,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
  *   The stack, if no parameter is given.
  */
 function _dhtml_menu_stack($link = FALSE) {
-  static $stack;
+  static $stack = array();
   if ($link) {
     $stack[$link['localized_options']['attributes']['id']] = $link;
   }
