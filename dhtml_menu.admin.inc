@@ -10,6 +10,8 @@
  * Module settings form.
  */
 function dhtml_menu_settings(&$form_state) {
+  $settings = unserialize(DHTML_MENU_DEFAULT_SETTINGS);
+
   $form['dhtml_menu_nav'] = array(
     '#type' => 'radios',
     '#title' => t('Static navigation'),
@@ -19,7 +21,7 @@ function dhtml_menu_settings(&$form_state) {
       'double-click' => t('<strong>Doubleclick:</strong> To expand a menu, click the link once. To navigate to the page, click it twice. <em>This may be difficult to find for your users!</em>'),
       'none' => t('<strong>None:</strong> Clicking the link will expand the menu. Navigating to the page is not possible. <em>This will make pages with sub-items very difficult to reach!</em>'),
     ),
-    '#default_value' => variable_get('dhtml_menu_nav', 'pseudo-child'),
+    '#default_value' => variable_get('dhtml_menu_nav', $settings['nav']),
     '#description' => t('Dynamic expansion of menus competes with the static navigation of content. Choose how to resolve this conflict.'),
   );
   
@@ -39,14 +41,14 @@ function dhtml_menu_settings(&$form_state) {
       'opacity' => t('Fade in'),
     ),
     '#description' => t('You may pick any number of animation effects that will accompany the opening and closing of a menu.'),
-    '#default_value' => variable_get('dhtml_menu_animations', array('slide-vertical', 'fade-in')),
+    '#default_value' => variable_get('dhtml_menu_animations', $settings['animations']),
   );
   
   $form['animation']['dhtml_menu_speed'] = array(
     '#type' => 'select',
     '#title' => t('Speed'),
     '#options' => array(100 => 'Very Fast (0.1s)', 500 => 'Fast (0.5s)', 1000 => 'Medium (1s)', 1500 => 'Slow (1.5s)', 2000 => 'Very Slow (2s)'),
-    '#default_value' => variable_get('dhtml_menu_speed', 1000),
+    '#default_value' => variable_get('dhtml_menu_speed', $settings['speed']),
     '#description' => t('Choose how quickly the menus should expand and collapse.'),
   );
   
@@ -65,7 +67,7 @@ function dhtml_menu_settings(&$form_state) {
       'close-all' => t('Close all other open menus on the page.'),
       'close-same-tree' => t('Close other open submenus in the same menu tree.'),
     ),
-    '#default_value' => variable_get('dhtml_menu_siblings', 'none'),
+    '#default_value' => variable_get('dhtml_menu_siblings', $settings['siblings']),
   );
   
   $form['effects']['dhtml_menu_children'] = array(
@@ -75,7 +77,7 @@ function dhtml_menu_settings(&$form_state) {
       'none' => t('Remember which sub-items were expanded when it next opens.'),
       'close-children' => t('Close all its sub-items, too.'),
     ),
-    '#default_value' => variable_get('dhtml_menu_children', 'none'),
+    '#default_value' => variable_get('dhtml_menu_children', $settings['children']),
   );
 
   $form['dhtml_menu_disabled'] = array(

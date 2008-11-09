@@ -8,24 +8,29 @@
  */
 
 /**
+ * A serialized array of default settings. Constants must be strings.
+ */
+define('DHTML_MENU_DEFAULT_SETTINGS', serialize(array(
+  'animations' => array(
+     'height' => 'height',
+     'opacity' => 'opacity'
+   ),
+  'speed' => 500,
+  'siblings' => 'none',
+  'children' => 'none',
+  'nav' => 'pseudo-child',
+)));
+
+/**
  * Implementation of hook_init().
  * Adds CSS, Javascript and settings to the page.
  */
 function dhtml_menu_init() {
   drupal_add_css(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.css');
   drupal_add_js(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.js');
-  
-  $settings = array(
-    'animations' => array(
-       'height' => 'height', 
-       'opacity' => 'opacity'
-     ), 
-    'speed' => 500, 
-    'siblings' => 'none', 
-    'children' => 'none', 
-    'nav' => 'pseudo-child'
-  );
-  
+
+  $settings = unserialize(DHTML_MENU_DEFAULT_SETTINGS);
+
   foreach ($settings as $setting => &$value) {
     $value = variable_get("dhtml_menu_$setting", $value);
   }
