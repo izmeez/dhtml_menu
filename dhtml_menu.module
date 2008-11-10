@@ -26,10 +26,13 @@ function dhtml_menu_init() {
 
 /** 
  * Implementation of hook_theme_registry_alter().
- * Replaces the theme functions for the menu_item functions
+ * Replaces the theme functions for the menu_item functions, and stores the
+ * original functions in order to cascade to them.
  */
 function dhtml_menu_theme_registry_alter(&$theme_registry) {
+  variable_set('dhtml_menu_theme_menu_item', $theme_registry['menu_item']['function']);
   $theme_registry['menu_item']['function'] = 'dhtml_menu_theme_menu_item';
+  variable_set('dhtml_menu_theme_menu_item_link', $theme_registry['menu_item_link']['function']);
   $theme_registry['menu_item_link']['function'] = 'dhtml_menu_theme_menu_item_link';
 }
 
@@ -56,7 +59,8 @@ function dhtml_menu_theme_menu_item_link($link) {
   _dhtml_menu_stack($link);
   
   // Pass the altered variables to the normal menu themer.
-  return theme_menu_item_link($link);
+  $theme = variable_get('dhtml_menu_theme_menu_item_link', 'theme_menu_item_link');
+  return $theme($link);
 }
 
 /**
@@ -103,7 +107,9 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
     $extra_class .= ' collapsed start-collapsed ';
   }
 
-  return theme_menu_item($link, $has_children, $menu, $in_active_trail, $extra_class);
+  // Cascade up to the original theming function.
+  $theme = variable_get('dhtml_menu_theme_menu_item', 'theme_menu_item');
+  return $theme($link, $has_children, $menu, $in_active_trail, $extra_class);
 }
 
 /**
