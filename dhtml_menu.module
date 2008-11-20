@@ -48,15 +48,16 @@ function dhtml_menu_theme_menu_item_link($link) {
     $disabled = variable_get('dhtml_menu_disabled', array());
   }
 
+  // TODO: Find out why options sometimes are serialized. Fix this workaround before D7 release!
+  if (!isset($link['localized_options']) || !is_array($link['localized_options'])) {
+    $link['localized_options'] = array('attributes' => '');
+  }
+
   if (!isset($link['menu_name']) || !isset($link['mlid']) || !empty($disabled[$link['menu_name']])) {
     $link['dhtml_disabled'] = TRUE;
   }
 
-  // TODO: When the menu appears multiple times on a page, validation breaks.
-  if (!isset($link['localized_options']) || !is_array($link['localized_options'])) {
-    $link['localized_options'] = array('attributes' => '');
-  }
-  $link['localized_options']['attributes']['id'] = "menu-". $link['mlid'];
+  $link['localized_options']['attributes']['id'] = 'dhtml_menu-' . _dhtml_menu_unique_id($link['mlid']);
 
   // Each link in series is another level of recursion. Add it to the stack.
   _dhtml_menu_stack($link);
@@ -201,3 +202,16 @@ function dhtml_menu_help($path) {
   }
 }
 
+/**
+ * Keeps track of ID attributes and adds a suffix to make it unique-when necessary.
+ */
+function _dhtml_menu_unique_id($id) {
+  static $ids = array();
+  if (!isset($ids[$id])) {
+    $ids[$id] = 1;
+    return $id;
+  }
+  else {
+    return $id . '-' . $ids[$id]++;
+  }
+}
