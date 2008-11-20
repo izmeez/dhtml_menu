@@ -7,11 +7,15 @@
  * is rebuilt, like hook_menu. 
  */
 
-/** Implementation of hook_theme_registry_alter().
- * Replaces the theme functions for the menu_item functions
+/** 
+ * Implementation of hook_theme_registry_alter().
+ * Replaces the theme functions for the menu_item functions, and stores the
+ * original functions in order to cascade to them.
  */
 function dhtml_menu_theme_registry_alter(&$theme_registry) {
+  variable_set('dhtml_menu_theme_menu_item', $theme_registry['menu_item']['function']);
   $theme_registry['menu_item']['function'] = 'dhtml_menu_theme_menu_item';
+  variable_set('dhtml_menu_theme_menu_item_link', $theme_registry['menu_item_link']['function']);
   $theme_registry['menu_item_link']['function'] = 'dhtml_menu_theme_menu_item_link';
 }
 
