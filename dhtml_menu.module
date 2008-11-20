@@ -42,24 +42,24 @@ function dhtml_menu_theme_registry_alter(&$theme_registry) {
  * follow the recursion of menu_tree_output().
  */
 function dhtml_menu_theme_menu_item_link($link) {
-  static $disabled;
+  static $disabled, $theme;
   if (!isset($disabled)) {
     $disabled = variable_get('dhtml_menu_disabled', array());
+    $theme = variable_get('dhtml_menu_theme_menu_item_link', 'theme_menu_item_link');
   }
 
-  // Do not work on menu items that are either without menu name or mlid, or disabled.
-  if (!isset($link['menu_name']) || !isset($link['mlid']) || !empty($disabled[$link['menu_name']])) {
+  // Only work with menu items that have an mlid, a menu name, and are not disabled.
+  if (isset($link['menu_name']) && isset($link['mlid']) && empty($disabled[$link['menu_name']])) {
+    $link['localized_options']['attributes']['id'] = 'dhtml_menu-' . _dhtml_menu_unique_id($link['mlid']);
+
+    // Each link in series is another level of recursion. Add it to the stack.
+    _dhtml_menu_stack($link);
+  }
+  else {
     $link['dhtml_disabled'] = TRUE;
-    return theme_menu_item_link($link);
   }
 
-  $link['localized_options']['attributes']['id'] = 'dhtml_menu-' . _dhtml_menu_unique_id($link['mlid']);
-
-  // Each link in series is another level of recursion. Add it to the stack.
-  _dhtml_menu_stack($link);
-  
   // Pass the altered variables to the normal menu themer.
-  $theme = variable_get('dhtml_menu_theme_menu_item_link', 'theme_menu_item_link');
   return $theme($link);
 }
 
@@ -69,11 +69,14 @@ function dhtml_menu_theme_menu_item_link($link) {
  * were not rendered, and loads and renders them.
  */
 function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
-  $settings =  variable_get('dhtml_menu_effects', unserialize(DHTML_MENU_DEFAULT));
-  static $cookie;
+  static $cookie, $settings, $theme;
   if (!isset($cookie)) {
+    $settings =  variable_get('dhtml_menu_effects', unserialize(DHTML_MENU_DEFAULT));
+
     // Do not use this feature when keeping only one menu open at a time - the active path will always be open.
     $cookie = !empty($_COOKIE['dhtml_menu']) && empty($settings['siblings']) ? explode(',', $_COOKIE['dhtml_menu']) : array();
+    // Cascade up to the original theming function.
+    $theme = variable_get('dhtml_menu_theme_menu_item', 'theme_menu_item');
   }
 
   /* When theme('menu_item') is called, the menu tree below it has been
@@ -107,8 +110,6 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
     $extra_class .= ' collapsed start-collapsed ';
   }
 
-  // Cascade up to the original theming function.
-  $theme = variable_get('dhtml_menu_theme_menu_item', 'theme_menu_item');
   return $theme($link, $has_children, $menu, $in_active_trail, $extra_class);
 }
 
