@@ -130,7 +130,7 @@ Drupal.dhtmlMenu.toggleMenu = function(li) {
       if (effects.slide) {
         $(siblings).find('ul:first').animate({height: 'hide', opacity: 'hide'}, '1000');
       }
-      else $(siblings).fid('ul:first').css('display', 'none');
+      else $(siblings).find('ul:first').css('display', 'none');
 
       $(siblings).removeClass('expanded').addClass('collapsed');
     }
