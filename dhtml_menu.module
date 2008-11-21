@@ -92,7 +92,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   $current = current($stack);
   if (!empty($current['dhtml_disabled'])) {
     $extra_class .= ' no-dhtml ';
-    return theme_menu_item($link, $has_children, $menu, $in_active_trail, $extra_class);
+    return $theme($link, $has_children, $menu, $in_active_trail, $extra_class);
   }
   
   // If there are children, but they were not loaded...
