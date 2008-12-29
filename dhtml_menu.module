@@ -48,15 +48,17 @@ function dhtml_menu_theme_menu_item_link($link) {
     $theme = variable_get('dhtml_menu_theme_menu_item_link', 'theme_menu_item_link');
   }
 
-  // Only work with menu items that have an mlid, a menu name, and are not disabled.
-  if (isset($link['menu_name']) && isset($link['mlid']) && empty($disabled[$link['menu_name']])) {
+  // Only work with menu items that have an mlid and a menu name.
+  if (isset($link['menu_name']) && isset($link['mlid'])) {
     $link['localized_options']['attributes']['id'] = 'dhtml_menu-' . _dhtml_menu_unique_id($link['mlid']);
 
-    // Each link in series is another level of recursion. Add it to the stack.
-    _dhtml_menu_stack($link);
-  }
-  else {
-    $link['dhtml_disabled'] = TRUE;
+    // Disabled items are now marked. They must still be added to the stack to pass information within this module.
+    if (!empty($disabled[$link['menu_name']])) {
+      $link['dhtml_disabled'] = TRUE;
+    }
+
+    // Stack this item to track the recursion levels.
+    _dhtml_menu_stack($link);    
   }
 
   // Pass the altered variables to the normal menu themer.
