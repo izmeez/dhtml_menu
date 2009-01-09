@@ -46,6 +46,7 @@ function dhtml_menu_theme_menu_item_link($link) {
   if (!isset($disabled)) {
     $disabled = variable_get('dhtml_menu_disabled', array());
     $theme = variable_get('dhtml_menu_theme_menu_item_link', 'theme_menu_item_link');
+    $theme = function_exists($theme) ? $theme : 'theme_menu_item_link';
   }
 
   // Only work with menu items that have an mlid and a menu name.
@@ -79,6 +80,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
     $cookie = !empty($_COOKIE['dhtml_menu']) && empty($settings['siblings']) ? explode(',', $_COOKIE['dhtml_menu']) : array();
     // Cascade up to the original theming function.
     $theme = variable_get('dhtml_menu_theme_menu_item', 'theme_menu_item');
+    $theme = function_exists($theme) ? $theme : 'theme_menu_item';
   }
 
   /* When theme('menu_item') is called, the menu tree below it has been
@@ -171,7 +173,7 @@ function _dhtml_menu_subtree($stack) {
     }
     $tree = $tree[$key]['below'];
   }
-  return $tree;
+  return is_array($tree) ? $tree : array();
 }
 
 /**
