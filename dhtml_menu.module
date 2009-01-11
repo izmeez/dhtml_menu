@@ -51,7 +51,9 @@ function dhtml_menu_theme_menu_item_link($link) {
 
   // Only work with menu items that have an mlid and a menu name.
   if (isset($link['menu_name']) && isset($link['mlid'])) {
+    // Some themes use options, others use localized_options. Populate both.
     $link['localized_options']['attributes']['id'] = 'dhtml_menu-' . _dhtml_menu_unique_id($link['mlid']);
+    $link['options']['attributes']['id'] = $link['localized_options']['attributes']['id'];
 
     // Disabled items are now marked. They must still be added to the stack to pass information within this module.
     if (!empty($disabled[$link['menu_name']])) {
