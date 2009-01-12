@@ -93,14 +93,16 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
 
   // Move to the last element in the stack (the current item).
   end($stack);
-  
+
   // If this item should not have DHTML, then return to the "parent" function.
   $current = current($stack);
   if (!empty($current['dhtml_disabled'])) {
     $extra_class .= ' no-dhtml ';
     return $theme($link, $has_children, $menu, $in_active_trail, $extra_class);
   }
-  
+  // Otherwise, add a class to identify this element for JS.
+  $extra_class .= ' dhtml-menu ';  
+
   // If there are children, but they were not loaded...
   if ($has_children && !$menu) {
     // Load the tree below the current position.
