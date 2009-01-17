@@ -78,5 +78,6 @@ function dhtml_menu_update_6003() {
   variable_del('dhtml_menu_theme_menu_item_link');
 
   drupal_rebuild_theme_registry();
+  return array();
 }
 
