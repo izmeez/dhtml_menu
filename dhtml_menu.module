@@ -27,12 +27,21 @@ function dhtml_menu_init() {
 /** 
  * Implementation of hook_theme_registry_alter().
  * Replaces the theme functions for the menu_item functions, and stores the
- * original functions in order to cascade to them.
+ * original functions in order to call them when this module is done with preprocessing.
  */
 function dhtml_menu_theme_registry_alter(&$theme_registry) {
-  variable_set('dhtml_menu_theme_menu_item', $theme_registry['menu_item']['function']);
+  global $theme;
+
+  // Back up the existing theme functions.
+  $themes = variable_get('dhtml_menu_theme', array());
+  $themes[$theme] = array(
+    'menu_item' => $theme_registry['menu_item']['function'],
+    'menu_item_link' => $theme_registry['menu_item_link']['function'],
+  );
+  variable_set('dhtml_menu_theme', $themes);
+
+  // Replace them with our own. These will "preprocess" and call the real functions.
   $theme_registry['menu_item']['function'] = 'dhtml_menu_theme_menu_item';
-  variable_set('dhtml_menu_theme_menu_item_link', $theme_registry['menu_item_link']['function']);
   $theme_registry['menu_item_link']['function'] = 'dhtml_menu_theme_menu_item_link';
 }
 
@@ -42,11 +51,13 @@ function dhtml_menu_theme_registry_alter(&$theme_registry) {
  * follow the recursion of menu_tree_output().
  */
 function dhtml_menu_theme_menu_item_link($link) {
-  static $disabled, $theme;
+  // Find out which theme function to dispatch to after preprocessing.
+  global $theme;
+  static $disabled, $function;
   if (!isset($disabled)) {
     $disabled = variable_get('dhtml_menu_disabled', array());
-    $theme = variable_get('dhtml_menu_theme_menu_item_link', 'theme_menu_item_link');
-    $theme = function_exists($theme) ? $theme : 'theme_menu_item_link';
+    $registry = variable_get('dhtml_menu_theme', array());
+    $function = isset($registry[$theme]) ? $registry[$theme]['menu_item_link'] : 'theme_menu_item_link';
   }
 
   // Only work with menu items that have an mlid and a menu name.
@@ -65,7 +76,7 @@ function dhtml_menu_theme_menu_item_link($link) {
   }
 
   // Pass the altered variables to the normal menu themer.
-  return $theme($link);
+  return $function($link);
 }
 
 /**
@@ -74,15 +85,16 @@ function dhtml_menu_theme_menu_item_link($link) {
  * were not rendered, and loads and renders them.
  */
 function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
-  static $cookie, $settings, $theme;
+  global $theme;
+  static $cookie, $settings, $function;
   if (!isset($cookie)) {
     $settings =  variable_get('dhtml_menu_effects', unserialize(DHTML_MENU_DEFAULT));
 
     // Do not use this feature when keeping only one menu open at a time - the active path will always be open.
     $cookie = !empty($_COOKIE['dhtml_menu']) && empty($settings['siblings']) ? explode(',', $_COOKIE['dhtml_menu']) : array();
     // Cascade up to the original theming function.
-    $theme = variable_get('dhtml_menu_theme_menu_item', 'theme_menu_item');
-    $theme = function_exists($theme) ? $theme : 'theme_menu_item';
+    $registry = variable_get('dhtml_menu_theme', array());
+    $function = isset($registry[$theme]) ? $registry[$theme]['menu_item'] : 'theme_menu_item';
   }
 
   /* When theme('menu_item') is called, the menu tree below it has been
@@ -98,7 +110,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   $current = current($stack);
   if (!empty($current['dhtml_disabled'])) {
     $extra_class .= ' no-dhtml ';
-    return $theme($link, $has_children, $menu, $in_active_trail, $extra_class);
+    return $function($link, $has_children, $menu, $in_active_trail, $extra_class);
   }
   // Otherwise, add a class to identify this element for JS.
   $extra_class .= ' dhtml-menu ';  
@@ -118,7 +130,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
     $extra_class .= ' collapsed start-collapsed ';
   }
 
-  return $theme($link, $has_children, $menu, $in_active_trail, $extra_class);
+  return $function($link, $has_children, $menu, $in_active_trail, $extra_class);
 }
 
 /**

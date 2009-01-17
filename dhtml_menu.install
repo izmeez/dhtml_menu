@@ -70,3 +70,13 @@ function dhtml_menu_update_6002() {
   return array();
 }
 
+/**
+ * #6003: 6.x-3.4 upgrade. Remove two obsolete variables and rebuild all themes.
+ */
+function dhtml_menu_update_6003() {
+  variable_del('dhtml_menu_theme_menu_item');
+  variable_del('dhtml_menu_theme_menu_item_link');
+
+  drupal_rebuild_theme_registry();
+}
+
