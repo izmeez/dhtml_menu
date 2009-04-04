@@ -43,9 +43,12 @@ function dhtml_menu_init() {
  * follow the recursion of menu_tree_output().
  */
 function dhtml_menu_theme_menu_item_link($link) {
-  static $disabled;
+  global $theme;
+  static $disabled, $function;
   if (!isset($disabled)) {
     $disabled = variable_get('dhtml_menu_disabled', array());
+    $registry = variable_get('dhtml_menu_theme', array());
+    $function = isset($registry[$theme]) && drupal_function_exists($registry[$theme]['menu_item_link']) ? $registry[$theme]['menu_item_link'] : 'theme_menu_item_link';
   }
 
   // TODO: Find out why options sometimes are serialized. Fix this workaround before D7 release!
@@ -54,7 +57,8 @@ function dhtml_menu_theme_menu_item_link($link) {
   }
 
   if (!isset($link['menu_name']) || !isset($link['mlid']) || !empty($disabled[$link['menu_name']])) {
-    $link['dhtml_disabled'] = TRUE;
+    $link['dhtml_disabled'] = TRUE; 
+    return $function($link);
   }
 
   $link['localized_options']['attributes']['id'] = 'dhtml_menu-' . _dhtml_menu_unique_id($link['mlid']);
@@ -63,8 +67,7 @@ function dhtml_menu_theme_menu_item_link($link) {
   _dhtml_menu_stack($link);
 
   // Pass the altered variables to the normal menu themer.
-  $theme = variable_get('dhtml_menu_theme_menu_item_link', 'theme_menu_item_link');
-  return $theme($link);
+  return $function($link);
 }
 
 /**
@@ -73,9 +76,12 @@ function dhtml_menu_theme_menu_item_link($link) {
  * were not rendered, and loads and renders them.
  */
 function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
-  static $cookie;
+  global $theme;
+  static $cookie, $function;
   if (!isset($cookie)) {
     $cookie = explode(',', @$_COOKIE['dhtml_menu']);
+    $registry = variable_get('dhtml_menu_theme', array());
+    $function = isset($registry[$theme]) && drupal_function_exists($registry[$theme]['menu_item']) ? $registry[$theme]['menu_item'] : 'theme_menu_item';
   }
 
   /* When theme('menu_item') is called, the menu tree below it has been
@@ -91,7 +97,8 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   $current = current($stack);
   if (!empty($current['dhtml_disabled'])) {
     $extra_class .= ' no-dhtml ';
-    return theme_menu_item($link, $has_children, $menu, $in_active_trail, $extra_class);
+  
+    return $function($link, $has_children, $menu, $in_active_trail, $extra_class);
   }
   
   // If there are children, but they were not loaded...
@@ -110,8 +117,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   }
 
   // Cascade up to the original theming function.
-  $theme = variable_get('dhtml_menu_theme_menu_item', 'theme_menu_item');
-  return $theme($link, $has_children, $menu, $in_active_trail, $extra_class);
+  return $function($link, $has_children, $menu, $in_active_trail, $extra_class);
 }
 
 /**
