@@ -184,7 +184,9 @@ function _dhtml_menu_subtree($stack) {
   foreach ($stack as $item) {
     $key = $index[$item['mlid']];
     if (!isset($tree[$key])) {
-      $tree = $tree[key($tree)]['below'];
+      if (is_array($tree)) {
+        $tree = $tree[key($tree)]['below'];
+      }
       if (!isset($tree[$key])) return array();
     }
     $tree = $tree[$key]['below'];
