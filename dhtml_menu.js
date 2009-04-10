@@ -1,4 +1,5 @@
 // $Id$
+(function($) {
 
 /**
  * @file dhtml_menu.js
@@ -176,3 +177,4 @@ Drupal.dhtmlMenu.cookieSet = function() {
   document.cookie = 'dhtml_menu=' + expanded.join(',') + ';path=/';
 }
 
+})(jQuery);
