@@ -21,8 +21,9 @@ Drupal.behaviors.dhtmlMenu = {
     else {
       Drupal.dhtmlMenu.init = true;
     }*/
-  
-    $('.collapsed').removeClass('expanded');
+
+    // Sanitize by removing "expanded" on menus already marked "collapsed". 
+    $('li.dhtml-menu.collapsed.expanded').removeClass('expanded');
     var cookie = Drupal.dhtmlMenu.cookieGet();
     for (var i in cookie) {
       // If the cookie was not applied to the HTML code yet, do so now.
@@ -39,11 +40,12 @@ Drupal.behaviors.dhtmlMenu = {
      * only the latter element, so we must use siblings() to get 
      * back to the link element. 
      */
-    $('ul.menu li:not(.leaf,.no-dhtml)').each(function() {
+    $('ul.menu li.dhtml-menu:not(.leaf,.no-dhtml)').each(function() {
       if (nav == 'pseudo-child') {
         var ul = $(this).find('ul:first');
         if (ul.length) {
-          $(this).find('a:first').clone().prependTo(ul).wrap('<li class="leaf fake-leaf"></li>');
+          // Note: a single long class is used here to avoid matching the .dhtml-menu.leaf selector later on.
+          $(this).find('a:first').clone().prependTo(ul).wrap('<li class="leaf dhtml-menu-fake-leaf"></li>');
         }
       }
   
@@ -62,12 +64,12 @@ Drupal.behaviors.dhtmlMenu = {
     });
     
     if (nav == 'bullet') {
-      $('ul.menu a').click(function(e) {
+      $('ul.menu li.dhtml-menu a').click(function(e) {
         e.stopPropagation();
         return true;
       });
     } else {
-      $('ul.menu li.leaf a').click(function(e) {
+      $('ul.menu li.dhtml-menu.leaf a').click(function(e) {
         e.stopPropagation();
         return true;
       });

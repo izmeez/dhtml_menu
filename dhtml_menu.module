@@ -100,6 +100,9 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   
     return $function($link, $has_children, $menu, $in_active_trail, $extra_class);
   }
+  else {
+    $extra_class .= ' dhtml-menu ';
+  }
   
   // If there are children, but they were not loaded...
   if ($has_children && !$menu) {
