@@ -51,23 +51,25 @@ function dhtml_menu_theme_menu_item_link($link) {
     $function = isset($registry[$theme]) && drupal_function_exists($registry[$theme]['menu_item_link']) ? $registry[$theme]['menu_item_link'] : 'theme_menu_item_link';
   }
 
-  // TODO: Find out why options sometimes are serialized. Fix this workaround before D7 release!
-  if (!isset($link['localized_options']) || !is_array($link['localized_options'])) {
-    $link['localized_options'] = array('attributes' => '');
-  }
-
-  if (!isset($link['menu_name']) || !isset($link['mlid']) || !empty($disabled[$link['menu_name']])) {
-    $link['dhtml_disabled'] = TRUE; 
+  // Do not stack items that have no menu or mlid.
+  if (empty($link['menu_name']) || empty($link['mlid'])) {
     return $function($link);
   }
 
-  $link['localized_options']['attributes']['id'] = 'dhtml_menu-' . _dhtml_menu_unique_id($link['mlid']);
+  $extended_link = $link;
 
-  // Each link in series is another level of recursion. Add it to the stack.
-  _dhtml_menu_stack($link);
+  // If the menu is blacklisted, mark the link as disabled for DHTML.
+  $extended_link['dhtml_disabled'] = !empty($disabled[$link['menu_name']]);
 
-  // Pass the altered variables to the normal menu themer.
-  return $function($link);
+  // Add the ID attribute.
+  $extended_link = array_merge_recursive($extended_link, array('localized_options' => array('attributes' => array())));
+  $extended_link['localized_options']['attributes']['id'] = 'dhtml_menu-' . _dhtml_menu_unique_id($link['mlid']);
+
+  // Each link in series is another level of recursion. Add it to the stack, even if it is disabled.
+  _dhtml_menu_stack($extended_link);
+
+  // Pass the altered variables to the normal menu themer, but only if DHTML should be used.
+  return $function(!$extended_link['dhtml_disabled'] ? $extended_link : $link);
 }
 
 /**
@@ -95,15 +97,12 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   
   // If this item should not have DHTML, then return to the "parent" function.
   $current = current($stack);
-  if (!empty($current['dhtml_disabled'])) {
-    $extra_class .= ' no-dhtml ';
-  
+  if (!$current || !empty($current['dhtml_disabled'])) {
     return $function($link, $has_children, $menu, $in_active_trail, $extra_class);
   }
-  else {
-    $extra_class .= ' dhtml-menu ';
-  }
-  
+
+  $extra_class .= ' dhtml-menu ';
+
   // If there are children, but they were not loaded...
   if ($has_children && !$menu) {
     // Load the tree below the current position.
