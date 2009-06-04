@@ -83,7 +83,7 @@ function dhtml_menu_settings(&$form_state) {
   $form['dhtml_menu_disabled'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Menus without DHTML'),
-    '#options' => dhtml_menu_menus(),
+    '#options' => _dhtml_menu_menus(),
     '#default_value' => variable_get('dhtml_menu_disabled', array()),
     '#description' => t('DHTML will be used for all menus by default, but can be switched off for specific menus.'),
   );
@@ -92,27 +92,34 @@ function dhtml_menu_settings(&$form_state) {
 }
 
 /**
- * Build human-readable menu names for book menus.
- * This fetches the title of the book outline's root node. Titles are cached for performance.
+ * Build a human-readable option list for all non-empty menus.
+ * Custom menus and book menus are included if the respective modules are enabled.
  */
-function dhtml_menu_menus() {
-  $titles = cache_get('dhtml_book_titles');
-  $titles = isset($titles->data) ? $titles->data : array();
-
-  $menu_internal = menu_get_names();
-
-  foreach ($menu_internal as $key) {
-    if (preg_match('/book-toc-([0-9]+)/', $key, $match)) {
-      if (!isset($titles[$match[1]])) {
-        $node = node_load($match[1]);
-        $titles[$match[1]] = $node->title;
-      }
-      $menus[$key] = t('Book: %title', array('%title' => $titles[$match[1]]));
-    }
-    else $menus[$key] = $key;
+function _dhtml_menu_menus() {
+  if (drupal_function_exists('menu_get_menus')) {
+    // If the menu module is enabled, list custom menus.
+    $menus = menu_get_menus();
+  }
+  else {
+    // Otherwise, list only system menus.
+    $menus = menu_list_system_menus();
   }
 
-  cache_set('dhtml_book_titles', $titles);
+  // If the book module is enabled, also include book menus.
+  if (drupal_function_exists('book_get_books')) {
+    foreach (book_get_books() as $bid => $link) {
+      $menus["book-toc-$bid"] = t('Book: %title', array('%title' => $link['title']));
+    }
+  }
+
+  // @TODO: Critical core bug #473240 does not let us call menu_get_names();
   return $menus;
+
+  // menu_get_names() filters out empty menus, and adds any menus not found using the above calls (edge case).
+  foreach (menu_get_names() as $menu) {
+    $opts[$menu] = isset($menus[$menu]) ? $menus[$menu] : t('Other menu: %menu', array('%menu' => $menu));
+  }
+
+  return $opts;
 }
 
