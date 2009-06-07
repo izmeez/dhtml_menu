@@ -1,11 +1,54 @@
+/*
+ * Fake leaves are small and emphasized.
+ */
 li.dhtml-menu-fake-leaf
 {
-  font-size:8pt;
-  font-style:italic;
+  font-size: 8pt;
+  font-style: italic;
 }
 
+/*
+ * Hide items that should initially be collapsed. Otherwise
+ * they will be open until the document finishes rendering.
+ */
 li.dhtml-menu.start-collapsed ul
 {
-  display:none;
+  display: none;
 }
 
+/*
+ * Make the invisible link as large as the bullet icon.
+ * It will be positioned by Javascript, respecting text direction.
+ */
+a.dhtml-menu-icon
+{
+  position: relative;
+  float: left;
+  width: 16px;
+  height: 16px;
+
+  /* Debug code to make the overlay visible and semi-transparent. */
+  /* background: blue; */
+  /* opacity: 0.3; */
+}
+
+/*
+ * Invisible link shouldn't be underlined.
+ */
+a.dhtml-menu-icon:hover
+{
+  text-decoration: none !important;
+}
+
+
+/*
+ * Provide large and visible folder icons for clicking.
+ */
+li.dhtml-folder.expanded
+{
+  list-style-image: url("images/folder-open-white.png") !important;
+}
+li.dhtml-folder.collapsed
+{
+  list-style-image: url("images/folder-closed-white.png") !important;
+}

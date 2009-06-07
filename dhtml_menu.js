@@ -29,50 +29,60 @@ Drupal.behaviors.dhtmlMenu = {
       // If the cookie was not applied to the HTML code yet, do so now.
       var li = $('#dhtml_menu-' + cookie[i]).parents('li:first');
       if ($(li).hasClass('collapsed')) {
-        Drupal.dhtmlMenu.toggleMenu(li);
+        Drupal.dhtmlMenu.toggleMenu(li, $(li).find('a:first'), $(li).find('ul:first'));
       }
     }
   
     var nav = Drupal.settings.dhtmlMenu.nav;
+
+    // Create the markup for the bullet overlay, and the amount to shift it to the right in RTL mode.
+    var bullet = $('<a href="#" class="dhtml-menu-icon"></a>');
+    var rtl = $('html').attr('dir') == 'rtl' ? Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1 : 0;
   
-    /* Add jQuery effects and listeners to all menu items.
-     * The ~ (sibling) selector is unidirectional and selects 
-     * only the latter element, so we must use siblings() to get 
-     * back to the link element. 
-     */
+    /* Add jQuery effects and listeners to all menu items. */
     $('ul.menu li.dhtml-menu:not(.leaf)').each(function() {
-      if (nav == 'pseudo-child') {
-        var ul = $(this).find('ul:first');
-        if (ul.length) {
+      var li = $(this);
+      var link = $(this).find('a:first');
+      var ul = $(this).find('ul:first');
+
+      if (ul.length) {
+        if (nav == 'pseudo-child') {
           // Note: a single long class is used here to avoid matching the .dhtml-menu.leaf selector later on.
-          $(this).find('a:first').clone().prependTo(ul).wrap('<li class="leaf dhtml-menu-fake-leaf"></li>');
+          link.clone().prependTo(ul).wrap('<li class="leaf dhtml-menu-fake-leaf"></li>');
+        } 
+        else if (nav == 'doubleclick') {
+          link.dblclick(function(e) {
+            window.location = link.attr('href');
+          });
+        }
+        
+        if (nav == 'bullet') {
+          li.addClass('dhtml-folder');
+          var b = bullet.clone().prependTo(link).click(function(e) {
+            Drupal.dhtmlMenu.toggleMenu(li, link, ul);
+            return false;
+          });
+          // When using RTL, each overlay must be shifted to the other side of the link text, individually.
+          if (rtl) {
+            // Shift the overlay right by the width of the text and the distance between text and icon.
+            b.css('right', '-' + (Math.ceil(link.css('width').replace('px', '')) + rtl) + 'px');
+          }
+        }
+        else {
+          link.click(function(e) {
+            Drupal.dhtmlMenu.toggleMenu(li, link, ul);
+            return false;
+          });
         }
       }
-  
-      if (nav == 'doubleclick') {
-        $(this).dblclick(function(e) {
-          window.location = $(this).find('a:first').attr('href');
-          e.stopPropagation();
-        });
-      }
-  
-      $(this).click(function(e) {
-        Drupal.dhtmlMenu.toggleMenu(this);
-        e.stopPropagation();
-        return false;
-      });
     });
-    
-    if (nav == 'bullet') {
-      $('ul.menu li.dhtml-menu a').click(function(e) {
-        e.stopPropagation();
-        return true;
-      });
-    } else {
-      $('ul.menu li.dhtml-menu.leaf a').click(function(e) {
-        e.stopPropagation();
-        return true;
-      });
+
+    // When using LTR, all icons can be shifted as one, as the text width is not relevant.
+    if (nav == 'bullet' && !rtl) {
+      // Shift overlay to the left by the width of the icon and the distance between icon and text.
+      var shift = '-' + (Math.ceil(($('.menu li').css('margin-left').replace('px', ''))) + 16) + 'px';
+      // Shift the overlay using a negative left-hand offset, and the text using a negative right-hand margin.
+      $('.dhtml-menu-icon').css('left', shift).css('margin-right', shift);
     }
   }
 }
@@ -82,38 +92,41 @@ Drupal.behaviors.dhtmlMenu = {
  *
  * @param li
  *   Object. The <li> element that will be expanded or collapsed.
+ * @param link
+ *   Object. The <a> element representing the menu link anchor.
+ * @param ul
+ *   Object. The <ul> element containing the sub-items.
  */
-Drupal.dhtmlMenu.toggleMenu = function(li) {
+Drupal.dhtmlMenu.toggleMenu = function(li, link, ul) {
   var effects = Drupal.settings.dhtmlMenu;
 
   // If the menu is expanded, collapse it.
-  if($(li).hasClass('expanded')) {
-    Drupal.dhtmlMenu.animate($(li).find('ul:first'), 'hide');
+  if(li.hasClass('expanded')) {
+    Drupal.dhtmlMenu.animate(ul, 'hide');
    
     // If children are closed automatically, find and close them now.
     if (effects.children == 'close-children') {
-      Drupal.dhtmlMenu.animate($(li).find('li.expanded').find('ul:first'), 'hide');
-      $(li).find('li.expanded').removeClass('expanded').addClass('collapsed')
+      Drupal.dhtmlMenu.animate(li.find('li.expanded').find('ul:first'), 'hide');
+      li.find('li.expanded').removeClass('expanded').addClass('collapsed')
     }
 
-    $(li).removeClass('expanded').addClass('collapsed');
+    li.removeClass('expanded').addClass('collapsed');
   }
 
   // Otherwise, expand it.
   else {
-    Drupal.dhtmlMenu.animate($(li).find('ul:first'), 'show');
-    $(li).removeClass('collapsed').addClass('expanded');
+    Drupal.dhtmlMenu.animate(ul, 'show');
+    li.removeClass('collapsed').addClass('expanded');
 
     // If the siblings effect is on, close all sibling menus.
     if (effects.siblings != 'none') {
-      var id = $(li).find('a:first').attr('id');
-
+      var id = link.attr('id');
       // Siblings are all open menus that are neither parents nor children of this menu.
-      $(li).find('li').addClass('own-children-temp');
+      li.find('li').addClass('own-children-temp');
 
       // If the relativity option is on, select only the siblings that have the same root
       if (effects.siblings == 'close-same-tree') {
-        var siblings = $(li).parent().find('li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
+        var siblings = li.parent().find('li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
       }
       // Otherwise, select all menus
       else {
@@ -129,7 +142,9 @@ Drupal.dhtmlMenu.toggleMenu = function(li) {
         siblings = $(siblings).not('.sibling-children-temp');
       }
 
-      $('.own-children-temp, .sibling-children-temp').removeClass('own-children-temp').removeClass('sibling-children-temp');
+      $('.own-children-temp, .sibling-children-temp')
+        .removeClass('own-children-temp')
+        .removeClass('sibling-children-temp');
 
       Drupal.dhtmlMenu.animate($(siblings).find('ul:first'), 'hide');
       $(siblings).removeClass('expanded').addClass('collapsed');
@@ -142,16 +157,19 @@ Drupal.dhtmlMenu.toggleMenu = function(li) {
 
 Drupal.dhtmlMenu.animate = function(ul, open) {
   var settings = Drupal.settings.dhtmlMenu;
-  var effects = {};
-  
-  for (effect in settings.animations) {
-    if (eval("settings.animations." + effect)) {
-      eval("effects." + effect + " = open");
+  var effects;
+  var animate = 0;
+
+  if (!effects) {
+    effects = {};
+    for (var i in settings.animations) {
+      if (settings.animations[i]) {
+        effects[i] = open;
+        animate++;
+      }
     }
   }
-  
-  //alert(effects);
-  if (effects) {
+  if (animate) {
     $(ul).animate(effects, settings.speed * 1);
   }
   else $(ul).css('display', open == 'show' ? 'block' : 'none'); 
