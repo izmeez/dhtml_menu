@@ -157,7 +157,7 @@ Drupal.dhtmlMenu.toggleMenu = function(li, link, ul) {
 
 Drupal.dhtmlMenu.animate = function(ul, open) {
   var settings = Drupal.settings.dhtmlMenu;
-  var effects;
+  var effects = {};
   var animate = 0;
 
   if (!effects) {
