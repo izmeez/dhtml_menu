@@ -33,30 +33,32 @@ Drupal.behaviors.dhtmlMenu = {
       }
     }
   
-    var nav = Drupal.settings.dhtmlMenu.nav;
+    var settings = Drupal.settings.dhtmlMenu;
 
-    // Create the markup for the bullet overlay, and the amount to shift it to the right in RTL mode.
-    var bullet = $('<a href="#" class="dhtml-menu-icon"></a>');
-    var rtl = $('html').attr('dir') == 'rtl' ? Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1 : 0;
+    if (settings.nav == 'bullet') {
+      // Create the markup for the bullet overlay, and the amount to shift it to the right in RTL mode.
+      var bullet = $('<a href="#" class="dhtml-menu-icon"></a>');
+      var rtl = $('html').attr('dir') == 'rtl' ? Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1 : 0;
+    }
   
     /* Add jQuery effects and listeners to all menu items. */
     $('ul.menu li.dhtml-menu:not(.leaf)').each(function() {
       var li = $(this);
       var link = $(this).find('a:first');
       var ul = $(this).find('ul:first');
-
+      
       if (ul.length) {
-        if (nav == 'pseudo-child') {
+        if (settings.nav == 'pseudo-child') {
           // Note: a single long class is used here to avoid matching the .dhtml-menu.leaf selector later on.
           link.clone().prependTo(ul).wrap('<li class="leaf dhtml-menu-fake-leaf"></li>');
         } 
-        else if (nav == 'doubleclick') {
+        else if (settings.nav == 'doubleclick') {
           link.dblclick(function(e) {
             window.location = link.attr('href');
           });
         }
         
-        if (nav == 'bullet') {
+        if (settings.nav == 'bullet') {
           li.addClass('dhtml-folder');
           var b = bullet.clone().prependTo(link).click(function(e) {
             Drupal.dhtmlMenu.toggleMenu(li, link, ul);
@@ -78,7 +80,7 @@ Drupal.behaviors.dhtmlMenu = {
     });
 
     // When using LTR, all icons can be shifted as one, as the text width is not relevant.
-    if (nav == 'bullet' && !rtl) {
+    if (settings.nav == 'bullet' && !rtl) {
       // Shift overlay to the left by the width of the icon and the distance between icon and text.
       var shift = '-' + (Math.ceil(($('.menu li').css('margin-left').replace('px', ''))) + 16) + 'px';
       // Shift the overlay using a negative left-hand offset, and the text using a negative right-hand margin.
@@ -98,7 +100,7 @@ Drupal.behaviors.dhtmlMenu = {
  *   Object. The <ul> element containing the sub-items.
  */
 Drupal.dhtmlMenu.toggleMenu = function(li, link, ul) {
-  var effects = Drupal.settings.dhtmlMenu;
+  var effects = Drupal.settings.dhtmlMenu.effects;
 
   // If the menu is expanded, collapse it.
   if(li.hasClass('expanded')) {
@@ -156,23 +158,24 @@ Drupal.dhtmlMenu.toggleMenu = function(li, link, ul) {
 }
 
 Drupal.dhtmlMenu.animate = function(ul, open) {
-  var settings = Drupal.settings.dhtmlMenu;
-  var effects = {};
+  var settings = Drupal.settings.dhtmlMenu.animation;
+
+  var effects;
   var animate = 0;
 
   if (!effects) {
     effects = {};
-    for (var i in settings.animations) {
-      if (settings.animations[i]) {
+    for (var i in settings.effects) {
+      if (settings.effects[i]) {
         effects[i] = open;
         animate++;
       }
     }
   }
   if (animate) {
-    $(ul).animate(effects, settings.speed * 1);
+    ul.animate(effects, settings.speed * 1);
   }
-  else $(ul).css('display', open == 'show' ? 'block' : 'none'); 
+  else ul.css('display', open == 'show' ? 'block' : 'none'); 
 }
 
 /**

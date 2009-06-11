@@ -13,9 +13,9 @@
  */
 function dhtml_menu_theme_menu_item_link($link) {
   global $theme;
-  static $disabled, $function;
-  if (!isset($disabled)) {
-    $disabled = variable_get('dhtml_menu_disabled', array());
+  static $function;
+  $settings = variable_get('dhtml_menu_settings');
+  if (!isset($function)) {
     $registry = variable_get('dhtml_menu_theme', array());
     $function = isset($registry[$theme]) && drupal_function_exists($registry[$theme]['menu_item_link']) ? $registry[$theme]['menu_item_link'] : 'theme_menu_item_link';
   }
@@ -28,7 +28,7 @@ function dhtml_menu_theme_menu_item_link($link) {
   $extended_link = $link;
 
   // If the menu is blacklisted, mark the link as disabled for DHTML.
-  $extended_link['dhtml_disabled'] = !empty($disabled[$link['menu_name']]);
+  $extended_link['dhtml_disabled'] = !empty($settings['filter']['list'][$link['menu_name']]);
 
   // Add the ID attribute.
   $extended_link = array_merge_recursive($extended_link, array('localized_options' => array('attributes' => array())));

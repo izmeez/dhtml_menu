@@ -6,6 +6,70 @@
  * Update functions for the DHTML Menu module.
  */
 
+
+/**
+ * Default settings storage.
+ */
+function _dhtml_menu_defaults() {
+  return array(
+    'nav' => 'pseudo-child',
+    'animation' => array(
+      'effects' => array(
+        'height' => 'height',
+        'opacity' => 'opacity',
+      ),
+      'speed' => 500,
+    ),
+    'effects' => array(
+      'siblings' => 'close-same-tree',
+      'children' => 'none',
+      'remember' => 0,
+    ),
+    'filter' => array(
+      'list' => array(),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function dhtml_menu_enable() {
+  // Register our theme interceptors.
+  // This does not happen on its own because we have no hook_theme().
+  drupal_theme_rebuild();
+}
+
+/**
+ * Implementation of hook_disable().
+ */
+function dhtml_menu_disable() {
+  // Unregister our theme interceptors.
+  drupal_theme_rebuild();
+}
+
+/**
+ * Implementation of hook_install().
+ * This will create our system variable defaults.
+ * The benefit is that we do not need to pass defaults
+ * to variable_get(), which allows centralization of defaults.
+ */
+function dhtml_menu_install() {
+  variable_set('dhtml_menu_settings', _dhtml_menu_defaults());
+}
+
+/**
+ * Implementation of hook_uninstall().
+ * Only clears our variables, so a fresh installation can repopulate them.
+ */
+function dhtml_menu_uninstall() {
+  // Theme registry backup.
+  variable_del('dhtml_menu_theme');
+  // Settings.
+  variable_del('dhtml_menu_settings');
+}
+
+
 /**
  * #6000: 6.x-2.x upgrade. Custom blocks are gone, using preprocess instead.
  * - Fixing a variable typo in dhtml_menus_menus.
@@ -81,3 +145,32 @@ function dhtml_menu_update_7101() {
   return array();
 }
 
+/**
+ * #7103: Consolidate variables into one settings array.
+ */
+function dhtml_menu_update_7103() {
+  $defaults = _dhtml_menu_defaults();
+
+  // As the settings have moved, read them individually.
+  $settings['nav'] = variable_get('dhtml_menu_nav', $defaults['nav']);
+  $settings['animation'] = array(
+    'effects' => variable_get('dhtml_menu_animations', $defaults['animation']['effects']),
+    'speed' => variable_get('dhtml_menu_speed', $defaults['animation']['speed']),
+  );
+  $settings['effects'] = array(
+    'siblings' => variable_get('dhtml_menu_siblings', $defaults['effects']['siblings']),
+    'children' => variable_get('dhtml_menu_children', $defaults['effects']['children']),
+    // Entirely new setting.
+    'remember' => $defaults['effects']['remember'],
+  );
+
+  $settings['filter']['list'] = variable_get('dhtml_menu_disabled', array());
+
+  // Write the consolidated settings.
+  variable_set("dhtml_menu_settings", $settings);
+
+  // Clear the old settings.
+  foreach (array('nav', 'siblings', 'children', 'animations', 'speed', 'disabled') as $key) {
+    variable_del("dhtml_menu_$key");
+  }
+}

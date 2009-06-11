@@ -10,9 +10,9 @@
  * Module settings form.
  */
 function dhtml_menu_settings(&$form_state) {
-  $settings = unserialize(DHTML_MENU_DEFAULT_SETTINGS);
-
-  $form['dhtml_menu_nav'] = array(
+  $settings = variable_get('dhtml_menu_settings');
+ 
+  $options['nav'] = array(
     '#type' => 'radios',
     '#title' => t('Static navigation'),
     '#options' => array(
@@ -21,18 +21,18 @@ function dhtml_menu_settings(&$form_state) {
       'double-click' => t('<strong>Doubleclick:</strong> To expand a menu, click the link once. To navigate to the page, click it twice. <em>This may be difficult to find for your users!</em>'),
       'none' => t('<strong>None:</strong> Clicking the link will expand the menu. Navigating to the page is not possible. <em>This will make pages with sub-items very difficult to reach!</em>'),
     ),
-    '#default_value' => variable_get('dhtml_menu_nav', $settings['nav']),
+    '#default_value' => $settings['nav'],
     '#description' => t('Dynamic expansion of menus competes with the static navigation of content. Choose how to resolve this conflict.'),
   );
   
-  $form['animation'] = array(
+  $options['animation'] = array(
     '#type' => 'fieldset',
     '#title' => t('Animation'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
   
-  $form['animation']['dhtml_menu_animations'] = array(
+  $options['animation']['effects'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Effects'),
     '#options' => array(
@@ -41,25 +41,25 @@ function dhtml_menu_settings(&$form_state) {
       'opacity' => t('Fade in'),
     ),
     '#description' => t('You may pick any number of animation effects that will accompany the opening and closing of a menu.'),
-    '#default_value' => variable_get('dhtml_menu_animations', $settings['animations']),
+    '#default_value' => $settings['animation']['effects'],
   );
   
-  $form['animation']['dhtml_menu_speed'] = array(
+  $options['animation']['speed'] = array(
     '#type' => 'select',
     '#title' => t('Speed'),
     '#options' => array(100 => 'Very Fast (0.1s)', 500 => 'Fast (0.5s)', 1000 => 'Medium (1s)', 1500 => 'Slow (1.5s)', 2000 => 'Very Slow (2s)'),
-    '#default_value' => variable_get('dhtml_menu_speed', $settings['speed']),
+    '#default_value' => $settings['animation']['speed'],
     '#description' => t('Choose how quickly the menus should expand and collapse.'),
   );
   
-  $form['effects'] = array(
+  $options['effects'] = array(
     '#type' => 'fieldset',
     '#title' => t('Other effects'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
   
-  $form['effects']['dhtml_menu_siblings'] = array(
+  $options['effects']['siblings'] = array(
     '#type' => 'radios',
     '#title' => t('When a menu opens'),
     '#options' => array(
@@ -67,28 +67,35 @@ function dhtml_menu_settings(&$form_state) {
       'close-all' => t('Close all other open menus on the page.'),
       'close-same-tree' => t('Close other open submenus in the same menu tree.'),
     ),
-    '#default_value' => variable_get('dhtml_menu_siblings', $settings['siblings']),
+    '#default_value' => $settings['effects']['siblings'],
   );
   
-  $form['effects']['dhtml_menu_children'] = array(
+  $options['effects']['children'] = array(
     '#type' => 'radios',
     '#title' => t('When a menu closes'),
     '#options' => array(
       'none' => t('Remember which sub-items were expanded when it next opens.'),
       'close-children' => t('Close all its sub-items, too.'),
     ),
-    '#default_value' => variable_get('dhtml_menu_children', $settings['children']),
+    '#default_value' => $settings['effects']['children'],
   );
 
-  $form['dhtml_menu_disabled'] = array(
+  $options['filter'] = array();
+
+  $options['filter']['list'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Menus without DHTML'),
     '#options' => _dhtml_menu_menus(),
-    '#default_value' => variable_get('dhtml_menu_disabled', array()),
+    '#default_value' => $settings['filter']['list'],
     '#description' => t('DHTML will be used for all menus by default, but can be switched off for specific menus.'),
   );
 
-  return system_settings_form($form);
+  $form = array(
+    '#tree' => TRUE,
+    'dhtml_menu_settings' => $options,
+  );
+
+  return system_settings_form($form, FALSE);
 }
 
 /**
