@@ -40,7 +40,27 @@ Drupal.behaviors.dhtmlMenu = {
       var bullet = $('<a href="#" class="dhtml-menu-icon"></a>');
       var rtl = $('html').attr('dir') == 'rtl' ? Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1 : 0;
     }
-  
+
+    /* Relevant only when hovering:
+     *
+     * If a context menu is opened (as most users do when opening links in a
+     * new tab), the mouseleave event will be triggered. Although the context
+     * menu still works, having the menu close underneath it is confusing.
+     *
+     * This code will "freeze" the menu's collapse if the body is left
+     * (which happens when a context menu opens), and only release it when the cursor
+     * reenters the menu.
+     *
+     * Note that due to the order in which events are called,
+     * the hovering collapse must work asynchronously so
+     * this event is triggered before the collapse.
+     */
+    else if (settings.nav == 'hover') {
+      var freeze = false;
+      $('ul.menu').mouseenter(function() {freeze = false});
+      $('body').mouseleave(function() {freeze = true});
+    }
+
     /* Add jQuery effects and listeners to all menu items. */
     $('ul.menu li.dhtml-menu:not(.leaf)').each(function() {
       var li = $(this);
@@ -69,6 +89,29 @@ Drupal.behaviors.dhtmlMenu = {
             // Shift the overlay right by the width of the text and the distance between text and icon.
             b.css('right', '-' + (Math.ceil(link.css('width').replace('px', '')) + rtl) + 'px');
           }
+        }
+
+        /* When using hover expansion:
+         * - Add mouse-hovering events.
+         */
+        else if (settings.nav == 'hover') {
+          link.mouseenter(function(e) {
+              Drupal.dhtmlMenu.switchMenu(li, link, ul, true);
+          });
+          li.mouseleave(function(e) {
+            // Only collapse the menu if it was initially collapsed.
+            if (li.hasClass('start-collapsed')) {
+              /* As explained earlier, this event fires before the body event.
+               * We need to wait to make sure that the user isn't browsing a
+               * context menu right now, in which case the menu isn't collapsed.
+               */
+              setTimeout(function() {
+                if (!freeze) {
+                  Drupal.dhtmlMenu.switchMenu(li, link, ul, false);
+                }
+              }, 10);
+            }
+          });
         }
         else {
           link.click(function(e) {
@@ -100,10 +143,31 @@ Drupal.behaviors.dhtmlMenu = {
  *   Object. The <ul> element containing the sub-items.
  */
 Drupal.dhtmlMenu.toggleMenu = function(li, link, ul) {
+  // Make it open if closed, close if open.
+  Drupal.dhtmlMenu.switchMenu(li, link, ul, !li.hasClass('expanded'));
+}
+
+/**
+ * Switches the menu's state to a defined value.
+ * This function does nothing if the menu is in the target state already.
+ *
+ * @param li
+ *   Object. The <li> element that will be expanded or collapsed.
+ * @param link
+ *   Object. The <a> element representing the menu link anchor.
+ * @param ul
+ *   Object. The <ul> element containing the sub-items.
+ */
+Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
+  // No need for switching. Menu is already in desired state.
+  if (open == li.hasClass('expanded')) {
+    return;
+  }
+
   var effects = Drupal.settings.dhtmlMenu.effects;
 
-  // If the menu is expanded, collapse it.
-  if(li.hasClass('expanded')) {
+  // Collapse the menu.
+  if(!open) {
     Drupal.dhtmlMenu.animate(ul, 'hide');
    
     // If children are closed automatically, find and close them now.
