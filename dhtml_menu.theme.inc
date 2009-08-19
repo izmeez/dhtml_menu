@@ -59,14 +59,10 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
    * rendered already. Since we are done on this recursion level,
    * one element must be popped off the stack.
    */
-  $stack = _dhtml_menu_stack();
+  $item = _dhtml_menu_stack();
 
-  // Move to the last element in the stack (the current item).
-  end($stack);
-  
   // If this item should not have DHTML, then return to the "parent" function.
-  $current = current($stack);
-  if (!$current || !empty($current['dhtml_disabled'])) {
+  if (!$item || !empty($item['dhtml_disabled'])) {
     return $function($link, $has_children, $menu, $in_active_trail, $extra_class);
   }
 
@@ -75,7 +71,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   // If there are children, but they were not loaded...
   if ($has_children && !$menu) {
     // Load the tree below the current position.
-    $tree = _dhtml_menu_subtree($stack);
+    $tree = _dhtml_menu_subtree($item);
 
     // Render it...
     $menu = menu_tree_output($tree);
@@ -83,7 +79,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   }
 
   // If the current item can expand, and is neither saved as open nor in the active trail, close it.
-  if ($menu && !($in_active_trail || in_array(substr(key($stack), 5), $cookie))) {
+  if ($menu && !($in_active_trail || in_array(substr($item['localized_options']['attributes']['id'], 5), $cookie))) {
     $extra_class .= ' collapsed start-collapsed ';
   }
 
@@ -117,55 +113,62 @@ function _dhtml_menu_stack($link = FALSE) {
  * Traverses the menu tree and returns the sub-tree of the item
  * indicated by the parameter.
  *
- * @param $stack
- *   An array of menu item links that are nested in each other in the tree.
+ * @param $item
+ *   A menu item link that must contain the keys "mlid" and "menu_name".
  *
  * @return
- *   The items below the lowest item in the stack.
+ *   The tree below the menu item.
  */
-function _dhtml_menu_subtree($stack) {
+function _dhtml_menu_subtree($item) {
   static $index = array();
   static $indexed = array();
 
-  reset($stack);
-  $start = current($stack);
-
   // This looks expensive, but menu_tree_all_data uses static caching.
-  $tree = menu_tree_all_data($start['menu_name']);
+  $tree = menu_tree_all_data($item['menu_name']);
 
-  if (!isset($indexed[$start['menu_name']])) {
+  if (!isset($indexed[$item['menu_name']])) {
     $index += _dhtml_menu_index($tree);
-    $indexed[$start['menu_name']] = TRUE;
+    $indexed[$item['menu_name']] = TRUE;
   }
 
-  // Traverse the tree.
-  foreach ($stack as $item) {
-    $key = $index[$item['mlid']];
-    if (!isset($tree[$key])) {
-      $tree = $tree[key($tree)]['below'];
-      if (!isset($tree[$key])) return array();
+  // Traverse the tree using the indexed ancestor path..
+  foreach ($index[$item['mlid']]['parents'] as $mlid) {
+    $key = $index[$mlid]['key'];
+    if (isset($tree[$key])) {
+      $tree = $tree[$key]['below'];
     }
-    $tree = $tree[$key]['below'];
+    else {
+      return array();
+    }
   }
-  return $tree;
+
+  // Go one level further to go below the current item.
+  $key = $index[$item['mlid']]['key'];
+  return isset($tree[$key]) ? $tree[$key]['below'] : array();
 }
 
 /**
  * Indexes the menu tree by mlid. This is needed to identify the items
- * without relying on titles. This function is recursive.
+ * without relying on titles or stacks. This function is recursive.
  *
  * @param $tree
  *   A tree of menu items such as the return value of menu_tree_all_data()
  *
  * @return
- *   An array associating mlid values with the internal keys of the menu tree.
+ *   An array associating mlid values with the internal keys of the menu tree,
+ *   and all the mlids of the item's ancestors.
  */
-function _dhtml_menu_index($tree) {
+function _dhtml_menu_index($tree, $ancestors = array(), $parent = NULL) {
   $index = array();
+  if ($parent) ancestors[] = $parent;
+
   foreach ($tree as $key => $item) {
-    $index[$item['link']['mlid']] = $key;
+    $index[$item['link']['mlid']] = array(
+      'key' => $key,
+      'parents' => $ancestors,
+    );
     if (!empty($item['below'])) {
-      $index += _dhtml_menu_index($item['below']);
+      $index += _dhtml_menu_index($item['below'], $ancestors, $item['link']['mlid']);
     }
   }
   return $index;
