@@ -41,6 +41,13 @@ Drupal.behaviors.dhtmlMenu = {
       var rtl = $('html').attr('dir') == 'rtl' ? Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1 : 0;
     }
 
+    /* Relevant only on "open-only" menus:
+     * The links of expanded items should be marked for emphasis.
+     */
+    else if (settings.nav == 'open') {
+      $('li.dhtml-menu.expanded').addClass('dhtml-menu-open');
+    }
+
     /* Relevant only when hovering:
      *
      * If a context menu is opened (as most users do when opening links in a
@@ -113,6 +120,23 @@ Drupal.behaviors.dhtmlMenu = {
             }
           });
         }
+
+        /* When using menus that cannot collapse:
+         * Toggle the menu normally, but only if the menu is closed.
+         */
+        else if (settings.nav == 'open') {
+          link.click(function(e) {
+            // Don't collapse expanded menus.
+            if (li.hasClass('expanded')) {
+              return true;
+            }
+            Drupal.dhtmlMenu.toggleMenu(li, link, ul);
+            $('.dhtml-menu-open').removeClass('dhtml-menu-open');
+            $('li.dhtml-menu.expanded').addClass('dhtml-menu-open');
+            return false;
+          });
+        }
+
         else {
           link.click(function(e) {
             Drupal.dhtmlMenu.toggleMenu(li, link, ul);

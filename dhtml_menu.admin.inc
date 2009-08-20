@@ -16,6 +16,7 @@ function dhtml_menu_settings(&$form_state) {
     '#type' => 'radios',
     '#title' => t('Static navigation'),
     '#options' => array(
+      'open' => t('<strong>No Collapsing:</strong> Menu items cannot be collapsed dynamically. Instead, clicking on an already expanded item will take you to the page.'),
       'pseudo-child' => t('<strong>Fake child item:</strong> At the top of each submenu, an extra link will be generated that leads to the page of the parent item.'),
       'bullet' => t('<strong>Link remains static:</strong> All menu links will continue to function as static links. To expand a menu, click the bullet icon next to the link.'),
       'hover' => t('<strong>Expand on Hover:</strong> Items expand when the cursor hovers over them. Links function normally. <em>This is unfamiliar and causes accessibility problems!</em>'),

@@ -12,7 +12,7 @@
  */
 function _dhtml_menu_defaults() {
   return array(
-    'nav' => 'pseudo-child',
+    'nav' => 'open',
     'animation' => array(
       'effects' => array(
         'height' => 'height',

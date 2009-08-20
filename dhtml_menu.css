@@ -16,6 +16,14 @@ li.dhtml-menu.start-collapsed ul
   display: none;
 }
 
+/**
+ * When using open-only menus, expanded links are italicized
+ * to show that they are now static.
+ */ 
+li.dhtml-menu-open > a {
+  font-style: italic;
+}
+
 /*
  * Make the invisible link as large as the bullet icon.
  * It will be positioned by Javascript, respecting text direction.
