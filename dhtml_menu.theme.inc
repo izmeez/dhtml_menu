@@ -91,21 +91,19 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
  * Helper function for storing recursion levels.
  *
  * @param $link
- *   If a menu item link is passed, it will be appended to the stack.
- *   If none is given, the stack will be returned and popped by one.
+ *   If a menu item link is passed, it will be pushed onto the stack.
+ *   Otherwise, one element will be popped off the stack.
  *
  * @return
- *   The stack, if no parameter is given.
+ *   The last element of the stack, if no argument is passed.
  */
 function _dhtml_menu_stack($link = FALSE) {
   static $stack = array();
   if ($link) {
-    $stack[$link['localized_options']['attributes']['id']] = $link;
+    $stack[] = $link;
   }
   else {
-    $copy = $stack;
-    array_pop($stack);
-    return $copy;
+    return array_pop($stack);
   }
 }
 
@@ -160,7 +158,7 @@ function _dhtml_menu_subtree($item) {
  */
 function _dhtml_menu_index($tree, $ancestors = array(), $parent = NULL) {
   $index = array();
-  if ($parent) ancestors[] = $parent;
+  if ($parent) $ancestors[] = $parent;
 
   foreach ($tree as $key => $item) {
     $index[$item['link']['mlid']] = array(
