@@ -50,7 +50,8 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   global $theme;
   static $cookie, $function;
   if (!isset($cookie)) {
-    $cookie = explode(',', @$_COOKIE['dhtml_menu']);
+    $settings = variable_get('dhtml_menu_settings');
+    $cookie = $settings['effects']['remember'] ? explode(',', @$_COOKIE['dhtml_menu']) : array();
     $registry = variable_get('dhtml_menu_theme', array());
     $function = isset($registry[$theme]) && drupal_function_exists($registry[$theme]['menu_item']) ? $registry[$theme]['menu_item'] : 'theme_menu_item';
   }

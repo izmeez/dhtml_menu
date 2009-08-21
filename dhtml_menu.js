@@ -24,16 +24,18 @@ Drupal.behaviors.dhtmlMenu = {
 
     // Sanitize by removing "expanded" on menus already marked "collapsed". 
     $('li.dhtml-menu.collapsed.expanded').removeClass('expanded');
-    var cookie = Drupal.dhtmlMenu.cookieGet();
-    for (var i in cookie) {
-      // If the cookie was not applied to the HTML code yet, do so now.
-      var li = $('#dhtml_menu-' + cookie[i]).parents('li:first');
-      if ($(li).hasClass('collapsed')) {
-        Drupal.dhtmlMenu.toggleMenu(li, $(li).find('a:first'), $(li).find('ul:first'));
+    var settings = Drupal.settings.dhtmlMenu;
+
+    if (settings.effects.remember) {
+      var cookie = Drupal.dhtmlMenu.cookieGet();
+      for (var i in cookie) {
+        // If the cookie was not applied to the HTML code yet, do so now.
+        var rememberedItems = $('#dhtml_menu-' + cookie[i]).parents('li:first');
+        if (rememberedItems.hasClass('collapsed')) {
+          Drupal.dhtmlMenu.toggleMenu(li, $(li).find('a:first'), $(li).find('ul:first'));
+        }
       }
     }
-  
-    var settings = Drupal.settings.dhtmlMenu;
 
     if (settings.nav == 'bullet') {
       // Create the markup for the bullet overlay, and the amount to shift it to the right in RTL mode.

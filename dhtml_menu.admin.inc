@@ -82,6 +82,16 @@ function dhtml_menu_settings(&$form_state) {
     '#default_value' => $settings['effects']['children'],
   );
 
+  $options['effects']['remember'] = array(
+    '#type' => 'radios',
+    '#title' => t('When a new page is loaded'),
+    '#options' => array(
+      'remember' => t('Remember which items were expanded on the last page.'),
+      0 => t('Expand only the currently active path.'),
+    ),
+    '#default_value' => $settings['effects']['remember'],
+  );
+
   $options['filter'] = array();
 
   $options['filter']['list'] = array(
