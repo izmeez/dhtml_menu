@@ -27,8 +27,8 @@ function dhtml_menu_theme_menu_item_link($link) {
 
   $extended_link = $link;
 
-  // If the menu is blacklisted, mark the link as disabled for DHTML.
-  $extended_link['dhtml_disabled'] = !empty($settings['filter']['list'][$link['menu_name']]);
+  // If the menu is blacklisted or not whitelisted, mark the link as disabled for DHTML.
+  $extended_link['dhtml_disabled'] = ($settings['filter']['type'] == 'blacklist') == !empty($settings['filter']['list'][$link['menu_name']]);
 
   // Add the ID attribute.
   $extended_link = array_merge_recursive($extended_link, array('localized_options' => array('attributes' => array())));

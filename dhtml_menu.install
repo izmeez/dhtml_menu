@@ -26,6 +26,7 @@ function _dhtml_menu_defaults() {
       'remember' => 0,
     ),
     'filter' => array(
+      'type' => 'blacklist',
       'list' => array(),
     ),
   );

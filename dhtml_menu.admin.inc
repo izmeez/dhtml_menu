@@ -92,11 +92,26 @@ function dhtml_menu_settings(&$form_state) {
     '#default_value' => $settings['effects']['remember'],
   );
 
-  $options['filter'] = array();
+  $options['filter'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Disabling DHTML'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $options['filter']['type'] = array(
+    '#type' => 'radios',
+    '#title' => t('Filter type'),
+    '#options' => array(
+      'blacklist' => t('Disable DHTML on the menus checked below.'),
+      'whitelist' => t('Enable DHTML on the menus checked below.'),
+    ),
+    '#default_value' => $settings['filter']['type'],
+  );
 
   $options['filter']['list'] = array(
     '#type' => 'checkboxes',
-    '#title' => t('Menus without DHTML'),
+    '#title' => t('List'),
     '#options' => _dhtml_menu_menus(),
     '#default_value' => $settings['filter']['list'],
     '#description' => t('DHTML will be used for all menus by default, but can be switched off for specific menus.'),
