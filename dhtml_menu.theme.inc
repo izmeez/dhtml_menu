@@ -17,7 +17,7 @@ function dhtml_menu_theme_menu_item_link($link) {
   $settings = variable_get('dhtml_menu_settings');
   if (!isset($function)) {
     $registry = variable_get('dhtml_menu_theme', array());
-    $function = isset($registry[$theme]) && drupal_function_exists($registry[$theme]['menu_item_link']) ? $registry[$theme]['menu_item_link'] : 'theme_menu_item_link';
+    $function = isset($registry[$theme]) && function_exists($registry[$theme]['menu_item_link']) ? $registry[$theme]['menu_item_link'] : 'theme_menu_item_link';
   }
 
   // Do not stack items that have no menu or mlid.
@@ -53,7 +53,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
     $settings = variable_get('dhtml_menu_settings');
     $cookie = $settings['effects']['remember'] ? explode(',', @$_COOKIE['dhtml_menu']) : array();
     $registry = variable_get('dhtml_menu_theme', array());
-    $function = isset($registry[$theme]) && drupal_function_exists($registry[$theme]['menu_item']) ? $registry[$theme]['menu_item'] : 'theme_menu_item';
+    $function = isset($registry[$theme]) && function_exists($registry[$theme]['menu_item']) ? $registry[$theme]['menu_item'] : 'theme_menu_item';
   }
 
   /* When theme('menu_item') is called, the menu tree below it has been

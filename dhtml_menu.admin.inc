@@ -130,7 +130,7 @@ function dhtml_menu_settings(&$form_state) {
  * Custom menus and book menus are included if the respective modules are enabled.
  */
 function _dhtml_menu_menus() {
-  if (drupal_function_exists('menu_get_menus')) {
+  if (function_exists('menu_get_menus')) {
     // If the menu module is enabled, list custom menus.
     $menus = menu_get_menus();
   }
@@ -140,7 +140,7 @@ function _dhtml_menu_menus() {
   }
 
   // If the book module is enabled, also include book menus.
-  if (drupal_function_exists('book_get_books')) {
+  if (function_exists('book_get_books')) {
     foreach (book_get_books() as $bid => $link) {
       $menus["book-toc-$bid"] = t('Book: %title', array('%title' => $link['title']));
     }

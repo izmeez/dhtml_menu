@@ -7,6 +7,18 @@
  * that will add dynamic expansion to their menus.
  */
 
+require_once 'dhtml_menu.theme.inc';
+
+/**
+ * Implementation of hook_help().
+ * @TODO: Move this to dhtml_menu.rebuild.inc once hook_help is no longer called on every page.
+ */
+function dhtml_menu_help($path) {
+  switch ($path) {
+    case 'admin/settings/dhtml_menu':
+      return t('<em>DHTML Menu</em> adds dynamic functionality to the menus of your site. Ordinarily, reaching the child elements below an item requires you to visit its page. With DHTML Menu, clicking on an item with child elements will expand it without leaving the page, saving time. You can reach the actual page of such an item either by double-clicking on it or visiting the small extra link that will be shown right below it when expanded.');
+  }
+}
 
 /**
  * Implementation of hook_init().
@@ -19,13 +31,39 @@ function dhtml_menu_init() {
 }
 
 /**
- * Implementation of hook_help().
- * @TODO: Move this to dhtml_menu.rebuild.inc once hook_help is no longer called on every page.
+ * Implementation of hook_menu().
+ * Adds a settings page.
  */
-function dhtml_menu_help($path) {
-  switch ($path) {
-    case 'admin/settings/dhtml_menu':
-      return t('<em>DHTML Menu</em> adds dynamic functionality to the menus of your site. Ordinarily, reaching the child elements below an item requires you to visit its page. With DHTML Menu, clicking on an item with child elements will expand it without leaving the page, saving time. You can reach the actual page of such an item either by double-clicking on it or visiting the small extra link that will be shown right below it when expanded.');
-  }
+function dhtml_menu_menu() {
+  $menu['admin/settings/dhtml_menu'] = array(
+    'title' => 'DHTML Menu',
+    'description' => 'Configure the effects of DHTML Menu',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dhtml_menu_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'dhtml_menu.admin.inc',
+  );
+  return $menu;
+}
+
+/** 
+ * Implementation of hook_theme_registry_alter().
+ * Replaces the theme functions for the menu_item functions, and stores the
+ * original functions in order to call them when this module is done with preprocessing.
+ */
+function dhtml_menu_theme_registry_alter(&$theme_registry) {
+  global $theme;
+
+  // Back up the existing theme functions.
+  $themes = variable_get('dhtml_menu_theme', array());
+  $themes[$theme] = array(
+    'menu_item' => $theme_registry['menu_item']['function'],
+    'menu_item_link' => $theme_registry['menu_item_link']['function'],
+  );
+  variable_set('dhtml_menu_theme', $themes);
+
+  // Replace them with our own. These will "preprocess" and call the real functions.
+  $theme_registry['menu_item']['function'] = 'dhtml_menu_theme_menu_item';
+  $theme_registry['menu_item_link']['function'] = 'dhtml_menu_theme_menu_item_link';
 }
 
