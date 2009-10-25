@@ -240,19 +240,19 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
 
       // If the relativity option is on, select only the siblings that have the same root
       if (effects.siblings == 'close-same-tree') {
-        var siblings = li.parent().find('li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
+        var root = li.parent();
       }
-      // Otherwise, select all menus
       else {
-        var siblings = $('ul.menu li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
+        var root = $('ul.menu');
       }
+      var siblings = root.find('li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
 
       // If children should not get closed automatically...
       if (effects.children == 'none') {
         // Remove items that are currently hidden from view (do not close these).
         $('li.collapsed li.expanded').addClass('sibling-children-temp');
         // Only close the top-most open sibling, not its children.
-        $(siblings).find('li.expanded').addClass('sibling-children-temp');
+        siblings.find('li.expanded').addClass('sibling-children-temp');
         siblings = $(siblings).not('.sibling-children-temp');
       }
 
@@ -261,8 +261,8 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
         .removeClass('own-children-temp')
         .removeClass('sibling-children-temp');
 
-      Drupal.dhtmlMenu.animate($(siblings).find('ul:first'), 'hide');
-      $(siblings).removeClass('expanded').addClass('collapsed');
+      Drupal.dhtmlMenu.animate(siblings.find('ul:first'), 'hide');
+      siblings.removeClass('expanded').addClass('collapsed');
     }
   }
   else {
