@@ -1,11 +1,11 @@
 <?php
 // $Id$
 
+
 /**
  * @file dhtml_menu.install
- * Update functions for the DHTML Menu module.
+ * Installation and update functions for the DHTML Menu module.
  */
-
 
 /**
  * Default settings storage.
@@ -69,7 +69,6 @@ function dhtml_menu_uninstall() {
   // Settings.
   variable_del('dhtml_menu_settings');
 }
-
 
 /**
  * #6000: 6.x-2.x upgrade. Custom blocks are gone, using preprocess instead.
@@ -147,9 +146,9 @@ function dhtml_menu_update_7101() {
 }
 
 /**
- * #7103: Consolidate variables into one settings array.
+ * #7102: Consolidate variables into one settings array.
  */
-function dhtml_menu_update_7103() {
+function dhtml_menu_update_7102() {
   $defaults = _dhtml_menu_defaults();
 
   // As the settings have moved, read them individually.
@@ -174,4 +173,18 @@ function dhtml_menu_update_7103() {
   foreach (array('nav', 'siblings', 'children', 'animations', 'speed', 'disabled') as $key) {
     variable_del("dhtml_menu_$key");
   }
+  return array();
 }
+
+/**
+ * #7103: Rename "pseudo-child" to "clone".
+ */
+function dhtml_menu_update_7103() {
+  $settings = variable_get('dhtml_menu_settings');
+  if ($settings['nav'] == 'pseudo-child') {
+    $settings['nav'] = 'clone';
+    variable_set('dhtml_menu_settings', $settings);
+  }
+  return array();
+}
+
