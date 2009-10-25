@@ -26,7 +26,7 @@ Drupal.behaviors.dhtmlMenu = {
       }
     }
 
-    // Sanitize by removing "expanded" on menus already marked "collapsed". 
+    // Sanitize by removing "expanded" on menus already marked "collapsed".
     $('li.dhtml-menu.collapsed.expanded').removeClass('expanded');
 
     if (settings.effects.remember) {
@@ -78,18 +78,18 @@ Drupal.behaviors.dhtmlMenu = {
       var li = $(this);
       var link = $(this).find('a:first');
       var ul = $(this).find('ul:first');
-      
+
       if (ul.length) {
         if (settings.nav == 'pseudo-child') {
           // Note: a single long class is used here to avoid matching the .dhtml-menu.leaf selector later on.
           link.clone().prependTo(ul).wrap('<li class="leaf dhtml-menu-fake-leaf"></li>');
-        } 
+        }
         else if (settings.nav == 'doubleclick') {
           link.dblclick(function(e) {
             window.location = link.attr('href');
           });
         }
-        
+
         if (settings.nav == 'bullet') {
           li.addClass('dhtml-folder');
           var b = bullet.clone().prependTo(link).click(function(e) {
@@ -198,7 +198,7 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
   // Collapse the menu.
   if(!open) {
     Drupal.dhtmlMenu.animate(ul, 'hide');
-   
+
     // If children are closed automatically, find and close them now.
     if (effects.children == 'close-children') {
       Drupal.dhtmlMenu.animate(li.find('li.expanded').find('ul:first'), 'hide');
