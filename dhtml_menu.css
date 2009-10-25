@@ -42,13 +42,6 @@ a.dhtml-menu-icon {
 }
 
 /*
- * Invisible link shouldn't be underlined.
- */
-a.dhtml-menu-icon:hover {
-  text-decoration: none !important;
-}
-
-/*
  * Provide large and visible folder icons for easy clicking.
  */
 li.dhtml-folder.expanded {

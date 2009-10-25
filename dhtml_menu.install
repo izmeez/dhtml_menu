@@ -39,6 +39,7 @@ function dhtml_menu_enable() {
   // Register our theme interceptors.
   // This does not happen on its own because we have no hook_theme().
   drupal_theme_rebuild();
+  drupal_set_message(t('<em>DHTML Menu</em> offers a wide range of customization options. If you wish to change them, please visit the <a href="@url">configuration page</a>.', array('@url' => url('admin/settings/dhtml_menu'))), 'warning');
 }
 
 /**
