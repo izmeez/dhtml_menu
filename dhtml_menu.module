@@ -1,17 +1,16 @@
 <?php
 // $Id$
 
+
 /**
  * @file dhtml_menu.module
- * Adds preprocessors to the menu theming functions
- * that will add dynamic expansion to their menus.
+ * Initialization and various hook implementations.
  */
 
 require_once 'dhtml_menu.theme.inc';
 
 /**
  * Implementation of hook_help().
- * @TODO: Move this to dhtml_menu.rebuild.inc once hook_help is no longer called on every page.
  */
 function dhtml_menu_help($path) {
   switch ($path) {
@@ -25,8 +24,8 @@ function dhtml_menu_help($path) {
  * Adds CSS, Javascript and settings to the page.
  */
 function dhtml_menu_init() {
-  drupal_add_css(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.css');
-  drupal_add_js(drupal_get_path('module', 'dhtml_menu') .'/dhtml_menu.js');
+  drupal_add_css(drupal_get_path('module', 'dhtml_menu') . '/dhtml_menu.css');
+  drupal_add_js(drupal_get_path('module', 'dhtml_menu') . '/dhtml_menu.js');
   drupal_add_js(array('dhtmlMenu' => variable_get('dhtml_menu_settings')), 'setting');
 }
 
@@ -46,7 +45,7 @@ function dhtml_menu_menu() {
   return $menu;
 }
 
-/** 
+/**
  * Implementation of hook_theme_registry_alter().
  * Replaces the theme functions for the menu_item functions, and stores the
  * original functions in order to call them when this module is done with preprocessing.
@@ -66,4 +65,3 @@ function dhtml_menu_theme_registry_alter(&$theme_registry) {
   $theme_registry['menu_item']['function'] = 'dhtml_menu_theme_menu_item';
   $theme_registry['menu_item_link']['function'] = 'dhtml_menu_theme_menu_item_link';
 }
-
