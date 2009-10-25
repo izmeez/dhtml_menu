@@ -195,21 +195,7 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
 
   var effects = Drupal.settings.dhtmlMenu.effects;
 
-  // Collapse the menu.
-  if(!open) {
-    Drupal.dhtmlMenu.animate(ul, 'hide');
-
-    // If children are closed automatically, find and close them now.
-    if (effects.children == 'close-children') {
-      Drupal.dhtmlMenu.animate(li.find('li.expanded').find('ul:first'), 'hide');
-      li.find('li.expanded').removeClass('expanded').addClass('collapsed')
-    }
-
-    li.removeClass('expanded').addClass('collapsed');
-  }
-
-  // Otherwise, expand it.
-  else {
+  if (open) {
     Drupal.dhtmlMenu.animate(ul, 'show');
     li.removeClass('collapsed').addClass('expanded');
 
@@ -244,6 +230,17 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
       Drupal.dhtmlMenu.animate($(siblings).find('ul:first'), 'hide');
       $(siblings).removeClass('expanded').addClass('collapsed');
     }
+  }
+  else {
+    Drupal.dhtmlMenu.animate(ul, 'hide');
+
+    // If children are closed automatically, find and close them now.
+    if (effects.children == 'close-children') {
+      Drupal.dhtmlMenu.animate(li.find('li.expanded').find('ul:first'), 'hide');
+      li.find('li.expanded').removeClass('expanded').addClass('collapsed')
+    }
+
+    li.removeClass('expanded').addClass('collapsed');
   }
 
   // Save the current state of the menus in the cookie.
