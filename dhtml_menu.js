@@ -113,7 +113,7 @@ Drupal.behaviors.dhtmlMenu = {
          * - In RTL mode, shift the overlay to the right of the text.
          * - @TODO: Explore whether "float:right" in dhtml_menu-rtl.css could solve this.
          */
-        if (settings.nav == 'bullet') {
+        else if (settings.nav == 'bullet') {
           li.addClass('dhtml-folder');
           var b = bullet.clone().prependTo(link).click(function(e) {
             Drupal.dhtmlMenu.toggleMenu(li, link, ul);
@@ -165,7 +165,8 @@ Drupal.behaviors.dhtmlMenu = {
           });
         }
 
-        else {
+        // These three options make links simply toggle when clicked.
+        if (settings.nav == 'clone' || settings.nav == 'doubleclick' || settings.nav == 'none') {
           link.click(function(e) {
             Drupal.dhtmlMenu.toggleMenu(li, link, ul);
             return false;
