@@ -71,9 +71,16 @@ Drupal.behaviors.dhtmlMenu = {
      * Create the markup for the bullet overlay, and the amount to shift it to the right in RTL mode.
      */
     else if (settings.nav == 'bullet') {
-      // Create the markup for the bullet overlay, and the amount to shift it to the right in RTL mode.
       var bullet = $('<a href="#" class="dhtml-menu-icon"></a>');
       var rtl = $('html').attr('dir') == 'rtl' ? Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1 : 0;
+    }
+
+    /* Relevant only when adding cloned links:
+     * Create the markup for the cloned list item container.
+     */
+    else if (settings.nav == 'pseudo-child') {
+      // Note: a single long class is used here to avoid matching the .dhtml-menu.leaf selector later on.
+      var cloned = $('<li class="leaf dhtml-menu-cloned-leaf"></li>');
     }
 
     /* Add jQuery effects and listeners to all menu items. */
@@ -82,14 +89,21 @@ Drupal.behaviors.dhtmlMenu = {
       var link = $(this).find('a:first');
       var ul = $(this).find('ul:first');
 
-      if (ul.length) {
+      // Only work on menus with an actual sub-menu.
+      if (link.length && ul.length) {
+        /* When using fake-child items:
+         * - Clone the menu link and mark it as fake.
+         */
         if (settings.nav == 'pseudo-child') {
-          // Note: a single long class is used here to avoid matching the .dhtml-menu.leaf selector later on.
-          link.clone().prependTo(ul).wrap('<li class="leaf dhtml-menu-fake-leaf"></li>');
+          link.clone().prependTo(ul).wrap(cloned);
         }
+
+        /* When using double-click:
+         * - Add a dblclick event handler that allows the normal link action to complete.
+         */
         else if (settings.nav == 'doubleclick') {
           link.dblclick(function(e) {
-            window.location = link.attr('href');
+            return true;
           });
         }
 
