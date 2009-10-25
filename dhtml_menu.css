@@ -1,22 +1,27 @@
-/*
- * Fake leaves are small and emphasized.
+/* $Id$ */
+
+/**
+ * @file dhtml_menu.css
+ * Static stylesheet rules to be applied to DHTML Menu markup.
  */
-li.dhtml-menu-fake-leaf
-{
+
+/*
+ * Cloned leaves are small and emphasized with italics.
+ */
+li.dhtml-menu-cloned-leaf {
   font-size: 8pt;
   font-style: italic;
 }
 
 /*
- * Hide items that should initially be collapsed. Otherwise
- * they will be open until the document finishes rendering.
+ * Menus that are initially collapsed must be hidden statically.
+ * Otherwise, they will show up while the page renders, until JS runs.
  */
-li.dhtml-menu.start-collapsed ul
-{
+li.dhtml-menu.start-collapsed ul {
   display: none;
 }
 
-/**
+/*
  * When using open-only menus, expanded links are italicized
  * to show that they are now static.
  */ 
@@ -25,38 +30,31 @@ li.dhtml-menu-open > a {
 }
 
 /*
- * Make the invisible link as large as the bullet icon.
- * It will be positioned by Javascript, respecting text direction.
+ * When using bullet-icon expansion, make the invisible link as large 
+ * as the bullet icon (16x16). It will be positioned by Javascript, respecting 
+ * text direction. Therefore no positioning code is required here.
  */
-a.dhtml-menu-icon
-{
+a.dhtml-menu-icon {
   position: relative;
   float: left;
   width: 16px;
   height: 16px;
-
-  /* Debug code to make the overlay visible and semi-transparent. */
-  /* background: blue; */
-  /* opacity: 0.3; */
 }
 
 /*
  * Invisible link shouldn't be underlined.
  */
-a.dhtml-menu-icon:hover
-{
+a.dhtml-menu-icon:hover {
   text-decoration: none !important;
 }
 
-
 /*
- * Provide large and visible folder icons for clicking.
+ * Provide large and visible folder icons for easy clicking.
  */
-li.dhtml-folder.expanded
-{
+li.dhtml-folder.expanded {
   list-style-image: url("images/folder-open-white.png") !important;
 }
-li.dhtml-folder.collapsed
-{
+li.dhtml-folder.collapsed {
   list-style-image: url("images/folder-closed-white.png") !important;
 }
+
