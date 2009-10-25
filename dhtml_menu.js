@@ -90,6 +90,12 @@ Drupal.behaviors.dhtmlMenu = {
           });
         }
 
+        /* When using bullet expansion:
+         * - Change the icon to a folder image
+         * - Add the clickable overlay and its handler
+         * - In RTL mode, shift the overlay to the right of the text.
+         * - @TODO: Explore whether "float:right" in dhtml_menu-rtl.css could solve this.
+         */
         if (settings.nav == 'bullet') {
           li.addClass('dhtml-folder');
           var b = bullet.clone().prependTo(link).click(function(e) {
@@ -202,7 +208,9 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
     // If the siblings effect is on, close all sibling menus.
     if (effects.siblings != 'none') {
       var id = link.attr('id');
-      // Siblings are all open menus that are neither parents nor children of this menu.
+      /* Siblings are all open menus that are neither parents nor children of this menu.
+       * First, mark this item's children for exclusion.
+       */
       li.find('li').addClass('own-children-temp');
 
       // If the relativity option is on, select only the siblings that have the same root
@@ -223,6 +231,7 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
         siblings = $(siblings).not('.sibling-children-temp');
       }
 
+      // The temp classes can now be removed.
       $('.own-children-temp, .sibling-children-temp')
         .removeClass('own-children-temp')
         .removeClass('sibling-children-temp');
@@ -247,6 +256,16 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
   Drupal.dhtmlMenu.cookieSet();
 }
 
+/**
+ * Animate a specific block element using the configured DHTML effects.
+ *
+ * @param element
+ *   The element to be animated. DHTML Menu only animates <ul> elements,
+ *   but this could in theory be any block (not inline) element.
+ *
+ * @param action
+ *   One of either 'show' or 'hide'.
+ */
 Drupal.dhtmlMenu.animate = function(element, action) {
   var effects = Drupal.dhtmlMenu.animation;
   var speed = Drupal.settings.dhtmlMenu.animation.speed;
