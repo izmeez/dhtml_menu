@@ -11,7 +11,7 @@
  */
 function dhtml_menu_settings(&$form_state) {
   $settings = variable_get('dhtml_menu_settings');
- 
+
   $options['nav'] = array(
     '#type' => 'radios',
     '#title' => t('Static navigation'),
@@ -26,14 +26,14 @@ function dhtml_menu_settings(&$form_state) {
     '#default_value' => $settings['nav'],
     '#description' => t('Dynamic expansion of menus competes with the static navigation of content. Choose how to resolve this conflict.'),
   );
-  
+
   $options['animation'] = array(
     '#type' => 'fieldset',
     '#title' => t('Animation'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-  
+
   $options['animation']['effects'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Effects'),
@@ -45,7 +45,7 @@ function dhtml_menu_settings(&$form_state) {
     '#description' => t('You may pick any number of animation effects that will accompany the opening and closing of a menu.'),
     '#default_value' => $settings['animation']['effects'],
   );
-  
+
   $options['animation']['speed'] = array(
     '#type' => 'select',
     '#title' => t('Speed'),
@@ -53,14 +53,14 @@ function dhtml_menu_settings(&$form_state) {
     '#default_value' => $settings['animation']['speed'],
     '#description' => t('Choose how quickly the menus should expand and collapse.'),
   );
-  
+
   $options['effects'] = array(
     '#type' => 'fieldset',
     '#title' => t('Other effects'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-  
+
   $options['effects']['siblings'] = array(
     '#type' => 'radios',
     '#title' => t('When a menu opens'),
@@ -71,7 +71,7 @@ function dhtml_menu_settings(&$form_state) {
     ),
     '#default_value' => $settings['effects']['siblings'],
   );
-  
+
   $options['effects']['children'] = array(
     '#type' => 'radios',
     '#title' => t('When a menu closes'),
@@ -117,11 +117,10 @@ function dhtml_menu_settings(&$form_state) {
     '#description' => t('DHTML will be used for all menus by default, but can be switched off for specific menus.'),
   );
 
-  $form = array(
-    '#tree' => TRUE,
-    'dhtml_menu_settings' => $options,
-  );
+  $options['#tree'] = TRUE;
+  $form['dhtml_menu_settings'] = $options;
 
+  // Disable automatic defaults, which don't work with nested values.
   return system_settings_form($form, FALSE);
 }
 
