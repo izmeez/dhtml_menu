@@ -67,7 +67,7 @@ Drupal.behaviors.dhtmlMenu = {
     /* Relevant only when adding cloned links:
      * Create the markup for the cloned list item container.
      */
-    else if (settings.nav == 'pseudo-child') {
+    else if (settings.nav == 'clone') {
       // Note: a single long class is used here to avoid matching the .dhtml-menu.leaf selector later on.
       var cloned = $('<li class="leaf dhtml-menu-cloned-leaf"></li>');
     }
@@ -80,10 +80,10 @@ Drupal.behaviors.dhtmlMenu = {
 
       // Only work on menus with an actual sub-menu.
       if (link.length && ul.length) {
-        /* When using fake-child items:
-         * - Clone the menu link and mark it as fake.
+        /* When using cloned items:
+         * - Clone the menu link and mark it as a clone.
          */
-        if (settings.nav == 'pseudo-child') {
+        if (settings.nav == 'clone') {
           link.clone().prependTo(ul).wrap(cloned);
         }
 
