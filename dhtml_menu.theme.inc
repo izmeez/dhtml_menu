@@ -14,7 +14,7 @@
  */
 function dhtml_menu_theme_menu_item_link($link) {
   global $theme;
-  static $function;
+  $function = &drupal_static(__FUNCTION__);
   $settings = variable_get('dhtml_menu_settings');
   if (!isset($function)) {
     $registry = variable_get('dhtml_menu_theme', array());
@@ -54,10 +54,12 @@ function dhtml_menu_theme_menu_item_link($link) {
  */
 function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
   global $theme;
-  static $cookie, $function;
-  if (!isset($cookie)) {
+  $cookie   = &drupal_static(__FUNCTION__ . ':cookie', array());
+  $function = &drupal_static(__FUNCTION__ . ':function');
+
+  if (empty($function)) {
     $settings = variable_get('dhtml_menu_settings');
-    if ($settings['effects']['remember']) {
+    if ($settings['effects']['remember'] && $settings['nav'] != 'open' && $settings['effects']['siblings'] != 'close-all') {
       $cookie = explode(',', @$_COOKIE['dhtml_menu']);
     }
     $registry = variable_get('dhtml_menu_theme', array());
