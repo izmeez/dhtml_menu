@@ -1,6 +1,7 @@
 <?php
 // $Id$
 
+
 /**
  * @file dhtml_menu.theme.inc
  * All functions related to generating the menu markup.
@@ -17,7 +18,12 @@ function dhtml_menu_theme_menu_item_link($link) {
   $settings = variable_get('dhtml_menu_settings');
   if (!isset($function)) {
     $registry = variable_get('dhtml_menu_theme', array());
-    $function = isset($registry[$theme]) && function_exists($registry[$theme]['menu_item_link']) ? $registry[$theme]['menu_item_link'] : 'theme_menu_item_link';
+    if (isset($registry[$theme]) && function_exists($registry[$theme]['menu_item_link'])) {
+      $function = $registry[$theme]['menu_item_link'];
+    }
+    else {
+      $function = 'theme_menu_item_link';
+    }
   }
 
   // Do not stack items that have no menu or mlid.
@@ -51,9 +57,16 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   static $cookie, $function;
   if (!isset($cookie)) {
     $settings = variable_get('dhtml_menu_settings');
-    $cookie = $settings['effects']['remember'] ? explode(',', @$_COOKIE['dhtml_menu']) : array();
+    if ($settings['effects']['remember']) {
+      $cookie = explode(',', @$_COOKIE['dhtml_menu']);
+    }
     $registry = variable_get('dhtml_menu_theme', array());
-    $function = isset($registry[$theme]) && function_exists($registry[$theme]['menu_item']) ? $registry[$theme]['menu_item'] : 'theme_menu_item';
+    if (isset($registry[$theme]) && function_exists($registry[$theme]['menu_item'])) {
+      $function = $registry[$theme]['menu_item'];
+    }
+    else {
+      $function = 'theme_menu_item';
+    }
   }
 
   /* When theme('menu_item') is called, the menu tree below it has been
@@ -76,7 +89,11 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
 
     // Render it...
     $menu = menu_tree_output($tree);
-    if (!$menu) $has_children = FALSE; // Sanitize tree.
+
+    // Sanitize the tree - uncheck has_children if no children were loaded.
+    if (!$menu) {
+      $has_children = FALSE;
+    }
   }
 
   // If the current item can expand, and is neither saved as open nor in the active trail, close it.
@@ -116,7 +133,7 @@ function _dhtml_menu_stack($link = FALSE) {
  *   A menu item link that must contain the keys "mlid" and "menu_name".
  *
  * @return
- *   The tree below the menu item.
+ *   The tree below the menu item, or an empty array.
  */
 function _dhtml_menu_subtree($item) {
   static $index = array();
@@ -125,12 +142,18 @@ function _dhtml_menu_subtree($item) {
   // This looks expensive, but menu_tree_all_data uses static caching.
   $tree = menu_tree_all_data($item['menu_name']);
 
+  // Index the menu tree to find ancestor paths for each item.
   if (!isset($indexed[$item['menu_name']])) {
     $index += _dhtml_menu_index($tree);
     $indexed[$item['menu_name']] = TRUE;
   }
 
-  // Traverse the tree using the indexed ancestor path..
+  // If the menu tree does not contain this item, stop.
+  if (!isset($index[$item['mlid']])) {
+    return array();
+  }
+
+  // Traverse the tree using the ancestor path.
   foreach ($index[$item['mlid']]['parents'] as $mlid) {
     $key = $index[$mlid]['key'];
     if (isset($tree[$key])) {
@@ -151,7 +174,11 @@ function _dhtml_menu_subtree($item) {
  * without relying on titles or stacks. This function is recursive.
  *
  * @param $tree
- *   A tree of menu items such as the return value of menu_tree_all_data()
+ *   A tree of menu items such as the return value of menu_tree_all_data().
+ * @param $ancestors
+ *   Optional, used only by internal recursion.
+ * @param $parent
+ *   Optional, used only by internal recursion.
  *
  * @return
  *   An array associating mlid values with the internal keys of the menu tree,
@@ -159,7 +186,9 @@ function _dhtml_menu_subtree($item) {
  */
 function _dhtml_menu_index($tree, $ancestors = array(), $parent = NULL) {
   $index = array();
-  if ($parent) $ancestors[] = $parent;
+  if ($parent) {
+    $ancestors[] = $parent;
+  }
 
   foreach ($tree as $key => $item) {
     $index[$item['link']['mlid']] = array(
