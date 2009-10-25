@@ -296,9 +296,10 @@ Drupal.dhtmlMenu.animate = function(element, action) {
 Drupal.dhtmlMenu.cookieSet = function() {
   var expanded = new Array();
   $('li.expanded').each(function() {
-    expanded.push($(this).children('a:first').attr('id').substr(5));
+    expanded.push($(this).children('a:first').attr('id'));
   });
   document.cookie = 'dhtml_menu=' + expanded.join(',') + ';path=/';
 }
 
 })(jQuery);
+

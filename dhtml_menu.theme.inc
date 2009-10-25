@@ -99,7 +99,7 @@ function dhtml_menu_theme_menu_item($link, $has_children, $menu = '', $in_active
   }
 
   // If the current item can expand, and is neither saved as open nor in the active trail, close it.
-  if ($menu && !($in_active_trail || in_array(substr($item['localized_options']['attributes']['id'], 5), $cookie))) {
+  if ($menu && !($in_active_trail || in_array($item['localized_options']['attributes']['id'], $cookie))) {
     $extra_class .= ' collapsed start-collapsed ';
   }
 
