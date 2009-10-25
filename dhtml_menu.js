@@ -1,11 +1,12 @@
 // $Id$
-(function($) {
 
 /**
  * @file dhtml_menu.js
  * The Javascript code for DHTML Menu
  */
- 
+
+
+(function($) {
 Drupal.dhtmlMenu = {};
 
 /**
@@ -13,15 +14,6 @@ Drupal.dhtmlMenu = {};
  */
 Drupal.behaviors.dhtmlMenu = {
   attach: function() {
-    // Do not run this function more than once.
-    // Check whether this is redundant with D7.
-    /*if (Drupal.dhtmlMenu.init) {
-      return;
-    }
-    else {
-      Drupal.dhtmlMenu.init = true;
-    }*/
-
     // Sanitize by removing "expanded" on menus already marked "collapsed". 
     $('li.dhtml-menu.collapsed.expanded').removeClass('expanded');
     var settings = Drupal.settings.dhtmlMenu;
@@ -280,7 +272,7 @@ Drupal.dhtmlMenu.cookieGet = function() {
 }
 
 /**
- * Saves the dhtml_menu cooki.
+ * Saves the dhtml_menu cookie.
  */
 Drupal.dhtmlMenu.cookieSet = function() {
   var expanded = new Array();
