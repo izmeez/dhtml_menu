@@ -8,15 +8,26 @@
 
 (function($) {
 Drupal.dhtmlMenu = {};
+Drupal.dhtmlMenu.animation = {show:{}, hide:{}, count:0};
 
 /**
  * Initialize the module's JS functions
  */
 Drupal.behaviors.dhtmlMenu = {
   attach: function() {
+    var settings = Drupal.settings.dhtmlMenu;
+
+    // Initialize the animation effects from the settings.
+    for (i in settings.animation.effects) {
+      if (settings.animation.effects[i]) {
+        Drupal.dhtmlMenu.animation.show[i] = 'show';
+        Drupal.dhtmlMenu.animation.hide[i] = 'hide';
+        Drupal.dhtmlMenu.animation.count++;
+      }
+    }
+
     // Sanitize by removing "expanded" on menus already marked "collapsed". 
     $('li.dhtml-menu.collapsed.expanded').removeClass('expanded');
-    var settings = Drupal.settings.dhtmlMenu;
 
     if (settings.effects.remember) {
       var cookie = Drupal.dhtmlMenu.cookieGet();
@@ -239,25 +250,16 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
   Drupal.dhtmlMenu.cookieSet();
 }
 
-Drupal.dhtmlMenu.animate = function(ul, open) {
-  var settings = Drupal.settings.dhtmlMenu.animation;
+Drupal.dhtmlMenu.animate = function(element, action) {
+  var effects = Drupal.dhtmlMenu.animation;
+  var speed = Drupal.settings.dhtmlMenu.animation.speed;
 
-  var effects;
-  var animate = 0;
-
-  if (!effects) {
-    effects = {};
-    for (var i in settings.effects) {
-      if (settings.effects[i]) {
-        effects[i] = open;
-        animate++;
-      }
-    }
+  if (effects.count) {
+    element.animate(effects[action], speed * 1);
   }
-  if (animate) {
-    ul.animate(effects, settings.speed * 1);
+  else {
+    element.css('display', action == 'show' ? 'block' : 'none');
   }
-  else ul.css('display', open == 'show' ? 'block' : 'none'); 
 }
 
 /**
