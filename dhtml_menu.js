@@ -40,16 +40,10 @@ Drupal.behaviors.dhtmlMenu = {
       }
     }
 
-    if (settings.nav == 'bullet') {
-      // Create the markup for the bullet overlay, and the amount to shift it to the right in RTL mode.
-      var bullet = $('<a href="#" class="dhtml-menu-icon"></a>');
-      var rtl = $('html').attr('dir') == 'rtl' ? Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1 : 0;
-    }
-
     /* Relevant only on "open-only" menus:
      * The links of expanded items should be marked for emphasis.
      */
-    else if (settings.nav == 'open') {
+    if (settings.nav == 'open') {
       $('li.dhtml-menu.expanded').addClass('dhtml-menu-open');
     }
 
@@ -71,6 +65,15 @@ Drupal.behaviors.dhtmlMenu = {
       var freeze = false;
       $('ul.menu').mouseenter(function() {freeze = false});
       $('body').mouseleave(function() {freeze = true});
+    }
+
+    /* Relevant only on bullet-icon expansion:
+     * Create the markup for the bullet overlay, and the amount to shift it to the right in RTL mode.
+     */
+    else if (settings.nav == 'bullet') {
+      // Create the markup for the bullet overlay, and the amount to shift it to the right in RTL mode.
+      var bullet = $('<a href="#" class="dhtml-menu-icon"></a>');
+      var rtl = $('html').attr('dir') == 'rtl' ? Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1 : 0;
     }
 
     /* Add jQuery effects and listeners to all menu items. */
