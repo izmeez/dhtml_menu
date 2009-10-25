@@ -29,17 +29,6 @@ Drupal.behaviors.dhtmlMenu = {
     // Sanitize by removing "expanded" on menus already marked "collapsed".
     $('li.dhtml-menu.collapsed.expanded').removeClass('expanded');
 
-    if (settings.effects.remember) {
-      var cookie = Drupal.dhtmlMenu.cookieGet();
-      for (var i in cookie) {
-        // If the cookie was not applied to the HTML code yet, do so now.
-        var rememberedItems = $('#dhtml_menu-' + cookie[i]).parents('li:first');
-        if (rememberedItems.hasClass('collapsed')) {
-          Drupal.dhtmlMenu.toggleMenu(li, $(li).find('a:first'), $(li).find('ul:first'));
-        }
-      }
-    }
-
     /* Relevant only on "open-only" menus:
      * The links of expanded items should be marked for emphasis.
      */
@@ -267,14 +256,15 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
   }
   else {
     Drupal.dhtmlMenu.animate(ul, 'hide');
+    li.removeClass('expanded').addClass('collapsed');
 
     // If children are closed automatically, find and close them now.
     if (effects.children == 'close-children') {
-      Drupal.dhtmlMenu.animate(li.find('li.expanded').find('ul:first'), 'hide');
-      li.find('li.expanded').removeClass('expanded').addClass('collapsed')
+      // If a sub-menu closes in the forest and nobody sees it, is animation a waste of performance? Yes.
+      li.find('li.expanded')
+        .removeClass('expanded').addClass('collapsed')
+        .find('ul:first').css('display', 'none');
     }
-
-    li.removeClass('expanded').addClass('collapsed');
   }
 }
 
@@ -298,17 +288,6 @@ Drupal.dhtmlMenu.animate = function(element, action) {
   else {
     element.css('display', action == 'show' ? 'block' : 'none');
   }
-}
-
-/**
- * Reads the dhtml_menu cookie.
- */
-Drupal.dhtmlMenu.cookieGet = function() {
-  var c = /dhtml_menu=(.*?)(;|$)/.exec(document.cookie);
-  if (c) {
-    return c[1];
-  }
-  else return '';
 }
 
 /**
