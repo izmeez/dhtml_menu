@@ -117,8 +117,12 @@ Drupal.behaviors.dhtmlMenu = {
           li.addClass('dhtml-folder');
           var b = bullet.clone().prependTo(link).click(function(e) {
             Drupal.dhtmlMenu.toggleMenu(li, link, ul);
+            if (settings.effects.remember) {
+              Drupal.dhtmlMenu.cookieSet();
+            }
             return false;
           });
+
           // When using RTL, each overlay must be shifted to the other side of the link text, individually.
           if (rtl) {
             // Shift the overlay right by the width of the text and the distance between text and icon.
@@ -169,6 +173,9 @@ Drupal.behaviors.dhtmlMenu = {
         if (settings.nav == 'clone' || settings.nav == 'doubleclick' || settings.nav == 'none') {
           link.click(function(e) {
             Drupal.dhtmlMenu.toggleMenu(li, link, ul);
+            if (settings.effects.remember) {
+              Drupal.dhtmlMenu.cookieSet();
+            }
             return false;
           });
         }
@@ -269,9 +276,6 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
 
     li.removeClass('expanded').addClass('collapsed');
   }
-
-  // Save the current state of the menus in the cookie.
-  Drupal.dhtmlMenu.cookieSet();
 }
 
 /**
