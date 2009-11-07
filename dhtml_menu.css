@@ -9,7 +9,7 @@
  * Cloned leaves are small and emphasized with italics.
  */
 li.dhtml-menu-cloned-leaf {
-  font-size: 8pt;
+  font-size: 0.7em;
   font-style: italic;
 }
 
