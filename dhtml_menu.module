@@ -7,8 +7,6 @@
  * Initialization and various hook implementations.
  */
 
-require_once 'dhtml_menu.theme.inc';
-
 /**
  * Implementation of hook_help().
  */
@@ -26,6 +24,7 @@ function dhtml_menu_help($path) {
  * Adds CSS, Javascript and settings to the page.
  */
 function dhtml_menu_init() {
+  module_load_include('inc', 'dhtml_menu', 'dhtml_menu.theme');
   drupal_add_css(drupal_get_path('module', 'dhtml_menu') . '/dhtml_menu.css');
   drupal_add_js(drupal_get_path('module', 'dhtml_menu') . '/dhtml_menu.js');
   drupal_add_js(array('dhtmlMenu' => variable_get('dhtml_menu_settings')), 'setting');
@@ -45,25 +44,4 @@ function dhtml_menu_menu() {
     'file' => 'dhtml_menu.admin.inc',
   );
   return $menu;
-}
-
-/**
- * Implementation of hook_theme_registry_alter().
- * Replaces the theme functions for the menu_item functions, and stores the
- * original functions in order to call them when this module is done with preprocessing.
- */
-function dhtml_menu_theme_registry_alter(&$theme_registry) {
-  global $theme;
-
-  // Back up the existing theme functions.
-  $themes = variable_get('dhtml_menu_theme', array());
-  $themes[$theme] = array(
-    'menu_item' => $theme_registry['menu_item']['function'],
-    'menu_item_link' => $theme_registry['menu_item_link']['function'],
-  );
-  variable_set('dhtml_menu_theme', $themes);
-
-  // Replace them with our own. These will "preprocess" and call the real functions.
-  $theme_registry['menu_item']['function'] = 'dhtml_menu_theme_menu_item';
-  $theme_registry['menu_item_link']['function'] = 'dhtml_menu_theme_menu_item_link';
 }

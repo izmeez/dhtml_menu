@@ -36,18 +36,7 @@ function _dhtml_menu_defaults() {
  * Implementation of hook_enable().
  */
 function dhtml_menu_enable() {
-  // Register our theme interceptors.
-  // This does not happen on its own because we have no hook_theme().
-  drupal_theme_rebuild();
   drupal_set_message(t('<em>DHTML Menu</em> offers a wide range of customization options. If you wish to change them, please visit the <a href="@url">configuration page</a>.', array('@url' => url('admin/settings/dhtml_menu'))), 'warning');
-}
-
-/**
- * Implementation of hook_disable().
- */
-function dhtml_menu_disable() {
-  // Unregister our theme interceptors.
-  drupal_theme_rebuild();
 }
 
 /**
@@ -65,8 +54,6 @@ function dhtml_menu_install() {
  * Only clears our variables, so a fresh installation can repopulate them.
  */
 function dhtml_menu_uninstall() {
-  // Theme registry backup.
-  variable_del('dhtml_menu_theme');
   // Settings.
   variable_del('dhtml_menu_settings');
 }
@@ -187,5 +174,12 @@ function dhtml_menu_update_7103() {
     variable_set('dhtml_menu_settings', $settings);
   }
   return array();
+}
+
+/**
+ * #7104: Theme registry interceptor is dead.
+ */
+function dhtml_menu_update_7104() {
+  variable_del('dhtml_menu_theme');
 }
 

@@ -221,7 +221,7 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
 
     // If the siblings effect is on, close all sibling menus.
     if (effects.siblings != 'none') {
-      var id = link.attr('id');
+      var id = li.attr('id');
       /* Siblings are all open menus that are neither parents nor children of this menu.
        * First, mark this item's children for exclusion.
        */
@@ -234,7 +234,7 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
       else {
         var root = $('ul.menu');
       }
-      var siblings = root.find('li.expanded').not('.own-children-temp').not(':has(#' + id + ')');
+      var siblings = root.find('li.expanded').not('.own-children-temp').not('#' + id);
 
       // If children should not get closed automatically...
       if (effects.children == 'none') {
@@ -296,7 +296,7 @@ Drupal.dhtmlMenu.animate = function(element, action) {
 Drupal.dhtmlMenu.cookieSet = function() {
   var expanded = new Array();
   $('li.expanded').each(function() {
-    expanded.push($(this).children('a:first').attr('id'));
+    expanded.push(this.id);
   });
   document.cookie = 'dhtml_menu=' + expanded.join(',') + ';path=/';
 }
