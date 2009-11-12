@@ -7,3 +7,4 @@ files[] = dhtml_menu.module
 files[] = dhtml_menu.install
 files[] = dhtml_menu.admin.inc
 files[] = dhtml_menu.theme.inc
+

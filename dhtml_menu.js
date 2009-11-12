@@ -1,5 +1,7 @@
 // $Id$
 
+
+
 /**
  * @file dhtml_menu.js
  * The Javascript code for DHTML Menu

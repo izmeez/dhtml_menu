@@ -45,3 +45,4 @@ function dhtml_menu_menu() {
   );
   return $menu;
 }
+

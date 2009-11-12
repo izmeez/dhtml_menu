@@ -12,9 +12,9 @@
  * Adds the required HTML attributes and loads subtrees if necessary.
  */
 function dhtml_menu_preprocess_menu_link(&$variables) {
-  $cookie   = &drupal_static(__FUNCTION__);
+  $cookie = &drupal_static(__FUNCTION__);
   $settings = variable_get('dhtml_menu_settings');
-  
+
   // Parse the cookie, if it is enabled.
   if (!isset($cookie)) {
     if ($settings['effects']['remember'] && $settings['nav'] != 'open' && $settings['effects']['siblings'] != 'close-all') {
@@ -29,17 +29,17 @@ function dhtml_menu_preprocess_menu_link(&$variables) {
   $l = &$variables['element']['#original_link'];
 
   // Determine if the menu is blacklisted or not whitelisted.
-  $disabled = ($settings['filter']['type'] == 'blacklist') == !empty($settings['filter']['list'][$l['menu_name']]); 
+  $disabled = ($settings['filter']['type'] == 'blacklist') == !empty($settings['filter']['list'][$l['menu_name']]);
   if (empty($l['menu_name']) || empty($l['mlid']) || $disabled) {
     return;
   }
 
   // Add the ID and class attributes.
-  
+
   $variables['element']['#attributes']['id'] = 'dhtml_menu-' . _dhtml_menu_unique_id($l['mlid']);
   $variables['element']['#attributes']['class'][] = 'dhtml-menu';
-  
-  // If there are children, but they were not loaded, load them. 
+
+  // If there are children, but they were not loaded, load them.
   if ($l['has_children'] && !$variables['element']['#below']) {
     $variables['element']['#below'] = _dhtml_menu_subtree($l['menu_name'], $l['mlid']);
   }
