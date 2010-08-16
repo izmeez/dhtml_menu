@@ -10,7 +10,7 @@
 /**
  * Module settings form.
  */
-function dhtml_menu_settings(&$form_state) {
+function dhtml_menu_settings($form, &$form_state) {
   $settings = variable_get('dhtml_menu_settings');
 
   $options['nav'] = array(
