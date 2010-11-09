@@ -50,7 +50,13 @@ function dhtml_menu_settings($form, &$form_state) {
   $options['animation']['speed'] = array(
     '#type' => 'select',
     '#title' => t('Speed'),
-    '#options' => array(100 => 'Very Fast (0.1s)', 500 => 'Fast (0.5s)', 1000 => 'Medium (1s)', 1500 => 'Slow (1.5s)', 2000 => 'Very Slow (2s)'),
+    '#options' => array(
+      100  => t('Very Fast (@seconds s)', array('@seconds' => 0.1)), 
+      500  => t('Fast (@seconds s)', array('@seconds' => 0.5)), 
+      1000 => t('Medium (@seconds s)', array('@seconds' => 1)),
+      1500 => t('Slow (@seconds s)', array('@seconds' => 1.5)), 
+      2000 => t('Very Slow (@seconds s)', array('@seconds' => 2)),
+    ),
     '#default_value' => $settings['animation']['speed'],
     '#description' => t('Choose how quickly the menus should expand and collapse.'),
   );
