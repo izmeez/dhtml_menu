@@ -152,14 +152,11 @@ function _dhtml_menu_menus() {
     }
   }
 
-  // @TODO: Critical core bug #473240 does not let us call menu_get_names();
-  return $menus;
-
   // menu_get_names() filters out empty menus, and adds any menus not found using the above calls (edge case).
   foreach (menu_get_names() as $menu) {
-    $opts[$menu] = isset($menus[$menu]) ? $menus[$menu] : t('Other menu: %menu', array('%menu' => $menu));
+    $menu_names[$menu] = isset($menus[$menu]) ? $menus[$menu] : t('Other menu: %menu', array('%menu' => $menu));
   }
 
-  return $opts;
+  return $menu_names;
 }
 
