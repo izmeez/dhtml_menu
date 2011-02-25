@@ -1,4 +1,3 @@
-; $Id$
 name = DHTML Menu
 description = Opens menus dynamically to reduce page reloads.
 core = 7.x
