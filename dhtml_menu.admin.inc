@@ -93,7 +93,7 @@ function dhtml_menu_settings($form, &$form_state) {
     '#title' => t('When a new page is loaded'),
     '#options' => array(
       'remember' => t('Remember which items were expanded on the last page.'),
-      0 => t('Expand only the currently active path.'),
+      '' => t('Expand only the currently active path.'),
     ),
     '#default_value' => $settings['effects']['remember'],
   );
