@@ -110,7 +110,7 @@ Drupal.behaviors.dhtmlMenu = {
          * - @TODO: Explore whether "float:right" in dhtml_menu-rtl.css could solve this.
          */
         else if (settings.nav == 'bullet') {
-          li.addClass('dhtml-folder');
+          li.addClass('dhtml-folder dhtml-menu-processed');
           var b = bullet.clone().prependTo(link).click(function(e) {
             Drupal.dhtmlMenu.toggleMenu(li, link, ul);
             if (settings.effects.remember) {
