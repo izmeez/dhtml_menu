@@ -105,6 +105,20 @@ Drupal.behaviors.dhtmlMenu = {
           });
         }
 
+        /** 
+         * If link is a placeholder (ie from special_menu_items module) make sure that
+         * when you click it, the children show
+         */
+        if (link.attr('href') == '#') {
+          link.click(function(e) {
+            Drupal.dhtmlMenu.toggleMenu(li, link, ul);
+            if (settings.effects.remember) {
+              Drupal.dhtmlMenu.cookieSet();
+            }
+            return false;
+          });
+        }
+
         /* When using bullet expansion:
          * - Change the icon to a folder image
          * - Add the clickable overlay and its handler
