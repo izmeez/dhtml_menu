@@ -15,7 +15,7 @@ Drupal.dhtmlMenu.animation = {show:{}, hide:{}, count:0};
  * Initialize the module's JS functions
  */
 Drupal.behaviors.dhtmlMenu = {
-  attach: function() {
+  attach: function(context, settings) {
     var settings = Drupal.settings.dhtmlMenu;
 
     // Initialize the animation effects from the settings.
@@ -28,13 +28,13 @@ Drupal.behaviors.dhtmlMenu = {
     }
 
     // Sanitize by removing "expanded" on menus already marked "collapsed".
-    $('li.dhtml-menu.collapsed.expanded').removeClass('expanded');
+    $('li.dhtml-menu.collapsed.expanded', context).removeClass('expanded');
 
     /* Relevant only on "open-only" menus:
      * The links of expanded items should be marked for emphasis.
      */
     if (settings.nav == 'open') {
-      $('li.dhtml-menu.expanded').addClass('dhtml-menu-open');
+      $('li.dhtml-menu.expanded', context).addClass('dhtml-menu-open');
     }
 
     /* Relevant only when hovering:
@@ -74,7 +74,7 @@ Drupal.behaviors.dhtmlMenu = {
     }
 
     /* Add jQuery effects and listeners to all menu items. */
-    $('ul.menu li.dhtml-menu:not(.leaf)').each(function() {
+    $('ul.menu li.dhtml-menu:not(.leaf)', context).each(function() {
       var li = $(this);
       var link = $(this).find('a:first');
       var ul = $(this).find('ul:first');
