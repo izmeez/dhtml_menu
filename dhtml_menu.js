@@ -62,7 +62,12 @@ Drupal.behaviors.dhtmlMenu = {
      */
     else if (settings.nav == 'bullet') {
       var bullet = $('<a href="#" class="dhtml-menu-icon"></a>');
-      var rtl = $('html').attr('dir') == 'rtl' ? Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1 : 0;
+      var rtl = 0;
+      if ($('html').attr('dir') === 'rtl') {
+        if (typeof($('.menu li').css('margin-right')) !== 'undefined') {
+          rtl = Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1;
+        }
+      }
     }
 
     /* Relevant only when adding cloned links:
@@ -178,10 +183,11 @@ Drupal.behaviors.dhtmlMenu = {
       // Shift overlay to the left by the width of the icon and the distance between icon and text.
       if ($('.menu li').hasClass('margin-left')) {
         // Saved for a later backport if needs.
-        // var shift = '-' + $('.menu li').css('margin-left');
-        var shift = '-' + (Math.ceil(($('.menu li.dhtml-folder').css('margin-left').replace('px', ''))) + 16) + 'px';
-        // Shift the overlay using a negative left-hand offset, and the text using a negative right-hand margin.
-        $('.dhtml-menu-icon').css('left', shift).css('margin-right', shift);
+        if (typeof($('.menu li').css('margin-right')) !== 'undefined') {
+          var shift = '-' + (Math.ceil(($('.menu li').css('margin-left').replace('px', ''))) + 16) + 'px';
+          // Shift the overlay using a negative left-hand offset, and the text using a negative right-hand margin.
+          $('.dhtml-menu-icon').css('left', shift).css('margin-right', shift);
+        }
       }
     }
   }
