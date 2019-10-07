@@ -58,8 +58,12 @@ function dhtml_menu_preprocess_menu_link(&$variables) {
 
   // If the current item can expand, and is neither saved as open nor in the active trail, close it.
   if ($l['has_children'] && !$l['in_active_trail'] && !in_array($variables['element']['#attributes']['id'], $cookie)) {
-    $variables['element']['#attributes']['class'][] = 'collapsed';
-    $variables['element']['#attributes']['class'][] = 'start-collapsed';
+    if (!in_array('collapsed', $variables['element']['#attributes']['class'])) {
+      $variables['element']['#attributes']['class'][] = 'collapsed';
+    }
+    if (!in_array('start-collapsed', $variables['element']['#attributes']['class'])) {
+      $variables['element']['#attributes']['class'][] = 'start-collapsed';
+    }
   }
 }
 
