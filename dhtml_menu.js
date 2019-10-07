@@ -74,7 +74,8 @@ Drupal.behaviors.dhtmlMenu = {
     }
 
     /* Add jQuery effects and listeners to all menu items. */
-    $('ul.menu li.dhtml-menu:not(.leaf)', context).each(function() {
+    $('ul.menu li.dhtml-menu:not(.leaf,.dhtml-processed)', context).each(function() {
+      $(this).addClass("dhtml-processed");
       var li = $(this);
       var link = $(this).find('a:first');
       var ul = $(this).find('ul:first');
