@@ -54,7 +54,9 @@ Drupal.behaviors.dhtmlMenu = {
     else if (settings.nav == 'hover') {
       var freeze = false;
       $('ul.menu').mouseenter(function() {freeze = false});
+      $('ul.menu').focus(function() {freeze = false});
       $('body').mouseleave(function() {freeze = true});
+      $('body').blur(function() {freeze = true});
     }
 
     /* Relevant only on bullet-icon expansion:
@@ -130,10 +132,27 @@ Drupal.behaviors.dhtmlMenu = {
          * - Add mouse-hovering events.
          */
         else if (settings.nav == 'hover') {
+          link.focus(function(e) {
+            Drupal.dhtmlMenu.switchMenu(li, link, ul, true);
+          });
           link.mouseenter(function(e) {
               Drupal.dhtmlMenu.switchMenu(li, link, ul, true);
           });
           li.mouseleave(function(e) {
+            // Only collapse the menu if it was initially collapsed.
+            if (li.hasClass('start-collapsed')) {
+              /* As explained earlier, this event fires before the body event.
+               * We need to wait to make sure that the user isn't browsing a
+               * context menu right now, in which case the menu isn't collapsed.
+               */
+              setTimeout(function() {
+                if (!freeze) {
+                  Drupal.dhtmlMenu.switchMenu(li, link, ul, false);
+                }
+              }, 10);
+            }
+          });
+          li.blur(function(e) {
             // Only collapse the menu if it was initially collapsed.
             if (li.hasClass('start-collapsed')) {
               /* As explained earlier, this event fires before the body event.
