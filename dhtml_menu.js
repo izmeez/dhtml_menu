@@ -105,7 +105,7 @@ Drupal.behaviors.dhtmlMenu = {
           });
         }
 
-        /** 
+        /**
          * If link is a placeholder (ie from special_menu_items module) make sure that
          * when you click it, the children show
          */
@@ -212,7 +212,7 @@ Drupal.behaviors.dhtmlMenu = {
     });
 
     // When using LTR, all icons can be shifted as one, as the text width is not relevant.
-    if (settings.nav == 'bullet' && !rtl && $('.menu li.dhtml-folder').length) {
+    if (settings.nav == 'bullet' && $('.menu li').length && !rtl && $('.menu li.dhtml-folder').length) {
       // Shift overlay to the left by the width of the icon and the distance between icon and text.
       if ($('.menu li').hasClass('margin-left')) {
         // Saved for a later backport if needs.
