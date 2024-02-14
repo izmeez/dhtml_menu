@@ -6,10 +6,8 @@
  * Initialization and various hook implementations.
  */
 
-require_once 'dhtml_menu.theme.inc';
-
 /**
- * Implementation of hook_help().
+ * Implements hook_help().
  */
 function dhtml_menu_help($path) {
   switch ($path) {
@@ -21,24 +19,36 @@ function dhtml_menu_help($path) {
 }
 
 /**
- * Implementation of hook_init().
- * Adds CSS, Javascript and settings to the page.
+ * Implements hook_config_info().
  */
-function dhtml_menu_init() {
-  drupal_add_css(drupal_get_path('module', 'dhtml_menu') . '/dhtml_menu.css');
-  drupal_add_js(drupal_get_path('module', 'dhtml_menu') . '/dhtml_menu.js');
-  drupal_add_js(array('dhtmlMenu' => variable_get('dhtml_menu_settings')), 'setting');
+function dhtml_menu_config_info() {
+  $prefixes['dhtml_menu.settings'] = array(
+    'label' => t('DHTML Menu settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
 }
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_init().
+ * Adds CSS, Javascript and settings to the page.
+ */
+function dhtml_menu_init() {
+  module_load_include('inc', 'dhtml_menu', 'dhtml_menu.theme');
+  backdrop_add_css(backdrop_get_path('module', 'dhtml_menu') . '/dhtml_menu.css');
+  backdrop_add_js(backdrop_get_path('module', 'dhtml_menu') . '/dhtml_menu.js');
+  backdrop_add_js(array('dhtmlMenu' => config_get('dhtml_menu.settings', 'dhtml_menu_settings')), 'setting');
+}
+
+/**
+ * Implements hook_menu().
  * Adds a settings page.
  */
 function dhtml_menu_menu() {
   $menu['admin/config/user-interface/dhtml_menu'] = array(
     'title' => 'DHTML Menu',
     'description' => 'Configure the behavior of DHTML Menu.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('dhtml_menu_settings'),
     'access arguments' => array('administer site configuration'),
     'file' => 'dhtml_menu.admin.inc',

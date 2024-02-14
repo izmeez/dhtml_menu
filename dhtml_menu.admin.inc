@@ -10,7 +10,7 @@
  * Module settings form.
  */
 function dhtml_menu_settings($form, &$form_state) {
-  $settings = variable_get('dhtml_menu_settings');
+  $settings = config_get('dhtml_menu.settings', 'dhtml_menu_settings');
 
   $options['nav'] = array(
     '#type' => 'radios',
@@ -50,10 +50,10 @@ function dhtml_menu_settings($form, &$form_state) {
     '#type' => 'select',
     '#title' => t('Speed'),
     '#options' => array(
-      100  => t('Very Fast (@seconds s)', array('@seconds' => 0.1)), 
-      500  => t('Fast (@seconds s)', array('@seconds' => 0.5)), 
+      100 => t('Very Fast (@seconds s)', array('@seconds' => 0.1)),
+      500 => t('Fast (@seconds s)', array('@seconds' => 0.5)),
       1000 => t('Medium (@seconds s)', array('@seconds' => 1)),
-      1500 => t('Slow (@seconds s)', array('@seconds' => 1.5)), 
+      1500 => t('Slow (@seconds s)', array('@seconds' => 1.5)),
       2000 => t('Very Slow (@seconds s)', array('@seconds' => 2)),
     ),
     '#default_value' => $settings['animation']['speed'],
@@ -122,18 +122,9 @@ function dhtml_menu_settings($form, &$form_state) {
     '#default_value' => $settings['filter']['list'],
     '#description' => t('DHTML will be used for all menus by default, but can be switched off for specific menus.'),
   );
-  
-  if (module_exists('menu_block')) {
-    $options['filter']['menu_block'] = array(
-      '#type' => 'checkboxes',
-      '#title' => t('Menu Blocks'),
-      '#options' => _dhtml_menu_blocks(),
-      '#default_value' => $settings['filter']['menu_block'],
-      '#description' => t('You may enable/disable specific menu blocks here, as long as the corresponding menu is enabled.'),
-    );
-  }
 
   $options['#tree'] = TRUE;
+  $form['#config'] = 'dhtml_menu.settings';
   $form['dhtml_menu_settings'] = $options;
 
   // Disable automatic defaults, which don't work with nested values.
@@ -169,19 +160,3 @@ function _dhtml_menu_menus() {
   return $menu_names;
 }
 
-/**
- * Build an option list for all menu blocks in the system.
- * Only applicable if the Menu Block module is installed.
- */
-function _dhtml_menu_blocks() {
-  if (function_exists('menu_block_block_info')) {
-    $block_names = array();
-    $blocks = menu_block_block_info();
-    foreach ($blocks as $delta => $block) {
-      $block_names['menu_block_' . $delta] = $block['info'];
-    }
-    
-    return $block_names;
-  }
-  return NULL;
-}

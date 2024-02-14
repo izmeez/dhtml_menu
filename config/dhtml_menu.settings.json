@@ -1,0 +1,12 @@
+{
+    "_config_name": "dhtml_menu.settings",
+    "dhtml_menu_settings": "",
+    "dhtml_menu_use_effects": false,
+    "dhtml_menu_hide_siblings": false,
+    "dhtml_menu_nav": "dynamic value in file /dhtml_menu/dhtml_menu.install line 142",
+    "dhtml_menu_animations": "dynamic value in file /dhtml_menu/dhtml_menu.install line 144",
+    "dhtml_menu_speed": "dynamic value in file /dhtml_menu/dhtml_menu.install line 145",
+    "dhtml_menu_siblings": "dynamic value in file /dhtml_menu/dhtml_menu.install line 148",
+    "dhtml_menu_children": "dynamic value in file /dhtml_menu/dhtml_menu.install line 149",
+    "dhtml_menu_disabled": []
+}

@@ -11,8 +11,8 @@
  * Adds the required HTML attributes and loads subtrees if necessary.
  */
 function dhtml_menu_preprocess_menu_link(&$variables) {
-  $cookie = &drupal_static(__FUNCTION__);
-  $settings = variable_get('dhtml_menu_settings');
+  $cookie = &backdrop_static(__FUNCTION__);
+  $settings = config_get('dhtml_menu.settings', 'dhtml_menu_settings');
 
   // Parse the cookie, if it is enabled.
   if (!isset($cookie)) {
@@ -26,27 +26,11 @@ function dhtml_menu_preprocess_menu_link(&$variables) {
 
   // Saves a lot of code.
   $l = &$variables['element']['#original_link'];
-  if (empty($l)) {
-    return;
-  }
 
   // Determine if the menu is blacklisted or not whitelisted.
-  // First check menu blocks.
-  if (!empty($variables['element']['#bid']['module']) &&
-      !empty($variables['element']['#bid']['delta']) &&
-      $variables['element']['#bid']['module'] == 'menu_block') {
-    $checked = !empty($settings['filter']['menu_block']['menu_block_' . $variables['element']['#bid']['delta']]);
-    if ($checked == ($settings['filter']['type'] == 'blacklist')) {
-      // This menu block is either blacklisted, or not whitelisted, hence it is disabled.
-      return;
-    }
-  }
-  // Then check menus.
-  else {
-    $disabled = ($settings['filter']['type'] == 'blacklist') == !empty($settings['filter']['list'][$l['menu_name']]);
-    if (empty($l['menu_name']) || empty($l['mlid']) || $disabled) {
-      return;
-    }
+  $disabled = ($settings['filter']['type'] == 'blacklist') == !empty($settings['filter']['list'][$l['menu_name']]);
+  if (empty($l['menu_name']) || empty($l['mlid']) || $disabled) {
+    return;
   }
 
   // Add the ID and class attributes.
@@ -61,12 +45,8 @@ function dhtml_menu_preprocess_menu_link(&$variables) {
 
   // If the current item can expand, and is neither saved as open nor in the active trail, close it.
   if ($l['has_children'] && !$l['in_active_trail'] && !in_array($variables['element']['#attributes']['id'], $cookie)) {
-    if (!in_array('collapsed', $variables['element']['#attributes']['class'])) {
-      $variables['element']['#attributes']['class'][] = 'collapsed';
-    }
-    if (!in_array('start-collapsed', $variables['element']['#attributes']['class'])) {
-      $variables['element']['#attributes']['class'][] = 'start-collapsed';
-    }
+    $variables['element']['#attributes']['class'][] = 'collapsed';
+    $variables['element']['#attributes']['class'][] = 'start-collapsed';
   }
 }
 
@@ -113,7 +93,7 @@ function _dhtml_menu_subtree($menu_name, $mlid) {
 
   // Go one level further to go below the current item.
   $key = $index[$mlid]['key'];
-  return isset($tree[$key]) ? menu_tree_output($tree[$key]['below']) : array();
+  return isset($tree[$key])?menu_tree_output($tree[$key]['below']) : array();
 }
 
 /**

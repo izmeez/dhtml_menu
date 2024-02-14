@@ -8,33 +8,33 @@
 
 
 (function($) {
-Drupal.dhtmlMenu = {};
-Drupal.dhtmlMenu.animation = {show:{}, hide:{}, count:0};
+Backdrop.dhtmlMenu = {};
+Backdrop.dhtmlMenu.animation = {show:{}, hide:{}, count:0};
 
 /**
  * Initialize the module's JS functions
  */
-Drupal.behaviors.dhtmlMenu = {
-  attach: function(context, settings) {
-    var settings = Drupal.settings.dhtmlMenu;
+Backdrop.behaviors.dhtmlMenu = {
+  attach: function() {
+    var settings = Backdrop.settings.dhtmlMenu;
 
     // Initialize the animation effects from the settings.
     for (i in settings.animation.effects) {
       if (settings.animation.effects[i]) {
-        Drupal.dhtmlMenu.animation.show[i] = 'show';
-        Drupal.dhtmlMenu.animation.hide[i] = 'hide';
-        Drupal.dhtmlMenu.animation.count++;
+        Backdrop.dhtmlMenu.animation.show[i] = 'show';
+        Backdrop.dhtmlMenu.animation.hide[i] = 'hide';
+        Backdrop.dhtmlMenu.animation.count++;
       }
     }
 
     // Sanitize by removing "expanded" on menus already marked "collapsed".
-    $('li.dhtml-menu.collapsed.expanded', context).removeClass('expanded');
+    $('li.dhtml-menu.collapsed.expanded').removeClass('expanded');
 
     /* Relevant only on "open-only" menus:
      * The links of expanded items should be marked for emphasis.
      */
     if (settings.nav == 'open') {
-      $('li.dhtml-menu.expanded', context).addClass('dhtml-menu-open');
+      $('li.dhtml-menu.expanded').addClass('dhtml-menu-open');
     }
 
     /* Relevant only when hovering:
@@ -54,9 +54,7 @@ Drupal.behaviors.dhtmlMenu = {
     else if (settings.nav == 'hover') {
       var freeze = false;
       $('ul.menu').mouseenter(function() {freeze = false});
-      $('ul.menu').focus(function() {freeze = false});
       $('body').mouseleave(function() {freeze = true});
-      $('body').blur(function() {freeze = true});
     }
 
     /* Relevant only on bullet-icon expansion:
@@ -64,12 +62,7 @@ Drupal.behaviors.dhtmlMenu = {
      */
     else if (settings.nav == 'bullet') {
       var bullet = $('<a href="#" class="dhtml-menu-icon"></a>');
-      var rtl = 0;
-      if ($('html').attr('dir') === 'rtl') {
-        if (typeof($('.menu li').css('margin-right')) !== 'undefined') {
-          rtl = Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1;
-        }
-      }
+      var rtl = $('html').attr('dir') == 'rtl' ? Math.ceil($('.menu li').css('margin-right').replace('px', '')) + 1 : 0;
     }
 
     /* Relevant only when adding cloned links:
@@ -81,8 +74,7 @@ Drupal.behaviors.dhtmlMenu = {
     }
 
     /* Add jQuery effects and listeners to all menu items. */
-    $('ul.menu li.dhtml-menu:not(.leaf,.dhtml-processed)', context).each(function() {
-      $(this).addClass("dhtml-processed");
+    $('ul.menu li.dhtml-menu:not(.leaf)').each(function() {
       var li = $(this);
       var link = $(this).find('a:first');
       var ul = $(this).find('ul:first');
@@ -105,20 +97,6 @@ Drupal.behaviors.dhtmlMenu = {
           });
         }
 
-        /**
-         * If link is a placeholder (ie from special_menu_items module) make sure that
-         * when you click it, the children show
-         */
-        if (link.attr('href') == '#') {
-          link.click(function(e) {
-            Drupal.dhtmlMenu.toggleMenu(li, link, ul);
-            if (settings.effects.remember) {
-              Drupal.dhtmlMenu.cookieSet();
-            }
-            return false;
-          });
-        }
-
         /* When using bullet expansion:
          * - Change the icon to a folder image
          * - Add the clickable overlay and its handler
@@ -126,11 +104,11 @@ Drupal.behaviors.dhtmlMenu = {
          * - @TODO: Explore whether "float:right" in dhtml_menu-rtl.css could solve this.
          */
         else if (settings.nav == 'bullet') {
-          li.addClass('dhtml-folder dhtml-menu-processed');
+          li.addClass('dhtml-folder');
           var b = bullet.clone().prependTo(link).click(function(e) {
-            Drupal.dhtmlMenu.toggleMenu(li, link, ul);
+            Backdrop.dhtmlMenu.toggleMenu(li, link, ul);
             if (settings.effects.remember) {
-              Drupal.dhtmlMenu.cookieSet();
+              Backdrop.dhtmlMenu.cookieSet();
             }
             return false;
           });
@@ -146,11 +124,8 @@ Drupal.behaviors.dhtmlMenu = {
          * - Add mouse-hovering events.
          */
         else if (settings.nav == 'hover') {
-          link.focus(function(e) {
-            Drupal.dhtmlMenu.switchMenu(li, link, ul, true);
-          });
           link.mouseenter(function(e) {
-              Drupal.dhtmlMenu.switchMenu(li, link, ul, true);
+              Backdrop.dhtmlMenu.switchMenu(li, link, ul, true);
           });
           li.mouseleave(function(e) {
             // Only collapse the menu if it was initially collapsed.
@@ -161,21 +136,7 @@ Drupal.behaviors.dhtmlMenu = {
                */
               setTimeout(function() {
                 if (!freeze) {
-                  Drupal.dhtmlMenu.switchMenu(li, link, ul, false);
-                }
-              }, 10);
-            }
-          });
-          li.blur(function(e) {
-            // Only collapse the menu if it was initially collapsed.
-            if (li.hasClass('start-collapsed')) {
-              /* As explained earlier, this event fires before the body event.
-               * We need to wait to make sure that the user isn't browsing a
-               * context menu right now, in which case the menu isn't collapsed.
-               */
-              setTimeout(function() {
-                if (!freeze) {
-                  Drupal.dhtmlMenu.switchMenu(li, link, ul, false);
+                  Backdrop.dhtmlMenu.switchMenu(li, link, ul, false);
                 }
               }, 10);
             }
@@ -191,7 +152,7 @@ Drupal.behaviors.dhtmlMenu = {
             if (li.hasClass('expanded')) {
               return true;
             }
-            Drupal.dhtmlMenu.toggleMenu(li, link, ul);
+            Backdrop.dhtmlMenu.toggleMenu(li, link, ul);
             $('.dhtml-menu-open').removeClass('dhtml-menu-open');
             $('li.dhtml-menu.expanded').addClass('dhtml-menu-open');
             return false;
@@ -201,9 +162,9 @@ Drupal.behaviors.dhtmlMenu = {
         // These three options make links simply toggle when clicked.
         if (settings.nav == 'clone' || settings.nav == 'doubleclick' || settings.nav == 'none') {
           link.click(function(e) {
-            Drupal.dhtmlMenu.toggleMenu(li, link, ul);
+            Backdrop.dhtmlMenu.toggleMenu(li, link, ul);
             if (settings.effects.remember) {
-              Drupal.dhtmlMenu.cookieSet();
+              Backdrop.dhtmlMenu.cookieSet();
             }
             return false;
           });
@@ -212,15 +173,12 @@ Drupal.behaviors.dhtmlMenu = {
     });
 
     // When using LTR, all icons can be shifted as one, as the text width is not relevant.
-    if (settings.nav == 'bullet' && $('.menu li').length && !rtl && $('.menu li.dhtml-folder').length) {
+    if (settings.nav == 'bullet' && !rtl) {
       // Shift overlay to the left by the width of the icon and the distance between icon and text.
       if ($('.menu li').hasClass('margin-left')) {
-        // Saved for a later backport if needs.
-        if (typeof($('.menu li').css('margin-right')) !== 'undefined') {
-          var shift = '-' + (Math.ceil(($('.menu li').css('margin-left').replace('px', ''))) + 16) + 'px';
-          // Shift the overlay using a negative left-hand offset, and the text using a negative right-hand margin.
-          $('.dhtml-menu-icon').css('left', shift).css('margin-right', shift);
-        }
+        var shift = '-' + (Math.ceil(($('.menu li').css('margin-left').replace('px', ''))) + 16) + 'px';
+        // Shift the overlay using a negative left-hand offset, and the text using a negative right-hand margin.
+        $('.dhtml-menu-icon').css('left', shift).css('margin-right', shift);
       }
     }
   }
@@ -236,9 +194,9 @@ Drupal.behaviors.dhtmlMenu = {
  * @param ul
  *   Object. The <ul> element containing the sub-items.
  */
-Drupal.dhtmlMenu.toggleMenu = function(li, link, ul) {
+Backdrop.dhtmlMenu.toggleMenu = function(li, link, ul) {
   // Make it open if closed, close if open.
-  Drupal.dhtmlMenu.switchMenu(li, link, ul, !li.hasClass('expanded'));
+  Backdrop.dhtmlMenu.switchMenu(li, link, ul, !li.hasClass('expanded'));
 }
 
 /**
@@ -252,16 +210,16 @@ Drupal.dhtmlMenu.toggleMenu = function(li, link, ul) {
  * @param ul
  *   Object. The <ul> element containing the sub-items.
  */
-Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
+Backdrop.dhtmlMenu.switchMenu = function(li, link, ul, open) {
   // No need for switching. Menu is already in desired state.
   if (open == li.hasClass('expanded')) {
     return;
   }
 
-  var effects = Drupal.settings.dhtmlMenu.effects;
+  var effects = Backdrop.settings.dhtmlMenu.effects;
 
   if (open) {
-    Drupal.dhtmlMenu.animate(ul, 'show');
+    Backdrop.dhtmlMenu.animate(ul, 'show');
     li.removeClass('collapsed').addClass('expanded');
 
     // If the siblings effect is on, close all sibling menus.
@@ -295,12 +253,12 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
         .removeClass('own-children-temp')
         .removeClass('sibling-children-temp');
 
-      Drupal.dhtmlMenu.animate(siblings.find('ul:first'), 'hide');
+      Backdrop.dhtmlMenu.animate(siblings.find('ul:first'), 'hide');
       siblings.removeClass('expanded').addClass('collapsed');
     }
   }
   else {
-    Drupal.dhtmlMenu.animate(ul, 'hide');
+    Backdrop.dhtmlMenu.animate(ul, 'hide');
     li.removeClass('expanded').addClass('collapsed');
 
     // If children are closed automatically, find and close them now.
@@ -323,9 +281,9 @@ Drupal.dhtmlMenu.switchMenu = function(li, link, ul, open) {
  * @param action
  *   One of either 'show' or 'hide'.
  */
-Drupal.dhtmlMenu.animate = function(element, action) {
-  var effects = Drupal.dhtmlMenu.animation;
-  var speed = Drupal.settings.dhtmlMenu.animation.speed;
+Backdrop.dhtmlMenu.animate = function(element, action) {
+  var effects = Backdrop.dhtmlMenu.animation;
+  var speed = Backdrop.settings.dhtmlMenu.animation.speed;
 
   if (effects.count) {
     element.animate(effects[action], speed * 1);
@@ -338,7 +296,7 @@ Drupal.dhtmlMenu.animate = function(element, action) {
 /**
  * Saves the dhtml_menu cookie.
  */
-Drupal.dhtmlMenu.cookieSet = function() {
+Backdrop.dhtmlMenu.cookieSet = function() {
   var expanded = new Array();
   $('li.expanded').each(function() {
     expanded.push(this.id);
